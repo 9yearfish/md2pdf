@@ -12,6 +12,13 @@
     "fonts": "python3 scripts/prepare_fonts.py"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.11.1",
+    "@codemirror/lang-markdown": "^6.5.2",
+    "@codemirror/language": "^6.12.4",
+    "@codemirror/search": "^6.7.2",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.43.13",
+    "@lezer/highlight": "^1.2.3",
     "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
     "@myriaddreamin/typst.ts": "^0.7.0",
     "markdown-it": "^15.0.2",
@@ -21,6 +28,8 @@
     "pdfjs-dist": "^6.3.289"
   },
   "devDependencies": {
+    "@types/node": "^26.6.2",
+    "binaryen": "^132.0.0",
     "playwright": "^1.63.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.6"

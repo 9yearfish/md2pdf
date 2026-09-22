@@ -8,8 +8,8 @@ import { createTypstCompiler, CompileFormatEnum } from '@myriaddreamin/typst.ts/
 import type { TypstCompiler } from '@myriaddreamin/typst.ts/compiler';
 import { loadFonts, withAccessModel, withPackageRegistry } from '@myriaddreamin/typst.ts/options.init';
 import type { FsAccessModel, PackageRegistry } from '@myriaddreamin/typst.ts/internal.types';
-import compilerWasm from '@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm?url';
 import { resolveFonts, fontSetKey, type FontSet } from './fonts';
+import { loadCompilerModule, shouldPrefetch } from './wasm-loader';
 
 const MAIN = '/main.typ';
 
@@ -58,7 +58,13 @@ const compilers = new Map<string, Promise<TypstCompiler>>();
 /** Paths mapped into each compiler's shadow filesystem, so stale assets get cleared. */
 const mappedAssets = new Map<string, Set<string>>();
 
-export type ProgressFn = (stage: string) => void;
+export type EngineProgress =
+  | { stage: 'downloading-engine'; loaded: number; total: number }
+  | { stage: 'starting-engine' }
+  | { stage: 'loading-fonts' }
+  | { stage: 'compiling' };
+
+export type ProgressFn = (progress: EngineProgress) => void;
 
 function getCompiler(set: FontSet, onProgress: ProgressFn): Promise<TypstCompiler> {
   const key = fontSetKey(set);
@@ -69,11 +75,15 @@ function getCompiler(set: FontSet, onProgress: ProgressFn): Promise<TypstCompile
   compilers.clear();
   mappedAssets.clear();
 
-  onProgress('loading-engine');
   const created = (async () => {
+    const module = await loadCompilerModule(({ loaded, total }) =>
+      onProgress({ stage: 'downloading-engine', loaded, total }),
+    );
+    onProgress({ stage: 'starting-engine' });
+
     const compiler = createTypstCompiler();
     await compiler.init({
-      getModule: () => compilerWasm,
+      getModule: () => module,
       beforeBuild: [
         loadFonts(set.urls, { assets: false }),
         withAccessModel(NO_FILESYSTEM),
@@ -106,7 +116,7 @@ export async function compileToPdf(
   const compiler = await getCompiler(fonts, onProgress);
   const key = fontSetKey(fonts);
 
-  onProgress('compiling');
+  onProgress({ stage: 'compiling' });
 
   // Clear assets from the previous run before mapping the current ones.
   const previous = mappedAssets.get(key)!;
@@ -136,17 +146,24 @@ export async function compileToPdf(
 }
 
 /**
- * Pull the compiler into the HTTP cache while the reader is still typing.
+ * Pull the compiler down while the reader is still typing, so the first
+ * conversion does not start with a 7 MB wait.
  *
- * This deliberately fetches rather than instantiates: the font tier is not
- * known until there is a document, and building a compiler for the wrong tier
- * would only have to be thrown away.
+ * Skipped on metered or slow connections: downloading that much of someone's
+ * data allowance before they have asked for anything is exactly the surprise
+ * this tool should avoid. Those visitors get the same download on their first
+ * conversion, with a progress bar and having chosen it.
+ *
+ * This fetches rather than instantiates, because the font tier is not known
+ * until there is a document and a compiler built for the wrong tier would only
+ * be thrown away.
  */
 export function prewarm(): void {
+  if (!shouldPrefetch()) return;
   const idle =
     (window as { requestIdleCallback?: (fn: () => void) => void }).requestIdleCallback ??
     ((fn: () => void) => setTimeout(fn, 1200));
   idle(() => {
-    void fetch(compilerWasm, { cache: 'force-cache' }).catch(() => {});
+    void loadCompilerModule(() => {}).catch(() => {});
   });
 }

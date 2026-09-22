@@ -124,6 +124,12 @@ export class PdfViewer {
     // document that opens on page 1 is not a change from the initial state.
     this.currentPage = 0;
     this.updateCurrentPage();
+
+    // Intersection callbacks are asynchronous, so returning here would hand
+    // back a viewer showing blank placeholders. Paint the page the reader is
+    // looking at before saying the document is ready.
+    const visible = this.slots[Math.max(0, this.currentPage - 1)];
+    if (visible) await this.renderSlot(visible);
   }
 
   /** Page sizes beyond the first are only known after loading them. */

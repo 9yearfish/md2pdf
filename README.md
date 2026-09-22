@@ -67,16 +67,44 @@ makes "nothing is uploaded" an enforced property rather than a promise. The
 service worker caches only the application's own immutable assets; no part of a
 document is ever stored.
 
-## Known constraints
+## What a visit actually costs
 
-- First load is roughly 11-12 MB, 7.8 MB of it the Typst WASM compiler. It is
-  fetched in the background while you type and cached by a service worker
-  afterwards. That is the price of a real typesetting engine in the browser.
+Opening the page downloads **56 KB**. Everything else arrives only when it is
+needed:
+
+| Payload | Size (brotli) | When |
+| --- | --- | --- |
+| Page, styles, app | 56 KB | on load |
+| Editor (CodeMirror) | 171 KB | after first paint, in the background |
+| Typesetting engine | ~6.9 MB | when you first touch the editor, or on the first conversion |
+| pdf.js | ~150 KB | with the first preview |
+| Mermaid | ~180 KB | only if a document contains a diagram |
+| Chinese fonts | 2.6-9 MB | only if a document contains Chinese |
+
+The engine is the one big item and there is no way around it: it is a real
+typesetting system compiled to WebAssembly. `wasm-opt -Oz` was tried and makes
+it worse — 27.0 MB shrinks to 25.4 MB uncompressed but compresses to 6.91 MB
+instead of 6.88 MB. So it is handled rather than shrunk: the download does not
+start until someone touches the editor, it is skipped entirely on metered or
+slow connections until they ask for a conversion, it reports byte-level
+progress while it runs, and it is kept in Cache Storage so it never happens
+twice.
+
+## Known constraints
 - Raw HTML in Markdown is not supported beyond `<br>`; Typst has no equivalent.
 - Italic Chinese renders upright: Noto Sans SC has no italic face and Typst
   does not synthesise one.
 - Remote images are not fetched. Drag a file onto the page or paste it instead.
 - Maths is not in this version.
+
+## SEO
+
+The page carries its description, feature notes and FAQ as real HTML below the
+tool, so there is something to index without executing JavaScript, plus
+`WebApplication` and `FAQPage` structured data. `VITE_SITE_URL` in `.env` sets
+the canonical origin and is baked into the canonical link, the Open Graph tags,
+`robots.txt` and `sitemap.xml` at build time. **Change it to the real domain
+before deploying**; a canonical pointing at the wrong origin is worse than none.
 
 ## Development
 
@@ -101,6 +129,16 @@ Cloudflare Pages, as a plain static site. Build command `npm run build`, output
 directory `dist`. No Workers, no KV, no R2, no D1. `public/_headers` carries the
 caching and security headers.
 
+After the first deploy, check that the engine is served compressed:
+
+```
+curl -sI -H 'Accept-Encoding: br' https://<your-domain>/assets/*.wasm | grep -i content-encoding
+```
+
+It should report `br`. Without compression that request is 27 MB rather than
+7 MB, which is the difference between a slow first conversion and an unusable
+one.
+
 ## Gotchas worth remembering
 
 These cost real debugging time and are easy to hit again:
@@ -115,6 +153,12 @@ These cost real debugging time and are easy to hit again:
   very recent browsers have. Use the `legacy` build.
 - pdf.js detaches the buffer it is given. The viewer always gets a copy, or the
   bytes queued for download would be emptied out from under it.
+- A class that sets `display` outranks the user-agent rule for `[hidden]`, so
+  panels stay on screen despite the attribute. There is one global
+  `[hidden] { display: none !important }` rather than a rule per component.
+- `Content-Length` is useless for download progress once the server compresses:
+  it reports compressed bytes while the stream yields decompressed ones. The
+  real size is injected at build time instead.
 - User text reaches Typst as quoted string literals, never as markup. Typst
   markup has a large set of special characters and a subtly wrong escape table
   would corrupt documents; string literals need two escapes, which makes this

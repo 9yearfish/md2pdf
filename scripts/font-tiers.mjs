@@ -3,6 +3,7 @@
  * actually causes to be downloaded.
  */
 import { chromium } from 'playwright';
+import { CHROMIUM, setDocument, waitForConversion } from './app-helpers.mjs';
 
 const URL = process.env.APP_URL ?? 'http://localhost:5200/';
 const CASES = [
@@ -15,7 +16,7 @@ const CASES = [
 let failures = 0;
 for (const testCase of CASES) {
   const browser = await chromium.launch({
-    executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
+    executablePath: CHROMIUM,
   });
   const page = await browser.newPage();
   const errors = [];
@@ -28,12 +29,10 @@ for (const testCase of CASES) {
   });
 
   await page.goto(URL, { waitUntil: 'load' });
-  await page.fill('#editor', testCase.md);
+  await setDocument(page, testCase.md);
   await page.click('#convert');
   try {
-    await page.waitForFunction(() => document.getElementById('overlay')?.hidden === true, null, {
-      timeout: 180000,
-    });
+    await waitForConversion(page, 180000);
   } catch {
     console.log(`FAIL  ${testCase.name} — conversion never finished`);
     console.log('      overlay:', await page.textContent('#overlay-title'));

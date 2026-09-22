@@ -1,12 +1,14 @@
 import './styles.css';
 import { convert } from './convert/pipeline';
 import { DEFAULT_OPTIONS, type DocumentOptions, type PaperSize } from './convert/preamble';
-import { compileToPdf, prewarm, TypstCompileError } from './typst/engine';
+import { compileToPdf, prewarm, TypstCompileError, type EngineProgress } from './typst/engine';
+import { isEngineCached } from './typst/wasm-loader';
 import { isSupportedImage, readImageFile, type LocalImage } from './convert/images';
 import { PdfViewer, type ZoomMode } from './preview/viewer';
 import { DocumentSearch } from './preview/search';
 import { extractOutline } from './preview/outline';
 import { SAMPLE_DOCUMENT } from './sample';
+import { createEditor, type Editor } from './ui/editor';
 
 const el = <T extends HTMLElement>(id: string): T => {
   const node = document.getElementById(id);
@@ -14,7 +16,10 @@ const el = <T extends HTMLElement>(id: string): T => {
   return node as T;
 };
 
-const editor = el<HTMLTextAreaElement>('editor');
+const editorPane = el<HTMLElement>('editor-pane');
+const textarea = el<HTMLTextAreaElement>('editor');
+/** Backed by the textarea until CodeMirror has loaded and taken over. */
+let doc: Editor;
 const convertButton = el<HTMLButtonElement>('convert');
 const downloadButton = el<HTMLButtonElement>('download');
 const overlay = el<HTMLDivElement>('overlay');
@@ -93,10 +98,27 @@ function showWarnings(messages: string[]): void {
   warnings.hidden = false;
 }
 
-const STAGE_TEXT: Record<string, string> = {
-  'loading-engine': '正在加载排版引擎…',
-  compiling: '正在排版…',
-};
+const mb = (bytes: number) => (bytes / 1_048_576).toFixed(1);
+
+function describeProgress(progress: EngineProgress): { title: string; detail: string; percent: number } {
+  switch (progress.stage) {
+    case 'downloading-engine': {
+      const ratio = progress.total ? Math.min(1, progress.loaded / progress.total) : 0;
+      return {
+        title: '正在下载排版引擎…',
+        detail: `${mb(progress.loaded)} / ${mb(progress.total)} MB · 仅首次需要，之后可离线使用`,
+        // The download is the bulk of the wait, so let it own most of the bar.
+        percent: 0.1 + ratio * 0.6,
+      };
+    }
+    case 'starting-engine':
+      return { title: '正在启动排版引擎…', detail: '', percent: 0.72 };
+    case 'loading-fonts':
+      return { title: '正在加载字体…', detail: '', percent: 0.78 };
+    case 'compiling':
+      return { title: '正在排版…', detail: '', percent: 0.85 };
+  }
+}
 
 /* ---------- conversion ---------- */
 
@@ -105,14 +127,14 @@ async function runConversion(): Promise<void> {
   converting = true;
   convertButton.disabled = true;
 
-  const source = editor.value;
+  const source = doc.getValue();
   try {
-    showStatus('正在解析 Markdown…', '', 0.1);
+    showStatus('正在解析 Markdown…', '', 0.08);
     const result = await convert(source, options, images);
 
-    showStatus(STAGE_TEXT['loading-engine']!, '首次使用需要下载排版引擎，之后会走缓存。', 0.3);
-    const outcome = await compileToPdf(result, stage => {
-      showStatus(STAGE_TEXT[stage] ?? stage, '', stage === 'compiling' ? 0.75 : 0.3);
+    const outcome = await compileToPdf(result, progress => {
+      const { title, detail, percent } = describeProgress(progress);
+      showStatus(title, detail, percent);
     });
 
     currentPdf = outcome.pdf;
@@ -149,7 +171,7 @@ async function runConversion(): Promise<void> {
 }
 
 function updateDirtyState(): void {
-  const dirty = renderedSource !== null && renderedSource !== editor.value;
+  const dirty = renderedSource !== null && renderedSource !== doc.getValue();
   convertButton.textContent = dirty || renderedSource === null ? '生成 PDF' : '已是最新';
   convertButton.classList.toggle('primary', dirty || renderedSource === null);
 }
@@ -170,7 +192,7 @@ function downloadPdf(): void {
 }
 
 function suggestedFileName(): string {
-  const heading = /^#\s+(.+)$/m.exec(editor.value)?.[1]?.trim();
+  const heading = /^#\s+(.+)$/m.exec(doc.getValue())?.[1]?.trim();
   const base = (heading || 'document').replace(/[\\/:*?"<>|]/g, '').slice(0, 60);
   return `${base || 'document'}.pdf`;
 }
@@ -260,7 +282,6 @@ function enableViewerControls(enabled: boolean): void {
 function bindControls(): void {
   convertButton.addEventListener('click', () => void runConversion());
   downloadButton.addEventListener('click', downloadPdf);
-  editor.addEventListener('input', updateDirtyState);
 
   el('settings-toggle').addEventListener('click', () => {
     settingsPanel.hidden = !settingsPanel.hidden;
@@ -365,7 +386,7 @@ function bindKeyboard(): void {
     }
 
     // Paging keys belong to the viewer, not the editor.
-    if (document.activeElement === editor || document.activeElement === searchInput) return;
+    if (doc.contains(document.activeElement) || document.activeElement === searchInput) return;
     if (event.key === 'PageDown' || (event.key === ' ' && !event.shiftKey)) {
       event.preventDefault();
       viewer.scrollToPage(viewer.page + 1);
@@ -398,7 +419,7 @@ function bindDragAndDrop(): void {
     void acceptFiles([...(event.dataTransfer?.files ?? [])]);
   });
 
-  editor.addEventListener('paste', event => {
+  editorPane.addEventListener('paste', event => {
     const files = [...(event.clipboardData?.files ?? [])].filter(f => isSupportedImage(f.type));
     if (files.length) {
       event.preventDefault();
@@ -417,7 +438,7 @@ async function acceptFiles(files: File[]): Promise<void> {
       insertAtCursor(`\n![${file.name}](${file.name})\n`);
       notes.push(`已嵌入图片 ${file.name}`);
     } else if (/\.(md|markdown|txt)$/i.test(file.name) || file.type.startsWith('text/')) {
-      editor.value = await file.text();
+      doc.setValue(await file.text());
       renderedSource = null;
       notes.push(`已载入 ${file.name}`);
     } else {
@@ -430,9 +451,7 @@ async function acceptFiles(files: File[]): Promise<void> {
 }
 
 function insertAtCursor(text: string): void {
-  const start = editor.selectionStart;
-  editor.value = editor.value.slice(0, start) + text + editor.value.slice(editor.selectionEnd);
-  editor.selectionStart = editor.selectionEnd = start + text.length;
+  doc.insert(text);
   renderedSource = null;
 }
 
@@ -463,15 +482,73 @@ function bindDivider(): void {
   });
 }
 
+/**
+ * Say up front what the first conversion will cost. A 7 MB download is fine
+ * when it is expected and one-time; it is not fine as a surprise.
+ */
+async function announceReadiness(): Promise<void> {
+  const cached = await isEngineCached();
+  showStatus(
+    '点「生成 PDF」开始',
+    cached
+      ? '排版引擎已缓存在本机，无需再次下载。'
+      : '首次转换需要下载约 7 MB 的排版引擎，之后可离线使用。',
+  );
+}
+
 /* ---------- boot ---------- */
 
-editor.value = SAMPLE_DOCUMENT;
-bindControls();
-updateDirtyState();
-showStatus('点「生成 PDF」开始', '排版引擎正在后台预加载。');
-// Fetch the compiler while the reader is still looking at the editor.
-prewarm();
+function boot(): void {
+  textarea.value = SAMPLE_DOCUMENT;
+  doc = {
+    getValue: () => textarea.value,
+    setValue: value => {
+      textarea.value = value;
+    },
+    insert: () => {},
+    focus: () => textarea.focus(),
+    contains: node => node === textarea,
+  };
 
+  bindControls();
+  updateDirtyState();
+  void announceReadiness();
+
+  // Upgrade the textarea in place; until this resolves the page is already usable.
+  void createEditor(textarea, { onChange: updateDirtyState }).then(editor => {
+    doc = editor;
+  });
+}
+
+/**
+ * Start fetching the engine when someone first touches the editor.
+ *
+ * Doing it on page load would spend 7 MB of a visitor's data before they have
+ * shown any interest — someone who lands here, reads what the tool does and
+ * leaves should cost nothing. Touching the editor is the point where a
+ * conversion becomes likely, and it still buys the download a head start over
+ * waiting for the button.
+ */
+function prewarmOnIntent(): void {
+  const start = () => {
+    editorPane.removeEventListener('focusin', start);
+    editorPane.removeEventListener('pointerdown', start);
+    editorPane.removeEventListener('keydown', start);
+    prewarm();
+  };
+  editorPane.addEventListener('focusin', start, { once: false });
+  editorPane.addEventListener('pointerdown', start, { once: false });
+  editorPane.addEventListener('keydown', start, { once: false });
+}
+
+try {
+  boot();
+  prewarmOnIntent();
+} catch (error) {
+  // A failure here leaves a page that looks fine but does nothing, which is
+  // the worst way to fail. Say so instead.
+  showError('页面初始化失败', error instanceof Error ? error.message : String(error));
+}
 // Hold the engine and fonts across visits; they are several megabytes that
 // never change. Failure here is not worth surfacing: it only costs a re-fetch.
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { CHROMIUM, setDocument, waitForConversion } from './app-helpers.mjs';
 import fs from 'node:fs';
 
 const OUT = '/tmp/claude-0/-home-user-md2pdf/145ae161-a9f8-50b2-82c8-be6dc82893f1/scratchpad';
@@ -6,23 +7,23 @@ const URL = process.env.APP_URL ?? 'http://localhost:5199/';
 const problems = [];
 
 const browser = await chromium.launch({
-  executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
+  executablePath: CHROMIUM,
 });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 page.on('pageerror', e => problems.push('pageerror: ' + e.message));
 page.on('console', m => { if (m.type() === 'error') problems.push('console: ' + m.text()); });
 
 await page.goto(URL, { waitUntil: 'load' });
+
+// Let the editor settle first, so the run exercises the same path a reader
+// takes rather than racing the CodeMirror upgrade.
+await page.waitForSelector('.cm-content, #editor', { timeout: 30000 });
 await page.click('#convert');
 
 // The overlay hides only once the preview has actually rendered. Wait on the
 // property: a hidden element is never "visible", so waitForSelector would
 // always time out here.
-await page.waitForFunction(
-  () => document.getElementById('overlay')?.hidden === true,
-  null,
-  { timeout: 240000 },
-);
+await waitForConversion(page);
 await page.waitForSelector('.page canvas', { timeout: 60000 });
 
 const pageCount = await page.locator('.page').count();

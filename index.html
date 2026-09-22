@@ -3,101 +3,254 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>md2pdf — Markdown 转 PDF</title>
+
+    <title>Markdown 转 PDF · 支持 Mermaid 流程图与中文排版</title>
     <meta
       name="description"
-      content="在浏览器里把 Markdown 转成 PDF，支持 Mermaid 流程图和中文排版。文档不会上传到任何服务器。"
+      content="免费的在线 Markdown 转 PDF 工具。支持 Mermaid 流程图矢量嵌入、中文排版、代码高亮、目录与页码。全部在浏览器本地完成，文档不会上传到任何服务器，无需注册，无水印。"
     />
+    <link rel="canonical" href="%VITE_SITE_URL%/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:title" content="Markdown 转 PDF · 支持 Mermaid 流程图与中文排版" />
+    <meta
+      property="og:description"
+      content="在浏览器里把 Markdown 转成 PDF，流程图以矢量嵌入，中文是可搜索的真文字。文档不上传，无需注册，无水印。"
+    />
+    <meta property="og:locale" content="zh_CN" />
+    <meta name="twitter:card" content="summary" />
+
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='14'>📄</text></svg>" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "name": "md2pdf",
+            "url": "%VITE_SITE_URL%/",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "任何支持 WebAssembly 的现代浏览器",
+            "description": "在浏览器本地把 Markdown 转换为 PDF，支持 Mermaid 流程图与中文排版，文档不会上传。",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+            "featureList": [
+              "Mermaid 流程图矢量嵌入",
+              "中文排版与字体子集化",
+              "代码语法高亮",
+              "目录、页码与 PDF 书签",
+              "本地转换，文档不上传"
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "我的文档会被上传到服务器吗？",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "不会。解析、排版和生成 PDF 全部在你的浏览器里完成。站点的内容安全策略不允许向自身以外的任何地址发起网络请求，所以这不是一句承诺，而是浏览器强制执行的限制。"
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "支持 Mermaid 流程图吗？",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "支持。流程图以矢量图形嵌入 PDF，放大不会模糊，图中的文字仍然可以选中和搜索，自定义的 classDef 配色也会完整保留。"
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "中文显示正常吗？",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "正常。中文以真实文字嵌入 PDF，可以选中、复制和搜索，字体会自动子集化。常用字使用较小的字体子集，遇到生僻字会自动切换到完整字体，不会出现缺字方块。"
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "需要注册或付费吗？有水印吗？",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "都不需要，也没有水印。工具是纯静态页面，没有账号系统，也没有后端。"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
-    <header class="toolbar">
-      <div class="toolbar-group">
-        <strong class="brand">md2pdf</strong>
-        <span class="privacy" title="所有处理都在这个标签页里完成">本地转换 · 不上传</span>
+    <div class="app">
+      <header class="toolbar">
+        <div class="toolbar-group">
+          <h1 class="brand">md2pdf<span class="sr-only"> — Markdown 转 PDF 在线工具</span></h1>
+          <span class="privacy" title="解析、排版与生成全部在这个标签页里完成">本地转换 · 不上传</span>
+        </div>
+
+        <div class="toolbar-group">
+          <button id="convert" class="primary" type="button">生成 PDF</button>
+          <button id="download" type="button" disabled>下载</button>
+        </div>
+
+        <div class="toolbar-group viewer-controls">
+          <button id="outline-toggle" type="button" title="大纲" disabled>大纲</button>
+          <button id="search-toggle" type="button" title="搜索 (Ctrl+F)" disabled>搜索</button>
+          <span class="separator"></span>
+          <button id="zoom-out" type="button" title="缩小" disabled>−</button>
+          <span id="zoom-level" class="readout">100%</span>
+          <button id="zoom-in" type="button" title="放大" disabled>+</button>
+          <select id="zoom-mode" aria-label="缩放方式" disabled>
+            <option value="fit-width">适合宽度</option>
+            <option value="fit-page">适合整页</option>
+          </select>
+          <span class="separator"></span>
+          <span id="page-readout" class="readout">— / —</span>
+        </div>
+
+        <div class="toolbar-group">
+          <button id="settings-toggle" type="button" title="排版设置">设置</button>
+        </div>
+      </header>
+
+      <div id="settings" class="settings" hidden>
+        <label>纸张
+          <select id="opt-paper">
+            <option value="a4">A4</option>
+            <option value="us-letter">Letter</option>
+            <option value="a5">A5</option>
+            <option value="iso-b5">B5</option>
+          </select>
+        </label>
+        <label>页边距 <input id="opt-margin" type="number" min="5" max="50" step="1" /> mm</label>
+        <label>字号 <input id="opt-font-size" type="number" min="8" max="18" step="0.5" /> pt</label>
+        <label>行距 <input id="opt-line-height" type="number" min="1" max="2.4" step="0.1" /></label>
+        <label class="check"><input id="opt-page-numbers" type="checkbox" /> 页码</label>
+        <label class="check"><input id="opt-toc" type="checkbox" /> 目录</label>
+        <label class="check"><input id="opt-justify" type="checkbox" /> 两端对齐</label>
       </div>
 
-      <div class="toolbar-group">
-        <button id="convert" class="primary" type="button">生成 PDF</button>
-        <button id="download" type="button" disabled>下载</button>
-      </div>
+      <main class="split">
+        <section class="editor-pane" id="editor-pane">
+          <textarea
+            id="editor"
+            spellcheck="false"
+            aria-label="Markdown 源文件"
+            placeholder="在这里输入或粘贴 Markdown，也可以把 .md 文件拖进来…"
+          ></textarea>
+        </section>
 
-      <div class="toolbar-group viewer-controls">
-        <button id="outline-toggle" type="button" title="大纲" disabled>大纲</button>
-        <button id="search-toggle" type="button" title="搜索 (Ctrl+F)" disabled>搜索</button>
-        <span class="separator"></span>
-        <button id="zoom-out" type="button" title="缩小" disabled>−</button>
-        <span id="zoom-level" class="readout">100%</span>
-        <button id="zoom-in" type="button" title="放大" disabled>+</button>
-        <select id="zoom-mode" disabled>
-          <option value="fit-width">适合宽度</option>
-          <option value="fit-page">适合整页</option>
-        </select>
-        <span class="separator"></span>
-        <span id="page-readout" class="readout">— / —</span>
-      </div>
+        <div class="divider" id="divider" role="separator" aria-orientation="vertical"></div>
 
-      <div class="toolbar-group">
-        <button id="settings-toggle" type="button" title="排版设置">设置</button>
-      </div>
-    </header>
+        <section class="preview-pane">
+          <aside id="outline" class="outline" hidden></aside>
 
-    <div id="settings" class="settings" hidden>
-      <label>纸张
-        <select id="opt-paper">
-          <option value="a4">A4</option>
-          <option value="us-letter">Letter</option>
-          <option value="a5">A5</option>
-          <option value="iso-b5">B5</option>
-        </select>
-      </label>
-      <label>页边距 <input id="opt-margin" type="number" min="5" max="50" step="1" /> mm</label>
-      <label>字号 <input id="opt-font-size" type="number" min="8" max="18" step="0.5" /> pt</label>
-      <label>行距 <input id="opt-line-height" type="number" min="1" max="2.4" step="0.1" /></label>
-      <label class="check"><input id="opt-page-numbers" type="checkbox" /> 页码</label>
-      <label class="check"><input id="opt-toc" type="checkbox" /> 目录</label>
-      <label class="check"><input id="opt-justify" type="checkbox" /> 两端对齐</label>
-    </div>
+          <div class="preview-main">
+            <div id="search-bar" class="search-bar" hidden>
+              <input id="search-input" type="search" placeholder="在 PDF 中查找…" aria-label="在 PDF 中查找" />
+              <span id="search-count" class="readout">0/0</span>
+              <button id="search-prev" type="button" title="上一个">↑</button>
+              <button id="search-next" type="button" title="下一个">↓</button>
+              <button id="search-close" type="button" title="关闭">×</button>
+            </div>
 
-    <main class="split">
-      <section class="editor-pane">
-        <textarea
-          id="editor"
-          spellcheck="false"
-          placeholder="在这里输入或粘贴 Markdown，也可以把 .md 文件拖进来…"
-        ></textarea>
-      </section>
+            <div id="scroller" class="scroller" tabindex="0">
+              <div id="pages" class="pages"></div>
+            </div>
 
-      <div class="divider" id="divider" role="separator" aria-orientation="vertical"></div>
-
-      <section class="preview-pane">
-        <aside id="outline" class="outline" hidden></aside>
-
-        <div class="preview-main">
-          <div id="search-bar" class="search-bar" hidden>
-            <input id="search-input" type="search" placeholder="在 PDF 中查找…" />
-            <span id="search-count" class="readout">0/0</span>
-            <button id="search-prev" type="button" title="上一个">↑</button>
-            <button id="search-next" type="button" title="下一个">↓</button>
-            <button id="search-close" type="button" title="关闭">×</button>
-          </div>
-
-          <div id="scroller" class="scroller" tabindex="0">
-            <div id="pages" class="pages"></div>
-          </div>
-
-          <div id="overlay" class="overlay">
-            <div class="overlay-card">
-              <p id="overlay-title">准备就绪</p>
-              <div class="progress" hidden><div id="progress-bar"></div></div>
-              <p id="overlay-detail" class="detail"></p>
+            <div id="overlay" class="overlay">
+              <div class="overlay-card">
+                <p id="overlay-title">准备就绪</p>
+                <div class="progress" hidden><div id="progress-bar"></div></div>
+                <p id="overlay-detail" class="detail"></p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-    </main>
+        </section>
+      </main>
 
-    <div id="warnings" class="warnings" hidden></div>
+      <div id="warnings" class="warnings" hidden></div>
+    </div>
+
+    <section class="about">
+      <h2>在浏览器里把 Markdown 转成 PDF</h2>
+      <p>
+        粘贴或拖入一份 Markdown，点「生成 PDF」，右侧立刻就是排好版的结果。你看到的那一页，
+        就是点下载后拿到的那个文件 —— 预览和下载是同一份数据，不存在「预览好看、导出错位」。
+      </p>
+      <p>
+        整个过程没有服务器参与。Markdown 解析、流程图渲染、排版和 PDF 生成全部在这个标签页里完成，
+        不需要注册，没有水印，也没有次数限制。
+      </p>
+
+      <h3>流程图是矢量的，不是截图</h3>
+      <p>
+        <code>```mermaid</code> 代码块会被渲染成 SVG 并以原生矢量图形嵌入 PDF。放大到任意倍数都清晰，
+        图里的文字可以被选中、复制和搜索，<code>classDef</code> 自定义的填充色、描边颜色和线宽都会完整保留。
+        很多在线工具是把流程图转成位图贴进 PDF 的，放大会糊，文字也选不中。
+      </p>
+
+      <h3>中文是真文字</h3>
+      <p>
+        中文以可选中、可搜索的真实文本嵌入，字体会自动子集化以控制文件体积。
+        常用汉字使用一份较小的字体子集，如果文档里出现了子集之外的生僻字，会自动切换到完整字体，
+        不会出现缺字的方块。中英文混排时会正确处理断行，不会插入多余空格。
+      </p>
+
+      <h3>排版由真正的排版引擎完成</h3>
+      <p>
+        底层用的是 Typst —— 一个编译成 WebAssembly、可以在浏览器里运行的现代排版系统。
+        分页、孤行控制、目录、页码、脚注和 PDF 书签都由它处理，代码高亮也由它内置的高亮器完成。
+        这也意味着首次转换需要下载约 7 MB 的引擎，下载一次之后会缓存在本机，之后可以离线使用。
+      </p>
+
+      <h3>支持的 Markdown 语法</h3>
+      <p>
+        标题、段落、粗体、斜体、删除线、行内代码、链接、图片、有序与无序列表、嵌套列表、
+        任务列表、引用块、带对齐的表格、定义列表、脚注、分隔线、围栏代码块（带语法高亮）、
+        以及 Mermaid 流程图。图片支持拖拽和粘贴本地文件。
+      </p>
+
+      <h3>常见问题</h3>
+      <details>
+        <summary>我的文档会被上传到服务器吗？</summary>
+        <p>
+          不会。站点的内容安全策略不允许向自身以外的任何地址发起网络请求，
+          所以「不上传」不是一句承诺，而是浏览器强制执行的限制。
+        </p>
+      </details>
+      <details>
+        <summary>为什么首次使用要等一会儿？</summary>
+        <p>
+          页面本身只有几十 KB，打开是即时的。等待的是排版引擎 —— 约 7 MB 的 WebAssembly，
+          只在第一次转换时下载，并且会显示下载进度。之后它会被缓存下来，再次使用无需等待，
+          离线也能工作。
+        </p>
+      </details>
+      <details>
+        <summary>支持数学公式吗？</summary>
+        <p>当前版本尚不支持数学公式。</p>
+      </details>
+      <details>
+        <summary>可以用 HTML 标签吗？</summary>
+        <p>
+          除 <code>&lt;br&gt;</code> 外不支持。排版引擎没有与 HTML 对应的语义，
+          与其渲染出一个似是而非的结果，不如明确跳过并给出提示。
+        </p>
+      </details>
+
+      <footer>
+        <p>
+          <strong>md2pdf</strong> · Markdown to PDF in your browser, with Mermaid diagrams and
+          Chinese typesetting. Nothing is uploaded.
+        </p>
+      </footer>
+    </section>
+
     <div id="drop-hint" class="drop-hint" hidden>松开以导入文件</div>
 
     <script type="module" src="/src/main.ts"></script>
