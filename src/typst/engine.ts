@@ -6,7 +6,8 @@
  */
 import { createTypstCompiler, CompileFormatEnum } from '@myriaddreamin/typst.ts/compiler';
 import type { TypstCompiler } from '@myriaddreamin/typst.ts/compiler';
-import { loadFonts } from '@myriaddreamin/typst.ts/options.init';
+import { loadFonts, withAccessModel, withPackageRegistry } from '@myriaddreamin/typst.ts/options.init';
+import type { FsAccessModel, PackageRegistry } from '@myriaddreamin/typst.ts/internal.types';
 import compilerWasm from '@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm?url';
 import { resolveFonts, fontSetKey, type FontSet } from './fonts';
 
@@ -38,6 +39,20 @@ export class TypstCompileError extends Error {
   }
 }
 
+/**
+ * Sources and assets are supplied through the shadow filesystem, so the
+ * compiler needs no real file access, and packages are never fetched: a public
+ * tool that promises the document stays local must not reach out to a registry.
+ */
+const NO_FILESYSTEM: FsAccessModel = {
+  getMTime: () => undefined,
+  isFile: () => undefined,
+  getRealPath: path => path,
+  readAll: () => undefined,
+};
+
+const NO_PACKAGES: PackageRegistry = { resolve: () => undefined };
+
 /** Compilers are keyed by font tier so switching tiers does not re-download the WASM. */
 const compilers = new Map<string, Promise<TypstCompiler>>();
 /** Paths mapped into each compiler's shadow filesystem, so stale assets get cleared. */
@@ -50,12 +65,20 @@ function getCompiler(set: FontSet, onProgress: ProgressFn): Promise<TypstCompile
   let existing = compilers.get(key);
   if (existing) return existing;
 
+  // Drop any other tier's compiler before building this one.
+  compilers.clear();
+  mappedAssets.clear();
+
   onProgress('loading-engine');
   const created = (async () => {
     const compiler = createTypstCompiler();
     await compiler.init({
       getModule: () => compilerWasm,
-      beforeBuild: [loadFonts(set.urls, { assets: false })],
+      beforeBuild: [
+        loadFonts(set.urls, { assets: false }),
+        withAccessModel(NO_FILESYSTEM),
+        withPackageRegistry(NO_PACKAGES),
+      ],
     });
     return compiler;
   })();
@@ -112,12 +135,18 @@ export async function compileToPdf(
   return { pdf: result.result, fonts, diagnostics };
 }
 
-/** Warm the engine up in the background so the first conversion feels instant. */
+/**
+ * Pull the compiler into the HTTP cache while the reader is still typing.
+ *
+ * This deliberately fetches rather than instantiates: the font tier is not
+ * known until there is a document, and building a compiler for the wrong tier
+ * would only have to be thrown away.
+ */
 export function prewarm(): void {
-  const idle = (window as any).requestIdleCallback ?? ((fn: () => void) => setTimeout(fn, 1200));
+  const idle =
+    (window as { requestIdleCallback?: (fn: () => void) => void }).requestIdleCallback ??
+    ((fn: () => void) => setTimeout(fn, 1200));
   idle(() => {
-    resolveFonts('')
-      .then(set => getCompiler(set, () => {}))
-      .catch(() => {});
+    void fetch(compilerWasm, { cache: 'force-cache' }).catch(() => {});
   });
 }

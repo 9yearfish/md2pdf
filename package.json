@@ -6,21 +6,24 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "node scripts/serve-dist.mjs",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node scripts/e2e.mjs && node scripts/font-tiers.mjs",
+    "fonts": "python3 scripts/prepare_fonts.py"
   },
   "dependencies": {
     "@myriaddreamin/typst-ts-web-compiler": "^0.7.0",
     "@myriaddreamin/typst.ts": "^0.7.0",
-    "katex": "^0.18.7",
     "markdown-it": "^15.0.2",
     "markdown-it-deflist": "^4.0.0",
     "markdown-it-footnote": "^4.0.0",
     "mermaid": "^12.0.0",
-    "pdfjs-dist": "^6.3.289",
+    "pdfjs-dist": "^6.3.289"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.6"
   },
-  "devDependencies": {
-    "playwright": "^1.63.0"
-  }
+  "description": "Markdown to PDF in the browser, with Mermaid diagrams and Chinese typesetting. Nothing is uploaded."
 }

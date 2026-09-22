@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>md2pdf — Markdown 转 PDF</title>
+    <meta
+      name="description"
+      content="在浏览器里把 Markdown 转成 PDF，支持 Mermaid 流程图和中文排版。文档不会上传到任何服务器。"
+    />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='14'>📄</text></svg>" />
+  </head>
+  <body>
+    <header class="toolbar">
+      <div class="toolbar-group">
+        <strong class="brand">md2pdf</strong>
+        <span class="privacy" title="所有处理都在这个标签页里完成">本地转换 · 不上传</span>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="convert" class="primary" type="button">生成 PDF</button>
+        <button id="download" type="button" disabled>下载</button>
+      </div>
+
+      <div class="toolbar-group viewer-controls">
+        <button id="outline-toggle" type="button" title="大纲" disabled>大纲</button>
+        <button id="search-toggle" type="button" title="搜索 (Ctrl+F)" disabled>搜索</button>
+        <span class="separator"></span>
+        <button id="zoom-out" type="button" title="缩小" disabled>−</button>
+        <span id="zoom-level" class="readout">100%</span>
+        <button id="zoom-in" type="button" title="放大" disabled>+</button>
+        <select id="zoom-mode" disabled>
+          <option value="fit-width">适合宽度</option>
+          <option value="fit-page">适合整页</option>
+        </select>
+        <span class="separator"></span>
+        <span id="page-readout" class="readout">— / —</span>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="settings-toggle" type="button" title="排版设置">设置</button>
+      </div>
+    </header>
+
+    <div id="settings" class="settings" hidden>
+      <label>纸张
+        <select id="opt-paper">
+          <option value="a4">A4</option>
+          <option value="us-letter">Letter</option>
+          <option value="a5">A5</option>
+          <option value="iso-b5">B5</option>
+        </select>
+      </label>
+      <label>页边距 <input id="opt-margin" type="number" min="5" max="50" step="1" /> mm</label>
+      <label>字号 <input id="opt-font-size" type="number" min="8" max="18" step="0.5" /> pt</label>
+      <label>行距 <input id="opt-line-height" type="number" min="1" max="2.4" step="0.1" /></label>
+      <label class="check"><input id="opt-page-numbers" type="checkbox" /> 页码</label>
+      <label class="check"><input id="opt-toc" type="checkbox" /> 目录</label>
+      <label class="check"><input id="opt-justify" type="checkbox" /> 两端对齐</label>
+    </div>
+
+    <main class="split">
+      <section class="editor-pane">
+        <textarea
+          id="editor"
+          spellcheck="false"
+          placeholder="在这里输入或粘贴 Markdown，也可以把 .md 文件拖进来…"
+        ></textarea>
+      </section>
+
+      <div class="divider" id="divider" role="separator" aria-orientation="vertical"></div>
+
+      <section class="preview-pane">
+        <aside id="outline" class="outline" hidden></aside>
+
+        <div class="preview-main">
+          <div id="search-bar" class="search-bar" hidden>
+            <input id="search-input" type="search" placeholder="在 PDF 中查找…" />
+            <span id="search-count" class="readout">0/0</span>
+            <button id="search-prev" type="button" title="上一个">↑</button>
+            <button id="search-next" type="button" title="下一个">↓</button>
+            <button id="search-close" type="button" title="关闭">×</button>
+          </div>
+
+          <div id="scroller" class="scroller" tabindex="0">
+            <div id="pages" class="pages"></div>
+          </div>
+
+          <div id="overlay" class="overlay">
+            <div class="overlay-card">
+              <p id="overlay-title">准备就绪</p>
+              <div class="progress" hidden><div id="progress-bar"></div></div>
+              <p id="overlay-detail" class="detail"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="warnings" class="warnings" hidden></div>
+    <div id="drop-hint" class="drop-hint" hidden>松开以导入文件</div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
