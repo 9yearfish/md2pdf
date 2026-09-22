@@ -1,5 +1,5 @@
 import type { Token } from 'markdown-it';
-import { tstr } from './typst-str';
+import { tstr, tmarkup } from './typst-str';
 import { toTree, type Node } from './tree';
 
 /** An asset resolved ahead of emission (diagram, formula or image). */
@@ -205,22 +205,21 @@ class Emitter {
 
 
   private figureImage(asset: ResolvedAsset, caption: string | null): string {
-    const image = this.imageCall(asset, true);
+    const image = this.imageCall(asset);
     return caption
       ? `#md-figure(${image}, [${caption}])`
       : `#align(center, ${image})`;
   }
 
-  private imageCall(asset: ResolvedAsset, constrain = false): string {
+  /**
+   * Widths arrive already clamped to the text block: Typst cannot compare a
+   * length with a ratio, so `calc.min(300pt, 100%)` is an error rather than a
+   * safeguard. `pipeline.ts` does the clamping where the page geometry is known.
+   */
+  private imageCall(asset: ResolvedAsset): string {
     const args = [tstr(asset.path)];
-    if (asset.width !== undefined) {
-      // Never let a wide diagram overflow the text block.
-      args.push(constrain ? `width: calc.min(${asset.width}pt, 100%)` : `width: ${asset.width}pt`);
-    } else if (constrain) {
-      args.push('width: 100%');
-    }
-    if (asset.height !== undefined && !constrain) args.push(`height: ${asset.height}pt`);
-    args.push('fit: "contain"');
+    if (asset.width !== undefined) args.push(`width: ${asset.width}pt`);
+    if (asset.height !== undefined) args.push(`height: ${asset.height}pt`);
     return `image(${args.join(', ')})`;
   }
 
@@ -230,9 +229,9 @@ class Emitter {
     const asset = this.input.assets.get(assetKey('image', src));
     if (!asset) {
       this.input.warn(`Image could not be embedded: ${src}`);
-      return `#text(fill: rgb("#a00"))[${tstr(`[image unavailable: ${src}]`)}]`;
+      return `#text(fill: rgb("#a00"))[${tmarkup(`[image unavailable: ${src}]`)}]`;
     }
-    if (block) return this.figureImage(asset, alt ? tstr(alt) : null);
+    if (block) return this.figureImage(asset, alt ? tmarkup(alt) : null);
     return `#box(${this.imageCall(asset)})`;
   }
 
@@ -252,7 +251,7 @@ class Emitter {
       const t = node.token;
       switch (t.type) {
         case 'text':
-          if (t.content !== '') out += tstr(t.content);
+          if (t.content !== '') out += tmarkup(t.content);
           break;
         case 'strong_open':
           out += `#strong[${this.inline(node.children)}]`;
@@ -302,7 +301,7 @@ class Emitter {
     const before = lastChar(nodes, index);
     const after = firstChar(nodes, index);
     if (before && after && CJK.test(before) && CJK.test(after)) return '';
-    return '" "';
+    return '#" "';
   }
 
 

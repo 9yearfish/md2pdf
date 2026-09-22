@@ -11,16 +11,20 @@ export function tstr(value: string): string {
     const cp = ch.codePointAt(0)!;
     if (ch === '\\') out += '\\\\';
     else if (ch === '"') out += '\\"';
-    else if (ch === '\n') out += ' ';
+    else if (ch === '\n') out += '\\n'; // must survive: code blocks rely on it
+    else if (ch === '\t') out += '\\t';
     else if (ch === '\r') continue;
-    else if (ch === '\t') out += ' ';
     else if (cp < 0x20 || cp === 0x7f) out += `\\u{${cp.toString(16)}}`;
     else out += ch;
   }
   return out + '"';
 }
 
-/** A Typst length literal from a number of points, guarding against NaN. */
-export function pt(value: number, fallback: number): string {
-  return `${Number.isFinite(value) ? value : fallback}pt`;
+/**
+ * The same literal placed in *markup* position, where a bare `"..."` would be
+ * read as literal text and picked up by Typst's smart quotes. The leading `#`
+ * is what makes Typst evaluate it as a string expression instead.
+ */
+export function tmarkup(value: string): string {
+  return '#' + tstr(value);
 }

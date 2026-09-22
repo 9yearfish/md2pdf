@@ -1,7 +1,7 @@
 /**
  * Font set resolution.
  *
- * Latin + mono fonts are always loaded (~1.3 MB). CJK fonts are only pulled in
+ * Latin + mono fonts are always loaded (~0.9 MB). CJK fonts are only pulled in
  * when the document actually contains CJK text, and we prefer a ~2.3 MB subset
  * covering GB2312 over the ~10 MB full face. `subset-coverage.bin` is a BMP
  * bitmap of the subset's cmap, so we can make that call without downloading
@@ -9,9 +9,10 @@
  */
 
 const LATIN = [
-  'LibertinusSerif-Regular.otf',
-  'LibertinusSerif-Bold.otf',
-  'LibertinusSerif-Italic.otf',
+  'NotoSans-Regular.ttf',
+  'NotoSans-Bold.ttf',
+  'NotoSans-Italic.ttf',
+  'NotoSans-BoldItalic.ttf',
   'DejaVuSansMono.ttf',
 ];
 const CJK_SUBSET = ['NotoSansSC-Regular.subset.ttf', 'NotoSansSC-Bold.subset.ttf'];
@@ -86,7 +87,7 @@ export function fontSetKey(set: FontSet): string {
 
 /** Approximate download size of a tier, for progress messaging. */
 export const TIER_BYTES: Record<FontTier, number> = {
-  latin: 1_300_000,
-  'cjk-subset': 5_900_000,
-  'cjk-full': 22_000_000,
+  latin: 900_000,
+  'cjk-subset': 5_700_000,
+  'cjk-full': 21_500_000,
 };
