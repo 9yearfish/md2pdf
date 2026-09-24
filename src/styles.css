@@ -1604,6 +1604,20 @@ button.disclosure:focus-visible { outline-offset: -2px; }
 }
 
 /* Features: a two-column grid of short blocks, hairlines between rows. */
+.about-lead {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 56px;
+}
+.about-lead > p {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 17px;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+.about-lead > p:only-child { grid-column: 1 / -1; max-width: var(--measure); }
+
 .features {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1718,6 +1732,8 @@ button.disclosure:focus-visible { outline-offset: -2px; }
   .about-more > h2 { margin-top: 44px; }
   .about-more > p { font-size: 16px; }
   .features { grid-template-columns: minmax(0, 1fr); margin-top: 40px; }
+  .about-lead { grid-template-columns: minmax(0, 1fr); row-gap: 14px; }
+  .about-lead > p { font-size: 16px; }
   .feature { padding: 22px 0 24px; }
   .about-more > h3 { margin-top: 56px; }
 }

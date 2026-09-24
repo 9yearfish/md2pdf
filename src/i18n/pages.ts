@@ -383,7 +383,9 @@ function aboutSection(ref: PageRef): string {
       ]
     : [
         `<h2>${escapeHtml(about.heading)}</h2>`,
-        paragraphs(about.intro),
+        // On the same two-column grid as the features below, so the edges and
+        // the gutter line up instead of the lead sitting in half the width.
+        `<div class="about-lead">${paragraphs(about.intro)}</div>`,
         ...sectionsHtml(about.sections),
         ...guideList(ref),
         ...faqHtml(about.faqHeading, about.faq),
