@@ -1,0 +1,102 @@
+/* Diagram figures in the preview: the error box, the last good render kept
+   while the source does not parse, and the export actions. Loaded with
+   Mermaid (see figure.ts), since none of it can appear before a render.
+
+   In the design's terms (src/styles.css): square corners, greys only, an
+   error is the notice's solid red with white text (the one hue), buttons are
+   mono, tracked and square.
+   The paper stays white in dark mode, so the colours are the light theme's,
+   pinned here rather than taken from the page tokens that flip. */
+.paper .diagram {
+  position: relative;
+  --diagram-err: #b3261e;
+  --diagram-err-soft: #fbefee;
+  --diagram-ink: #111111;
+  --diagram-rule: #c4c4c4;
+}
+
+/* A diagram Mermaid rejected: the same title, message and line as the PDF. */
+.paper .diagram-error {
+  padding: 0;
+  border: 1px solid var(--diagram-err);
+  border-radius: 0;
+  background: var(--diagram-err-soft);
+  color: var(--diagram-ink);
+  text-align: start;
+}
+.paper .diagram-error strong {
+  display: block;
+  padding: 0.5em 0.9em;
+  background: var(--diagram-err);
+  color: #ffffff;
+  font-weight: 600;
+}
+.paper .diagram-error span {
+  display: block;
+  padding: 0.6em 0.9em 0;
+  color: var(--diagram-ink);
+  overflow-wrap: anywhere;
+}
+.paper .diagram-error span:last-child { padding-bottom: 0.7em; }
+.paper .diagram-error pre {
+  margin: 0.6em 0.9em 0.8em;
+  padding: 0.4em 0.7em;
+  border: 0;
+  border-left: 2px solid var(--diagram-err);
+  border-radius: 0;
+  background: #ffffff;
+  color: var(--diagram-ink);
+  font-family: var(--mono);
+  font-size: 0.86em;
+}
+/* Mid-edit: the last good render stays, dimmed, with the error over it. */
+.paper .diagram-stale { display: flex; justify-content: center; width: 100%; }
+.paper .diagram-stale:not(.updating) { opacity: 0.3; }
+.paper .diagram-error.badge {
+  position: absolute;
+  inset: auto 0 0 0;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.paper .diagram-error.badge strong { padding: 0.4em 0.9em; }
+/* Two lines at most over the diagram; the full box is back once it renders. */
+.paper .diagram-error.badge span { padding: 0.4em 0.9em 0.5em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.paper .diagram-error.badge pre { display: none; }
+/* Fades in late, so an error that only exists between two keystrokes never shows. */
+.paper .diagram-error.fresh { animation: diagram-error-in 0.15s ease-out 0.6s both; }
+@keyframes diagram-error-in { from { opacity: 0; } }
+
+/* Copy / download, on hover or keyboard focus. Labels are CSS so that
+   find-in-page and copying the preview's text skip them. */
+.paper .diagram-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.paper .diagram:hover .diagram-actions,
+.paper .diagram-actions:focus-within { opacity: 1; }
+@media (hover: none) { .paper .diagram-actions { opacity: 0.85; } }
+/* The secondary button of the design, smaller. */
+.paper .diagram-actions button {
+  height: 26px;
+  padding: 0 9px;
+  border: 1px solid var(--diagram-rule);
+  border-radius: 0;
+  background: #ffffff;
+  color: var(--diagram-ink);
+  font: 500 11px/1 var(--control);
+  letter-spacing: var(--track-button);
+  cursor: pointer;
+}
+.paper .diagram-actions button + button { margin-left: -1px; }
+.paper .diagram-actions button:hover { position: relative; border-color: var(--diagram-ink); background: var(--diagram-ink); color: #ffffff; }
+.paper .diagram-actions button:focus-visible { position: relative; outline: 2px solid var(--diagram-ink); outline-offset: 2px; }
+.paper [data-diagram-action="copy"]::before { content: "\29C9  SVG"; }
+.paper [data-diagram-action="svg"]::before { content: "\2193  SVG"; }
+.paper [data-diagram-action="png"]::before { content: "\2193  PNG"; }
+.paper .diagram-actions [data-done="ok"]::before { content: "\2713"; color: var(--diagram-ink); }
+.paper .diagram-actions [data-done="failed"]::before { content: "\2715"; color: var(--diagram-err); }
+.paper .diagram-actions button:hover[data-done]::before { color: inherit; }

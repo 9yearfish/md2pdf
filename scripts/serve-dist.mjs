@@ -18,10 +18,15 @@ const TYPES = {
   '.css': 'text/css; charset=utf-8',
   '.wasm': 'application/wasm',
   '.ttf': 'font/ttf',
+  '.woff2': 'font/woff2',
   '.otf': 'font/otf',
   '.bin': 'application/octet-stream',
   '.json': 'application/json',
   '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.txt': 'text/plain; charset=utf-8',
+  '.xml': 'application/xml',
+  '.webmanifest': 'application/manifest+json',
 };
 
 /** Parse the Cloudflare _headers file into [globPrefix, headers] pairs. */
@@ -52,8 +57,17 @@ const matches = (pattern, pathname) =>
 http
   .createServer((req, res) => {
     const url = new URL(req.url ?? '/', 'http://localhost');
-    let pathname = decodeURIComponent(url.pathname);
+    const requested = decodeURIComponent(url.pathname);
+    let pathname = requested;
     if (pathname.endsWith('/')) pathname += 'index.html';
+
+    // Like Cloudflare Pages: /zh redirects to /zh/, which serves zh/index.html,
+    // and so does every landing page (/ja/chatgpt-to-pdf -> /ja/chatgpt-to-pdf/).
+    const directory = path.join(ROOT, pathname);
+    if (!pathname.endsWith('/index.html') && directory.startsWith(ROOT) && fs.existsSync(path.join(directory, 'index.html'))) {
+      res.writeHead(308, { Location: `${url.pathname}/${url.search}` }).end();
+      return;
+    }
 
     const file = path.join(ROOT, pathname);
     if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
@@ -61,11 +75,18 @@ http
       return;
     }
 
+    // Rules match the URL (`/zh/`) as Pages does, or the file (`/zh/index.html`).
+    // A header set by several rules, like Link, is joined as Pages joins it.
+    const headers = new Map();
     for (const rule of RULES) {
-      if (matches(rule.pattern, pathname)) {
-        for (const [name, value] of rule.headers) res.setHeader(name, value);
+      if (matches(rule.pattern, requested) || matches(rule.pattern, pathname)) {
+        for (const [name, value] of rule.headers) {
+          const key = name.toLowerCase();
+          headers.set(key, headers.has(key) ? `${headers.get(key)}, ${value}` : value);
+        }
       }
     }
+    for (const [name, value] of headers) res.setHeader(name, value);
     res.setHeader('Content-Type', TYPES[path.extname(file)] ?? 'application/octet-stream');
     res.writeHead(200);
     fs.createReadStream(file).pipe(res);

@@ -1,0 +1,19 @@
+sequenceDiagram
+  autonumber
+  participant Browser
+  participant Server
+  actor Reviewer
+  Browser->>Server: Upload draft
+  activate Server
+  Note right of Server: Validates the<br>document schema
+  Server-->>Browser: Draft accepted
+  deactivate Server
+  loop Every review round
+    Reviewer->>Server: Leave comments
+  end
+  alt Approved
+    Server->>Reviewer: Publish notice
+  else Rejected
+    Server->>Browser: Request changes
+  end
+  Note over Browser,Reviewer: Review complete

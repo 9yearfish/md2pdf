@@ -19,6 +19,11 @@ function isImmutable(url) {
   );
 }
 
+/** One cache entry per page, whatever its query string. */
+function pageKey(url) {
+  return new Request(url.origin + url.pathname);
+}
+
 self.addEventListener('install', () => self.skipWaiting());
 
 self.addEventListener('activate', event => {
@@ -26,6 +31,20 @@ self.addEventListener('activate', event => {
     (async () => {
       for (const key of await caches.keys()) {
         if (key !== CACHE) await caches.delete(key);
+      }
+      // Font files fetched before fonts were versioned (`?v=` in
+      // src/typst/fonts.ts) are dead weight, several megabytes of it; the
+      // engine and everything else stay cached.
+      // Pages are network-first. With navigation preload the request goes out
+      // while the worker is still starting, so a returning visit's HTML is
+      // never held up by the worker it has to pass through.
+      await self.registration.navigationPreload?.enable().catch(() => {});
+      const cache = await caches.open(CACHE);
+      for (const request of await cache.keys()) {
+        const url = new URL(request.url);
+        if (url.pathname.startsWith('/fonts/') && !url.search && !url.pathname.endsWith('.woff2')) {
+          await cache.delete(request);
+        }
       }
       await self.clients.claim();
     })(),
@@ -52,17 +71,28 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Everything else stays network-first so a deploy is picked up immediately,
-  // falling back to cache only when offline.
+  // Everything else, including each language's page (/, /zh/, /ja/, ...)
+  // and each landing page (/ja/chatgpt-to-pdf/, ...), stays network-first so
+  // a deploy is picked up immediately, falling back to cache only when
+  // offline. Pages are cached by path alone, so /?lang=en or a landing page
+  // with ?utm_source= offline still finds the copy that was saved. The
+  // trailing-slash redirect itself is never cached (response.redirected);
+  // offline, /ja/chatgpt-to-pdf falls back to the saved /ja/chatgpt-to-pdf/.
   if (url.origin === self.location.origin) {
+    const page = request.mode === 'navigate';
     event.respondWith(
       (async () => {
         try {
-          const response = await fetch(request);
-          if (response.ok) (await caches.open(CACHE)).put(request, response.clone());
+          const response = (page && (await event.preloadResponse)) || (await fetch(request));
+          if (response.ok && !response.redirected) {
+            const key = page ? pageKey(url) : request;
+            (await caches.open(CACHE)).put(key, response.clone());
+          }
           return response;
         } catch (error) {
-          const hit = await caches.match(request);
+          const hit =
+            (await caches.match(page ? pageKey(url) : request)) ??
+            (page && !url.pathname.endsWith('/') ? await caches.match(url.origin + url.pathname + '/') : undefined);
           if (hit) return hit;
           throw error;
         }

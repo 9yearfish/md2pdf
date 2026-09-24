@@ -1,6 +1,7 @@
 import type { Token } from 'markdown-it';
-import { tstr, tmarkup } from './typst-str';
+import { tstr, tmarkup, tprose } from './typst-str';
 import { toTree, type Node } from './tree';
+import { isMathFence } from './math-syntax';
 
 /** An asset resolved ahead of emission (diagram, formula or image). */
 export interface ResolvedAsset {
@@ -10,6 +11,40 @@ export interface ResolvedAsset {
   height?: number;
   /** Baseline shift in points, for inline formulas. */
   baseline?: number;
+  /** Text Typst sets on top of the image, in points from its top left. */
+  overlays?: Overlay[];
+  /** Typst emitted as is in place of the block (a diagram's error box). */
+  markup?: string;
+}
+
+export interface Overlay {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  size: number;
+  bold: boolean;
+  fill: [number, number, number];
+  lines: string[];
+}
+
+const pt = (n: number) => `${Number(n.toFixed(2))}pt`;
+
+/**
+ * A label set by Typst over a diagram (see `liftIndicLabels` in mermaid.ts),
+ * centred on the box the browser measured. The box gets some slack so that a
+ * slightly different measurement cannot wrap the line.
+ */
+function overlay(o: Overlay): string {
+  const slack = o.size * 2;
+  const body = o.lines.map(line => tmarkup(line)).join('#linebreak()');
+  const weight = o.bold ? ', weight: "bold"' : '';
+  return (
+    `place(top + left, dx: ${pt(o.x - slack)}, dy: ${pt(o.y)}, ` +
+    `box(width: ${pt(o.width + 2 * slack)}, height: ${pt(o.height)}, align(center + horizon, ` +
+    `text(size: ${pt(o.size)}, fill: rgb(${o.fill.join(', ')})${weight}, hyphenate: false, ` +
+    `top-edge: "ascender", bottom-edge: "descender")[#set par(leading: 0.2em, justify: false); ${body}])))`
+  );
 }
 
 export interface EmitInput {
@@ -18,6 +53,24 @@ export interface EmitInput {
   assets: Map<string, ResolvedAsset>;
   footnotes: Map<string, Node[]>;
   warn: (message: string) => void;
+  /** Formulas converted to Typst maths markup, keyed by their LaTeX source. */
+  math?: Map<string, MathConversion>;
+  /** Filled in by the emitter: every formula call placed in the source, in order. */
+  formulas?: EmittedFormula[];
+}
+
+export type MathConversion = { code: string } | { error: string };
+
+export interface EmittedFormula {
+  tex: string;
+  display: boolean;
+  /** The exact call in the source, unique thanks to its id. */
+  call: string;
+}
+
+/** A formula that could not be typeset: its source in red, with the reason. */
+export function mathErrorCall(display: boolean, tex: string, message: string): string {
+  return `#md-math-error(${display}, ${tstr(tex)}, ${tstr(message)})`;
 }
 
 const CJK = /[⺀-鿿　-ヿ豈-﫿＀-￯]/;
@@ -34,7 +87,11 @@ class Emitter {
     const out: string[] = [];
     for (const node of nodes) {
       const piece = this.block(node);
-      if (piece.trim() !== '') out.push(piece);
+      if (piece.trim() === '') continue;
+      // Set by src/layout (e.g. a résumé's contact line): the name of a
+      // preamble function to wrap the block in. Never user text.
+      const wrap = node.token.meta?.wrap;
+      out.push(typeof wrap === 'string' && /^md-[a-z-]+$/.test(wrap) ? `#${wrap}[\n${indent(piece)}\n]` : piece);
     }
     return out.join('\n\n');
   }
@@ -57,11 +114,17 @@ class Emitter {
         return this.table(node);
       case 'dl_open':
         return this.definitionList(node);
+      case 'math_block':
+        return this.math(t.content, true);
       case 'fence':
       case 'code_block':
         return this.code(t);
       case 'hr':
         return '#md-rule()';
+      case 'page_break':
+        // Weak: a break right after another (or before a heading that starts
+        // a page anyway) does not leave an empty page.
+        return '#pagebreak(weak: true)';
       case 'html_block':
         this.input.warn('Raw HTML blocks are not supported and were skipped.');
         return '';
@@ -163,9 +226,11 @@ class Emitter {
       const style = String(cell.token.attrGet('style') ?? '');
       if (style.includes('center')) return 'center';
       if (style.includes('right')) return 'right';
-      return 'left';
+      if (style.includes('left')) return 'left';
+      // Unaligned columns follow the text direction.
+      return 'start';
     });
-    while (aligns.length < columns) aligns.push('left');
+    while (aligns.length < columns) aligns.push('start');
 
     const cellContent = (cell: Node | undefined) =>
       cell ? `[${this.inlineOf(cell)}]` : '[]';
@@ -194,15 +259,29 @@ class Emitter {
 
   private code(token: Token): string {
     const info = (token.info || '').trim().split(/\s+/)[0].toLowerCase();
+    if (token.type === 'fence' && isMathFence(info)) return this.math(token.content.trim(), true);
     if (info === 'mermaid') {
       const asset = this.input.assets.get(assetKey('mermaid', token.content));
-      if (asset) return this.figureImage(asset, null);
+      if (asset?.markup) return asset.markup;
+      // Natural size in; `md-diagram` fits it to the page (diagram-typst.ts).
+      if (asset) return `#md-diagram(${asset.width}pt, ${asset.height}pt, ${this.imageCall(asset)})`;
       this.input.warn('A mermaid diagram could not be rendered and was kept as source.');
     }
     const lang = info && info !== 'mermaid' ? `, lang: ${tstr(info)}` : '';
     return `#raw(${tstr(token.content.replace(/\n$/, ''))}, block: true${lang})`;
   }
 
+
+  private math(tex: string, display: boolean): string {
+    const result = this.input.math?.get(tex);
+    if (!result || 'error' in result) {
+      return mathErrorCall(display, tex, result?.error ?? 'not converted');
+    }
+    const formulas = (this.input.formulas ??= []);
+    const call = `#md-math(${formulas.length}, ${display}, ${tstr(result.code)})`;
+    formulas.push({ tex, display, call });
+    return call;
+  }
 
   private figureImage(asset: ResolvedAsset, caption: string | null): string {
     const image = this.imageCall(asset);
@@ -220,7 +299,9 @@ class Emitter {
     const args = [tstr(asset.path)];
     if (asset.width !== undefined) args.push(`width: ${asset.width}pt`);
     if (asset.height !== undefined) args.push(`height: ${asset.height}pt`);
-    return `image(${args.join(', ')})`;
+    const image = `image(${args.join(', ')})`;
+    if (!asset.overlays?.length || asset.width === undefined || asset.height === undefined) return image;
+    return `box(width: ${asset.width}pt, height: ${asset.height}pt, {\n  ${[image, ...asset.overlays.map(overlay)].join('\n  ')}\n})`;
   }
 
   private image(token: Token, block: boolean): string {
@@ -251,7 +332,7 @@ class Emitter {
       const t = node.token;
       switch (t.type) {
         case 'text':
-          if (t.content !== '') out += tmarkup(t.content);
+          if (t.content !== '') out += tprose(t.content);
           break;
         case 'strong_open':
           out += `#strong[${this.inline(node.children)}]`;
@@ -267,6 +348,9 @@ class Emitter {
           out += `#link(${tstr(href)})[${this.inline(node.children)}]`;
           break;
         }
+        case 'math_inline':
+          out += this.math(t.content, Boolean(t.meta?.display));
+          break;
         case 'code_inline':
           out += `#raw(${tstr(t.content)})`;
           break;

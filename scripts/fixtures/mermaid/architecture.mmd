@@ -1,0 +1,11 @@
+architecture-beta
+  group api(cloud)[Public API]
+  service gateway(internet)[Gateway] in api
+  service app(server)[Application] in api
+  service db(database)[Database] in api
+  service files(disk)[File store] in api
+  service unknownicon(logos:aws-lambda)[Lambda worker] in api
+  gateway:R --> L:app
+  app:R --> L:db
+  app:B --> T:files
+  app:T --> B:unknownicon

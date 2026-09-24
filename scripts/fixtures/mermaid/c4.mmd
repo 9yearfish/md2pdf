@@ -1,0 +1,7 @@
+C4Context
+  title System context for the invoicing service
+  Person(accountant, "Accountant", "Issues invoices")
+  System(invoicing, "Invoicing service", "Creates and sends invoices")
+  System_Ext(mailer, "Mail provider", "Delivers email")
+  Rel(accountant, invoicing, "Uses")
+  Rel(invoicing, mailer, "Sends mail through")

@@ -1,0 +1,282 @@
+/*
+ * The preview's side of templates (src/layout/preview.ts), loaded with the
+ * layout chunk, never on first paint. It approximates src/layout/typst.ts:
+ * same faces where loaded, same numbering, header and footer as faint bands.
+ *
+ * Noto Serif, split by unicode-range like Noto Sans in src/fonts.css, is only
+ * fetched once text is set in it, i.e. for a serif template. The `?v=` is
+ * FONT_REVISION in src/typst/fonts.ts.
+ */
+
+@font-face {
+  font-family: "Noto Serif";
+  src: url("/fonts/NotoSerif-Regular.core.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-024F, U+02B0-02FF, U+0300-036F, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "Noto Serif";
+  src: url("/fonts/NotoSerif-Regular.ext.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "Noto Serif";
+  src: url("/fonts/NotoSerif-Bold.core.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-024F, U+02B0-02FF, U+0300-036F, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "Noto Serif";
+  src: url("/fonts/NotoSerif-Bold.ext.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "Noto Serif";
+  src: url("/fonts/NotoSerif-Italic.core.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0000-024F, U+02B0-02FF, U+0300-036F, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "Noto Serif";
+  src: url("/fonts/NotoSerif-Italic.ext.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "Noto Serif";
+  src: url("/fonts/NotoSerif-BoldItalic.core.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0000-024F, U+02B0-02FF, U+0300-036F, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "Noto Serif";
+  src: url("/fonts/NotoSerif-BoldItalic.ext.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "md2pdf Serif Latin in CJK";
+  src: url("/fonts/NotoSerif-Regular.core.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00B6, U+00B8-024F, U+02B0-02FF, U+0300-036F, U+2000-2012, U+2015-2017, U+201A-201B, U+201E-2024, U+2028-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "md2pdf Serif Latin in CJK";
+  src: url("/fonts/NotoSerif-Regular.ext.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "md2pdf Serif Latin in CJK";
+  src: url("/fonts/NotoSerif-Bold.core.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00B6, U+00B8-024F, U+02B0-02FF, U+0300-036F, U+2000-2012, U+2015-2017, U+201A-201B, U+201E-2024, U+2028-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "md2pdf Serif Latin in CJK";
+  src: url("/fonts/NotoSerif-Bold.ext.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "md2pdf Serif Latin in CJK";
+  src: url("/fonts/NotoSerif-Italic.core.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0000-00B6, U+00B8-024F, U+02B0-02FF, U+0300-036F, U+2000-2012, U+2015-2017, U+201A-201B, U+201E-2024, U+2028-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "md2pdf Serif Latin in CJK";
+  src: url("/fonts/NotoSerif-Italic.ext.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "md2pdf Serif Latin in CJK";
+  src: url("/fonts/NotoSerif-BoldItalic.core.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0000-00B6, U+00B8-024F, U+02B0-02FF, U+0300-036F, U+2000-2012, U+2015-2017, U+201A-201B, U+201E-2024, U+2028-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "md2pdf Serif Latin in CJK";
+  src: url("/fonts/NotoSerif-BoldItalic.ext.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+
+/* ---------- shared ---------- */
+
+.paper { position: relative; }
+
+.paper .page-band { height: 0; margin: 0; font: 9pt/1.3 var(--paper-font-family, var(--paper-font)); color: #707070; }
+.paper .page-band > div {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1em;
+  position: relative;
+  opacity: 0.85;
+}
+.paper .page-band span:last-child { text-align: end; }
+.paper .page-header > div { transform: translateY(calc(-1 * min(var(--paper-margin), 7vw) * 0.55 - 100%)); }
+.paper .page-footer > div { transform: translateY(calc(min(var(--paper-margin), 7vw) * 0.45)); }
+.paper[data-template="report"] .page-header > div { border-bottom: 0.5pt solid #c5cfdc; padding-bottom: 4px; }
+
+.paper .heading-number { margin-inline-end: 0.6em; }
+.paper .toc li[data-number]::before { content: attr(data-number) "\2002"; }
+
+/* A cover is a whole page: full bleed, the page's proportions. */
+.paper .cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1 / 1.414;
+  margin: calc(-1 * min(var(--paper-margin), 7vw)) calc(-1 * min(var(--paper-margin), 7vw)) 0;
+  padding: min(var(--paper-margin), 7vw);
+  text-align: center;
+}
+.paper .cover + .page-break { margin-top: 0; }
+.paper .cover-title { font-size: 2.5em; font-weight: 700; line-height: 1.2; }
+.paper .cover-subtitle { margin-top: 0.5em; font-size: 1.35em; color: var(--ink-muted); }
+.paper .cover-foot { margin-top: 2.4em; padding-top: 1.6em; border-top: 0.6pt solid var(--rule); }
+.paper .cover-author { font-size: 1.15em; }
+.paper .cover-date { margin-top: 0.5em; color: var(--ink-muted); }
+
+.paper .title-block { margin-bottom: 1.8em; padding-bottom: 0.6em; border-bottom: 0.5pt solid #d4d4d4; }
+.paper .title-block .title { font-size: 2em; font-weight: 700; line-height: 1.25; }
+.paper .title-block .subtitle { margin-top: 0.2em; font-size: 1.25em; color: var(--ink-muted); }
+.paper .title-block .byline { margin-top: 0.6em; color: var(--ink-muted); }
+
+.paper .abstract { margin: 0 1.5em 1.8em; font-size: 0.94em; }
+.paper .abstract-label { font-weight: 700; margin-bottom: 0.4em; }
+.paper .abstract p { margin-bottom: 0.6em; }
+
+/* ---------- report ---------- */
+
+.paper[data-template="report"] { --accent: #1f3a60; }
+.paper[data-template="report"] .cover {
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: start;
+  padding-top: calc(24% + 14mm);
+  border-top: 14mm solid var(--accent);
+}
+.paper[data-template="report"] .cover-title { font-size: 2.6em; color: var(--accent); }
+.paper[data-template="report"] .cover-subtitle { margin-top: 0.7em; color: #3b4652; }
+.paper[data-template="report"] .cover-subtitle::after { content: ""; display: block; width: 22%; min-width: 3em; margin-top: 1.2em; border-top: 2pt solid var(--accent); }
+.paper[data-template="report"] .cover-foot {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 0.5em;
+  border-top: 0.5pt solid #c5cfdc;
+}
+.paper[data-template="report"] .cover-author { font-weight: 700; }
+.paper[data-template="report"] :is(h1, h2) { color: var(--accent); }
+.paper[data-template="report"] h1 { font-size: 1.55em; margin-top: 2em; padding-bottom: 0.35em; border-bottom: 0.6pt solid #c5cfdc; }
+.paper[data-template="report"] h2 { font-size: 1.25em; border-bottom: none; padding-bottom: 0; }
+.paper[data-template="report"] h3 { font-size: 1.08em; }
+.paper[data-template="report"] th { background: #eef2f8; color: var(--accent); }
+.paper[data-template="report"] :is(th, td) { border-color: #c5cfdc; }
+.paper[data-template="report"] a { color: var(--accent); }
+.paper[data-template="report"] blockquote { padding: 0.5em 1em; background: #f3f6fa; border-color: var(--accent); color: #3b4652; }
+
+/* ---------- serif templates: academic, letter ---------- */
+
+.paper[data-serif] { font-family: var(--paper-serif-family, "Noto Serif", serif); }
+.paper[data-serif] :is(strong, b, th, dt, h1, h2, h3, h4, h5, h6, .title, .cover-title, .abstract-label, .sender-name, .subject) {
+  font-family: var(--paper-serif-bold-family, "Noto Serif", serif);
+}
+
+.paper[data-template="academic"] :is(h1, h2, h3, h4) { letter-spacing: 0; color: #111; }
+.paper[data-template="academic"] h1 { font-size: 1.22em; margin-top: 1.9em; }
+.paper[data-template="academic"] h2 { font-size: 1.08em; border-bottom: none; padding-bottom: 0; margin-top: 1.5em; }
+.paper[data-template="academic"] :is(h3, h4) { font-size: 1em; margin-top: 1.3em; }
+.paper[data-template="academic"] > p { margin: 0; }
+.paper[data-template="academic"] > p + p { text-indent: 1.5em; }
+.paper[data-template="academic"]:is(:lang(zh), :lang(ja)) > p { text-indent: 2em; }
+.paper[data-template="academic"] > p + :not(p) { margin-top: 0.9em; }
+.paper[data-template="academic"] .title-block { text-align: center; border: none; margin-bottom: 2em; }
+.paper[data-template="academic"] .title-block .title { font-size: 1.7em; }
+.paper[data-template="academic"] .title-block .subtitle { color: inherit; font-size: 1.2em; }
+.paper[data-template="academic"] .title-block .byline { margin-top: 0.7em; font-size: 1.08em; color: inherit; }
+.paper[data-template="academic"] .title-block .dateline { margin-top: 0.25em; font-size: 0.95em; color: var(--ink-muted); }
+.paper[data-template="academic"] .abstract { margin: 0 2.4em 2em; font-size: 0.92em; }
+.paper[data-template="academic"] .abstract-label { text-align: center; font-variant: small-caps; margin-bottom: 0.7em; }
+.paper[data-template="academic"] table { border-top: 0.9pt solid #000; border-bottom: 0.9pt solid #000; }
+.paper[data-template="academic"] :is(th, td) { border: none; }
+.paper[data-template="academic"] th { background: none; border-bottom: 0.5pt solid #000; }
+.paper[data-template="academic"] a { color: #1a4c8b; }
+.paper[data-template="academic"] blockquote { border: none; padding: 0 1.6em; color: inherit; font-size: 0.95em; }
+.paper[data-template="academic"] .footnotes { font-size: 0.84em; color: inherit; }
+.paper[data-template="academic"] .footnotes-sep { width: 28%; margin-inline-start: 0; border-top-color: #000; }
+.paper[data-template="academic"] .cover-subtitle { color: inherit; }
+
+/* ---------- résumé ---------- */
+
+.paper[data-template="resume"] { --accent: #1f3a60; }
+.paper[data-template="resume"] h1 { text-align: center; font-size: 2.3em; margin: 0 0 0.3em; letter-spacing: 0.01em; }
+.paper[data-template="resume"] .contact { text-align: center; font-size: 0.93em; color: #4b5563; margin-bottom: 1.1em; }
+.paper[data-template="resume"] h2 {
+  margin: 1.15em 0 0.6em;
+  padding-bottom: 3px;
+  border-bottom: 0.6pt solid #98a3b0;
+  color: var(--accent);
+  font-size: 1.15em;
+  font-variant: all-small-caps;
+  letter-spacing: 0.07em;
+}
+.paper[data-template="resume"] :is(h3, h4) { margin: 0.85em 0 0.4em; font-size: 1.02em; letter-spacing: 0; }
+.paper[data-template="resume"] .row { display: flex; justify-content: space-between; gap: 1em; }
+.paper[data-template="resume"] .row-right { font-weight: 400; font-size: 0.95em; color: #57606a; white-space: nowrap; }
+.paper[data-template="resume"] p { margin-bottom: 0.7em; }
+.paper[data-template="resume"] li + li { margin-top: 0.3em; }
+.paper[data-template="resume"] li::marker { color: var(--accent); }
+.paper[data-template="resume"] a { color: inherit; }
+
+/* ---------- letter ---------- */
+
+.paper[data-template="letter"] .letterhead { margin-bottom: 1.4em; }
+.paper[data-template="letter"] .sender { text-align: end; margin-bottom: 2.4em; }
+.paper[data-template="letter"] .sender-name { font-size: 1.25em; font-weight: 700; }
+.paper[data-template="letter"] .sender-address { margin-top: 0.4em; font-size: 0.9em; color: #57606a; }
+.paper[data-template="letter"] .recipient { margin-bottom: 2em; }
+.paper[data-template="letter"] .letter-date { text-align: end; margin-bottom: 1.6em; }
+.paper[data-template="letter"] .subject { font-weight: 700; }
+.paper[data-template="letter"] .signoff { margin-top: 1.8em; }
+.paper[data-template="letter"] .signature { margin-top: 3em; }
+.paper[data-template="letter"] a { color: inherit; }

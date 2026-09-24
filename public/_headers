@@ -1,5 +1,14 @@
 # Cloudflare Pages headers.
 
+# The *.pages.dev hosts (production alias and every preview deployment) are
+# not the site: keep them out of search results. Absolute-URL rules match the
+# host, and a :placeholder stops at a dot, so neither rule can match
+# freemd2pdf.com (developers.cloudflare.com/pages/configuration/headers/).
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex
+
 # Vite fingerprints these, so they can never go stale.
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
@@ -12,6 +21,41 @@
 /sw.js
   Cache-Control: no-cache
 
+# Share images: replaced in place when a heading changes, so not immutable.
+/og/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# For crawlers and AI assistants; regenerated on every build.
+/robots.txt
+  Cache-Control: public, max-age=3600
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+/llms.txt
+  Cache-Control: public, max-age=3600
+/llms-full.txt
+  Cache-Control: public, max-age=3600
+
+/favicon.svg
+  Cache-Control: public, max-age=86400
+/apple-touch-icon.png
+  Cache-Control: public, max-age=86400
+/icon-192.png
+  Cache-Control: public, max-age=86400
+/icon-512.png
+  Cache-Control: public, max-age=86400
+/manifest.webmanifest
+  Cache-Control: public, max-age=86400
+
+# Every page, including each locale (/, /zh/, /ja/, ...) and each landing
+# page (/chatgpt-to-pdf/, /ja/chatgpt-to-pdf/, ...), gets its own rule at the
+# end of dist/_headers, written by the build (earlyHints in vite.config.ts):
+# `Cache-Control: public, max-age=0, must-revalidate`, so the browser
+# revalidates and a deploy is picked up at once while the edge serves its
+# cached copy, and `Link` headers for the page's stylesheet and entry module,
+# which Pages sends as 103 Early Hints. Pages redirects /ja/chatgpt-to-pdf to
+# /ja/chatgpt-to-pdf/ itself (scripts/serve-dist.mjs does the same). The
+# language redirect script is fingerprinted under /assets/ and cached like
+# the rest.
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
@@ -19,4 +63,7 @@
   Cross-Origin-Opener-Policy: same-origin
   Permissions-Policy: geolocation=(), camera=(), microphone=(), interest-cohort=()
   # No connect-src beyond 'self': the document must never leave the browser.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' blob: data:; worker-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; form-action 'none'
+  # frame-src allows only our own Blob URLs: Print loads the PDF into a hidden
+  # frame. X-Frame-Options and frame-ancestors stop other sites framing us;
+  # they do not apply to that frame (a Blob URL has no response headers).
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' blob: data:; worker-src 'self' blob:; frame-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; form-action 'none'

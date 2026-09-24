@@ -1,54 +1,139 @@
+/*
+ * md2pdf Press: ink on paper, nothing else.
+ *
+ * Square corners, hairline rules between regions, a sans that tells and a
+ * monospace that labels. Every colour is a neutral between paper-white and
+ * ink-black; state is carried by shape and tone (a filled or hollow dot, a
+ * triangle, a solid or outlined notice), never by hue. The one exception is
+ * an error, which is a restrained red because it must be unmistakable. The
+ * proof sheet stays white in dark mode, because the PDF is white. No
+ * interface font is downloaded: the system sans and monospace do all of it.
+ *
+ * Motion is print-themed and cheap: transform and opacity only, from states
+ * that are already legible, and none of it under prefers-reduced-motion.
+ *
+ * The page scrolls: header, intro, the tool, then the descriptive text. On a
+ * desktop the tool fills the rest of the first screen. html.fullscreen (set by
+ * main.ts) gives the tool the whole window instead.
+ */
+
 :root {
-  --bg: #ffffff;
-  --bg-sunken: #f6f8fa;
-  --bg-raised: #ffffff;
-  --border: #d8dee4;
-  --border-strong: #b8c0c8;
-  --text: #1f2328;
-  --text-muted: #59636e;
-  --accent: #0b62c4;
-  --accent-contrast: #ffffff;
-  --danger: #b3261e;
-  --warning-bg: #fff4e5;
-  --warning-border: #f0c48a;
-  --text-faint: #8c959f;
-  --selection: rgba(11, 98, 196, 0.18);
-  --syntax-heading: #0b62c4;
-  --syntax-strong: #953800;
-  --syntax-emphasis: #6639ba;
-  --syntax-link: #0a7b5e;
-  --syntax-code: #b3261e;
-  --syntax-quote: #59636e;
-  --syntax-marker: #8c959f;
-  --toolbar-height: 48px;
-  --radius: 6px;
-  color-scheme: light dark;
+  --ink: #111111;
+  --ink-2: #383838;
+  --muted: #575757;
+  /* The lightest grey that still reads as text (4.8:1 on the ground). */
+  --faint: #6b6b6b;
+  /* Decoration only: crop marks, never text. */
+  --mark: #a8a8a8;
+  --rule: #dedede;
+  --rule-strong: #c4c4c4;
+  --ground: #f4f4f4;
+  --well: #fafafa;
+  --raised: #ffffff;
+  --sheet: #ffffff;
+  --sheet-edge: #dcdcdc;
+  --err: #b3261e;
+  --err-soft: #fbefee;
+  --on-status: #ffffff;
+  --shadow-sheet: 0 1px 2px rgba(0, 0, 0, 0.05), 0 14px 32px -18px rgba(0, 0, 0, 0.28);
+  --shadow-notice: 0 12px 28px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08);
+  /* The sheet frame is the scroller; the page inside draws no shadow of its own. */
+  --shadow-paper: none;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* The names the rest of the code (the editor theme, older rules) uses. */
+  --bg: var(--ground);
+  --bg-sunken: var(--well);
+  --bg-raised: var(--raised);
+  --bg-hover: var(--well);
+  --border: var(--rule);
+  --border-strong: var(--rule-strong);
+  --text: var(--ink);
+  --text-muted: var(--muted);
+  --text-faint: var(--faint);
+  --accent: var(--ink);
+  --accent-soft: rgba(17, 17, 17, 0.1);
+  --success: var(--ink);
+  --danger: var(--err);
+  --selection: rgba(17, 17, 17, 0.14);
+  --syntax-heading: var(--ink);
+  --syntax-strong: var(--ink);
+  --syntax-emphasis: var(--ink-2);
+  --syntax-link: var(--ink-2);
+  --syntax-code: var(--ink-2);
+  --syntax-quote: var(--muted);
+  --syntax-marker: var(--faint);
+
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", "PingFang SC", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  /* Labels and buttons: monospace, tracked. CJK pages use the sans for them
+     (the Han would fall back to it anyway) and track less. */
+  --control: var(--mono);
+  --track-button: 0.1em;
+  --track-label: 0.2em;
+  --size-button: 12px;
+  --size-label: 11px;
+  --ui-font: var(--sans);
+  --paper-font: "Noto Sans", -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans SC", sans-serif;
+  /* The tool's panes, where the page does not size them (narrow screens). */
+  --pane-height: clamp(420px, 68vh, 880px);
+  --gutter: 24px;
+  /* Where the sheet starts inside the proof pane: under its label. */
+  --sheet-top: 29px;
+  /* Lets disclosures animate to and from their natural height where supported. */
+  interpolate-size: allow-keywords;
+  color-scheme: light;
+}
+
+/*
+ * Han characters look different in Chinese, Japanese and Korean, and the first
+ * CJK font in a list wins. Each page puts its own language's fonts first.
+ */
+:root:lang(ja) {
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Hiragino Sans", "Yu Gothic", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", Meiryo, sans-serif;
+  --paper-font: "Noto Sans", -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+    Meiryo, "Noto Sans JP", sans-serif;
+}
+
+:root:lang(ko) {
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Apple SD Gothic Neo", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --paper-font: "Noto Sans", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR",
+    sans-serif;
+}
+
+:root:is(:lang(zh), :lang(ja), :lang(ko)) {
+  --control: var(--sans);
+  --track-button: 0.04em;
+  --track-label: 0.08em;
+  --size-button: 13px;
+  --size-label: 12px;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14181d;
-    --bg-sunken: #1b2027;
-    --bg-raised: #21262d;
-    --border: #30363d;
-    --border-strong: #454c55;
-    --text: #e6edf3;
-    --text-muted: #9198a1;
-    --accent: #4b93e8;
-    --accent-contrast: #0d1117;
-    --danger: #f2837c;
-    --warning-bg: #3a2d1a;
-    --warning-border: #6b5327;
-    --text-faint: #6e7681;
-    --selection: rgba(75, 147, 232, 0.28);
-    --syntax-heading: #6cb0f5;
-    --syntax-strong: #e3a06a;
-    --syntax-emphasis: #c49bf0;
-    --syntax-link: #59c2a0;
-    --syntax-code: #f2837c;
-    --syntax-quote: #9198a1;
-    --syntax-marker: #6e7681;
+  :root:not([data-theme="light"]) {
+    --ink: #ececec; --ink-2: #c8c8c8; --muted: #a8a8a8; --faint: #939393; --mark: #5c5c5c;
+    --rule: #2b2b2b; --rule-strong: #474747; --ground: #121212; --well: #191919; --raised: #1e1e1e;
+    --sheet-edge: #2b2b2b;
+    --err: #f08a83; --err-soft: #2d1a18; --on-status: #121212;
+    --accent-soft: rgba(236, 236, 236, 0.14); --selection: rgba(236, 236, 236, 0.2);
+    --shadow-sheet: 0 14px 32px -12px rgba(0, 0, 0, 0.75);
+    --shadow-notice: 0 12px 28px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --ink: #ececec; --ink-2: #c8c8c8; --muted: #a8a8a8; --faint: #939393; --mark: #5c5c5c;
+  --rule: #2b2b2b; --rule-strong: #474747; --ground: #121212; --well: #191919; --raised: #1e1e1e;
+  --sheet-edge: #2b2b2b;
+  --err: #f08a83; --err-soft: #2d1a18; --on-status: #121212;
+  --accent-soft: rgba(236, 236, 236, 0.14); --selection: rgba(236, 236, 236, 0.2);
+  --shadow-sheet: 0 14px 32px -12px rgba(0, 0, 0, 0.75);
+  --shadow-notice: 0 12px 28px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -59,28 +144,18 @@
  */
 [hidden] { display: none !important; }
 
-html {
-  height: 100%;
-}
-
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font: 14px/1.5 system-ui, -apple-system, "Segoe UI", "PingFang SC",
-    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--ground);
+  color: var(--ink);
+  font: 14px/1.5 var(--sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-/*
- * The tool fills the viewport; the descriptive content sits below it so that
- * the page has something for a reader (or a crawler) without ever getting in
- * the way of the editor.
- */
-.app {
-  display: flex;
-  flex-direction: column;
-  height: 100dvh;
-}
+::selection { background: var(--selection); }
+
+/* Focus is an ink ring standing off the control, the same in every state. */
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 .sr-only {
   position: absolute;
@@ -93,420 +168,1573 @@ body {
   white-space: nowrap;
 }
 
-/* ---------- toolbar ---------- */
+svg { flex: none; }
+
+/* The icon set: a sprite of 16px symbols, stroked in the current colour. */
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.icon {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+/* ---------- page frame ---------- */
+
+.app { position: relative; }
+
+.toolbar, .intro, .tool {
+  width: 100%;
+  max-width: calc(1232px + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
 
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 16px;
-  flex: none;
-  height: var(--toolbar-height);
-  padding: 0 12px;
-  background: var(--bg-raised);
-  border-bottom: 1px solid var(--border);
+  gap: 24px;
+  height: 52px;
 }
 
-.toolbar-group {
+/* A link home on every page; the page's one <h1> is in the intro. */
+.brand {
   display: flex;
   align-items: center;
-  gap: 6px;
-}
-
-.toolbar-group.viewer-controls { margin-left: auto; }
-
-.brand {
+  gap: 8px;
   margin: 0;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.privacy {
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--bg-sunken);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  font-size: 12px;
+  color: inherit;
+  font: 600 14px/1 var(--mono);
+  letter-spacing: 0.01em;
+  text-decoration: none;
   white-space: nowrap;
 }
 
-button, select, input[type="number"], input[type="search"] {
+.brand-mark { width: 20px; height: 20px; color: var(--ink); }
+/* The wordmark (BRAND): its first word in a lighter ink, the name in full ink. */
+.brand-free { color: var(--muted); font-weight: 400; }
+
+/* Information, not a control: no border, no fill, no hover. */
+.privacy {
+  display: flex;
+  gap: 20px;
+  min-width: 0;
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+  color: var(--faint);
+  font: 400 var(--size-label)/1 var(--control);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.privacy li { display: inline-flex; align-items: center; gap: 7px; }
+.privacy .icon { width: 14px; height: 14px; color: var(--ink-2); }
+
+/* The page's <h1> and one line of lead: enough to know what this is, then the tool. */
+.intro { padding-block: 10px 18px; }
+
+.intro-title {
+  margin: 0;
+  color: var(--ink);
+  font: 650 clamp(26px, 2.3vw, 34px)/1.15 var(--sans);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.intro-title span { color: var(--muted); font-weight: 400; }
+
+.intro-lead {
+  max-width: 78em;
+  margin: 6px 0 0;
+  color: var(--ink-2);
+  font: 400 15px/1.6 var(--sans);
+  text-wrap: pretty;
+}
+
+/* ---------- controls ---------- */
+
+button, select, input {
   font: inherit;
   color: inherit;
-  background: var(--bg-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 5px 10px;
+  border-radius: 0;
 }
 
-button { cursor: pointer; }
-button:hover:not(:disabled) { border-color: var(--border-strong); }
-button:disabled, select:disabled { opacity: 0.45; cursor: default; }
+/*
+ * Buttons: mono, tracked, square. Solid ink = primary (Download, and only
+ * Download in the action row); hairline on paper = secondary; bare = ghost.
+ * Hovering fills with ink from the left, like a roller; pressing sets it down.
+ */
+button {
+  --fill: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  background: linear-gradient(var(--fill), var(--fill)) no-repeat left / 0% 100%;
+  color: var(--ink);
+  font: 500 var(--size-button)/1 var(--control);
+  letter-spacing: var(--track-button);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-size 260ms var(--ease), background-color 160ms, border-color 160ms, color 160ms, transform 90ms;
+}
+
+button:active:not(:disabled) { transform: translateY(1px); }
+
+button .icon { width: 15px; height: 15px; }
 
 button.primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-contrast);
+  --fill: color-mix(in srgb, var(--ink) 80%, var(--ground));
+  height: 36px;
+  padding: 0 18px 0 20px;
+  border-color: var(--ink);
+  background-color: var(--ink);
+  color: var(--ground);
   font-weight: 600;
-}
-
-button.primary:hover:not(:disabled) { filter: brightness(1.08); }
-
-.separator {
-  width: 1px;
-  height: 20px;
-  background: var(--border);
-}
-
-.readout {
-  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
-  font-size: 13px;
-  min-width: 52px;
-  text-align: center;
 }
+
+button.primary:hover:not(:disabled) { background-size: 100% 100%; }
+
+/* The label turns into progress while exporting; it must never wrap the row. */
+#download-label, #print-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+button.busy { cursor: progress; }
+button.busy .icon { animation: nudge 900ms ease-in-out infinite; }
+/* The paper fed out: the arrow drops once. */
+button.done .icon { animation: drop 480ms var(--ease); }
+
+@keyframes drop {
+  40% { transform: translateY(4px); opacity: 0.2; }
+  41% { transform: translateY(-5px); }
+}
+
+@keyframes nudge {
+  50% { transform: translateY(2px); }
+}
+
+button.secondary { height: 36px; border-color: var(--rule-strong); background-color: var(--raised); }
+button.secondary:hover:not(:disabled) { border-color: var(--ink); background-size: 100% 100%; color: var(--ground); }
+
+button.ghost { --fill: var(--rule); height: 36px; color: var(--ink-2); padding: 0 10px; }
+button.ghost:hover:not(:disabled) { color: var(--ink); background-size: 100% 100%; }
+
+button.icon-only { width: 36px; padding: 0; }
+
+button:disabled { cursor: default; }
+
+/* Form fields: a hairline box, square, mono. */
+select, input[type="number"], input[type="text"] {
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--rule-strong);
+  background-color: var(--ground);
+  color: var(--ink);
+  font: 400 12px/1 var(--control);
+  letter-spacing: 0.02em;
+  transition: border-color 120ms;
+}
+
+select:hover, input[type="number"]:hover, input[type="text"]:hover { border-color: var(--ink-2); }
+
+/* A drawn chevron in currentColor, so it follows the theme. */
+select {
+  appearance: none;
+  padding-right: 26px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 13px center, right 9px center;
+  background-size: 4px 4px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+select option { color: var(--ink); background: var(--ground); }
+
+/* Unavailable looks unavailable. */
+:is(button, select, input):disabled:not(.primary, .busy) {
+  border-style: dashed;
+  border-color: var(--rule-strong);
+  background-color: transparent;
+  color: var(--faint);
+  cursor: not-allowed;
+}
+
+/* Busy is at work, not unavailable: an outline button keeps its ink. */
+button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/*
+ * The language menu: globe, name, chevron, quiet until hovered, like every
+ * control here. A <details> over plain links, so the list is drawn in the
+ * page's own type instead of the platform's native <select> popup.
+ */
+.lang { position: relative; flex: none; color: var(--ink-2); }
+
+.lang summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  font: 400 var(--size-label)/1 var(--control);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.lang summary::-webkit-details-marker { display: none; }
+.lang summary:hover, .lang[open] summary { border-color: var(--rule-strong); color: var(--ink); }
+.lang .icon { width: 15px; height: 15px; }
+.lang .lang-chevron { width: 12px; height: 12px; color: var(--faint); transition: transform 120ms; }
+.lang[open] .lang-chevron { transform: rotate(180deg); }
+
+.lang-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  display: grid;
+  min-width: 180px;
+  padding: 6px 0;
+  border: 1px solid var(--rule-strong);
+  background: var(--ground);
+  box-shadow: var(--shadow-notice);
+  transform-origin: top right;
+  animation: menu-in 160ms var(--ease);
+}
+
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+}
+
+.lang-list a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 14px;
+  color: var(--ink-2);
+  font: 400 14px/1.2 var(--sans);
+  text-decoration: none;
+}
+
+.lang-list a:hover, .lang-list a:focus-visible { background: var(--well); color: var(--ink); outline: none; }
+.lang-list a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+.lang-list a[aria-current="page"]::after {
+  content: "";
+  width: 12px;
+  height: 7px;
+  margin-top: -3px;
+  border-left: 1.5px solid var(--ink);
+  border-bottom: 1.5px solid var(--ink);
+  transform: rotate(-45deg);
+}
+
+/* ---------- the tool ---------- */
+
+/*
+ * One row between two hairlines, on the panes' own grid (the same columns and
+ * gap as .split): counts, Layout and the file actions over the source; Print
+ * and Download over the proof, ending flush with the sheet's right edge, with
+ * full screen last.
+ */
+.actionbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 56px;
+  align-items: center;
+  padding: 9px 0;
+  border-block: 1px solid var(--rule);
+}
+
+.actions, .actions-files {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.actions-source { gap: 24px; }
+.actions-files { margin-left: auto; }
+/* Print, then the one primary action, then full screen set apart. */
+.actions-output { justify-content: flex-end; gap: 10px; }
+#fullscreen-toggle { margin-left: 6px; }
+
+.stats {
+  color: var(--ink-2);
+  font: 400 12px/1 var(--control);
+  letter-spacing: var(--track-button);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* A disclosure: a quiet label with a + / − that opens the panel below the row. */
+button.disclosure {
+  flex: none;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  color: var(--ink-2);
+  font: 400 var(--size-label)/1 var(--control);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+button.disclosure .icon { width: 14px; height: 14px; color: var(--muted); }
+
+button.disclosure::after {
+  content: "+";
+  margin-left: 2px;
+  color: var(--muted);
+  font: 400 15px/1 var(--mono);
+  letter-spacing: 0;
+}
+
+button.disclosure[aria-expanded="true"]::after { content: "−"; }
+button.disclosure:hover, button.disclosure[aria-expanded="true"] { color: var(--ink); }
+button.disclosure:hover::after { color: var(--ink); }
+button.disclosure:focus-visible { outline-offset: -2px; }
 
 /* ---------- settings ---------- */
 
 .settings {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 20px;
-  flex: none;
-  padding: 10px 14px;
-  background: var(--bg-sunken);
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
+  align-items: center;
+  gap: 12px 28px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-2);
+  font: 400 12px/1.3 var(--control);
+  letter-spacing: 0.04em;
+  /* Opens to its height and closes back (where height: auto can animate). */
+  overflow: clip;
+  overflow-clip-margin: 4px;
+  transition: height 240ms var(--ease), padding-block 240ms var(--ease), opacity 200ms, display 240ms allow-discrete;
+}
+
+.settings[hidden] { height: 0; padding-block: 0; opacity: 0; }
+
+@starting-style {
+  .settings:not([hidden]) { height: 0; padding-block: 0; opacity: 0; }
 }
 
 .settings label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: var(--text-muted);
+  gap: 8px;
+  white-space: nowrap;
 }
 
-.settings input[type="number"] { width: 68px; }
-.settings .check { gap: 4px; }
+.settings input[type="number"] { width: 64px; font-variant-numeric: tabular-nums; }
+.settings input[type="text"] { width: 168px; }
 
-/* ---------- split layout ---------- */
+/* A setting the document's front matter decides (src/layout/index.ts): the
+   control is disabled and this tag says why. A label, so mono and tracked. */
+.settings .from-doc {
+  padding: 3px 6px;
+  border: 1px solid var(--rule-strong);
+  color: var(--ink-2);
+  font: 400 10px/1 var(--control);
+  letter-spacing: var(--track-button);
+  text-transform: uppercase;
+}
+
+.settings .check { cursor: pointer; }
+.settings .check:hover { color: var(--ink); }
+
+/* A square box, ink when ticked. */
+.settings input[type="checkbox"] {
+  appearance: none;
+  display: inline-grid;
+  place-content: center;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  border: 1px solid var(--ink-2);
+  background: var(--ground);
+  cursor: pointer;
+}
+
+.settings input[type="checkbox"]::after {
+  content: "";
+  width: 7px;
+  height: 4px;
+  margin-top: -2px;
+  border: solid var(--ground);
+  border-width: 0 0 1.5px 1.5px;
+  transform: rotate(-45deg);
+  visibility: hidden;
+}
+
+.settings input[type="checkbox"]:checked { border-color: var(--ink); background: var(--ink); }
+.settings input[type="checkbox"]:checked::after { visibility: visible; }
+.settings label:has(:disabled) { color: var(--faint); cursor: not-allowed; }
+
+/* ---------- panes ---------- */
+
+/* Phones only: which pane is on screen (see the narrow-screen rules). */
+.view-switch { display: none; }
 
 .split {
-  display: flex;
-  flex: 1;
-  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 56px;
+  padding-top: 24px;
 }
 
-.editor-pane {
+/* Resizing is for full-screen editing, where the panes share the width. */
+.divider { display: none; }
+
+.editor-pane, .preview-pane {
   display: flex;
   flex-direction: column;
-  flex: 0 0 42%;
-  min-width: 220px;
+  min-width: 0;
   min-height: 0;
-  overflow: hidden;
 }
 
+.pane-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  height: 17px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font: 400 var(--size-label)/1 var(--control);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pane-title { flex: none; }
+
+.pane-hint {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.editor-pane .pane-hint { margin-left: auto; letter-spacing: 0.06em; text-transform: none; }
+
+/* A small square at the end of the source label, as on a proof sheet's slug line. */
+.editor-pane .pane-header::after {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  background: var(--mark);
+}
+
+.preview-pane .pane-hint::before { content: "·"; margin-right: 10px; }
+
+/* The proof follows the text: an ink dot that pulses as the page is re-set. */
+.live {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  margin-left: auto;
+  color: var(--ink-2);
+}
+
+.live::before, .live::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.live::after {
+  position: absolute;
+  left: 0;
+  top: calc(50% - 3px);
+  opacity: 0;
+  animation: ink-pulse 1.6s var(--ease) 600ms 2;
+}
+
+@keyframes ink-pulse {
+  from { opacity: 0.5; transform: scale(1); }
+  to { opacity: 0; transform: scale(3.2); }
+}
+
+/* The source: a quiet well with a hairline, a fixed height that scrolls inside. */
+.editor-host {
+  position: relative;
+  display: flex;
+  height: var(--pane-height);
+  min-height: 0;
+  border: 1px solid var(--rule-strong);
+  background: var(--well);
+  transition: border-color 160ms;
+}
+
+.editor-host:focus-within { border-color: var(--ink); }
+
+/*
+ * The empty source (after New): what to do next, in the middle of the pane.
+ * Only its buttons take clicks; anywhere else lands in the editor beneath.
+ */
+.empty-state {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+  pointer-events: none;
+  animation: enter 320ms var(--ease) backwards;
+}
+
+.empty-state button { pointer-events: auto; }
+
+.empty-mark {
+  width: 36px;
+  height: 36px;
+  fill: none;
+  stroke: var(--faint);
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+
+.empty-title {
+  max-width: 26em;
+  margin: 0;
+  color: var(--ink-2);
+  font: 400 15px/1.5 var(--sans);
+  text-wrap: balance;
+}
+
+.empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+/* The empty state says it; the editor's own placeholder would say it twice. */
+.editor-host:has(> .empty-state:not([hidden])) #editor::placeholder { color: transparent; }
+
 /* CodeMirror replaces the textarea in place once it has loaded. */
-.editor-pane .cm-editor {
+.editor-host .cm-editor {
   flex: 1;
+  min-width: 0;
   min-height: 0;
 }
 
 #editor {
   flex: 1;
   width: 100%;
-  padding: 16px 18px;
+  padding: 20px;
   border: none;
   outline: none;
   resize: none;
-  background: var(--bg);
-  color: var(--text);
-  font: 13px/1.7 ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
-    "PingFang SC", monospace;
+  background: transparent;
+  color: var(--ink);
+  font: 13px/24px var(--mono);
   tab-size: 2;
 }
 
-.divider {
-  flex: none;
-  width: 5px;
-  cursor: col-resize;
-  background: var(--border);
-  transition: background 120ms;
-}
+#editor::placeholder { color: var(--faint); }
 
-.divider:hover, .divider.dragging { background: var(--accent); }
-
+/*
+ * The proof: a white sheet that scrolls inside a fixed frame, with printer's
+ * corner marks 12px outside each corner. The marks are background lines on
+ * the pane, which reaches 12px past the sheet on every side, so nothing is
+ * added to the sheet or to the page inside it.
+ */
 .preview-pane {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  border-left: 1px solid var(--border);
-  background: var(--bg-sunken);
-}
-
-.preview-main {
+  --reach: 12px;
+  --mark-top: calc(var(--sheet-top) - var(--reach));
   position: relative;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
+  margin-inline: calc(-1 * var(--reach));
+  padding: 0 var(--reach) var(--reach);
+  background:
+    linear-gradient(var(--mark), var(--mark)) left 0 top var(--mark-top) / var(--reach) 1px,
+    linear-gradient(var(--mark), var(--mark)) left 0 top var(--mark-top) / 1px var(--reach),
+    linear-gradient(var(--mark), var(--mark)) right 0 top var(--mark-top) / var(--reach) 1px,
+    linear-gradient(var(--mark), var(--mark)) right 0 top var(--mark-top) / 1px var(--reach),
+    linear-gradient(var(--mark), var(--mark)) left 0 bottom 0 / var(--reach) 1px,
+    linear-gradient(var(--mark), var(--mark)) left 0 bottom 0 / 1px var(--reach),
+    linear-gradient(var(--mark), var(--mark)) right 0 bottom 0 / var(--reach) 1px,
+    linear-gradient(var(--mark), var(--mark)) right 0 bottom 0 / 1px var(--reach);
+  background-repeat: no-repeat;
 }
 
-/* ---------- outline ---------- */
-
-.outline {
-  flex: 0 0 210px;
-  overflow: auto;
-  padding: 10px 0;
-  background: var(--bg-raised);
-  border-right: 1px solid var(--border);
+/*
+ * The print head: while a PDF is being made, a line sweeps down the sheet,
+ * trailing a faint wash of fresh ink. A transform, so it keeps moving while
+ * the engine has the main thread. The sheet is white in both themes, so the
+ * ink is the paper's. main.ts sets --sheet-h to the sheet's height.
+ */
+.preview-pane::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--sheet-top) - 22px);
+  left: calc(var(--reach) + 1px);
+  right: calc(var(--reach) + 1px);
+  height: 24px;
+  background: linear-gradient(rgba(17, 17, 17, 0), rgba(17, 17, 17, 0.07) calc(100% - 2px), rgba(17, 17, 17, 0.8) calc(100% - 2px));
+  opacity: 0;
+  pointer-events: none;
 }
 
-.outline-item {
-  display: block;
-  width: 100%;
-  padding: 5px 12px;
-  border: none;
-  border-radius: 0;
-  background: none;
-  text-align: left;
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--text-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.preview-pane.printing::after { animation: print-head 1.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
+
+@keyframes print-head {
+  0% { opacity: 0; transform: translateY(0); }
+  10%, 86% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(var(--sheet-h, var(--pane-height))); }
 }
-
-.outline-item:hover { background: var(--bg-sunken); color: var(--text); }
-.outline-empty { padding: 12px; color: var(--text-muted); font-size: 13px; }
-
-/* ---------- search ---------- */
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: none;
-  padding: 8px 10px;
-  background: var(--bg-raised);
-  border-bottom: 1px solid var(--border);
-}
-
-#search-input { flex: 1; min-width: 0; }
-
-::highlight(md2pdf-find) {
-  background-color: rgba(255, 213, 0, 0.45);
-}
-
-::highlight(md2pdf-find-active) {
-  background-color: rgba(255, 145, 0, 0.75);
-}
-
-/* ---------- pages ---------- */
 
 .scroller {
-  flex: 1;
+  height: var(--pane-height);
   overflow: auto;
   outline: none;
+  border: 1px solid var(--sheet-edge);
+  background: var(--sheet);
+  box-shadow: var(--shadow-sheet);
   /* Reaching the end of the document should not scroll the page behind it. */
   overscroll-behavior: contain;
 }
 
-.pages {
+.scroller:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Under the panes: whether the draft is saved, and where the PDF engine is. */
+.statusbar {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
-  padding: 16px;
-  min-height: 100%;
+  min-height: 20px;
+  padding: 12px 0 8px;
+  color: var(--faint);
+  font: 400 11px/1.4 var(--control);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
 }
 
-.page {
-  position: relative;
+.status-left {
+  display: inline-flex;
   flex: none;
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18), 0 6px 16px rgba(0, 0, 0, 0.08);
-}
-
-.page canvas { display: block; }
-
-/* The text layer sits invisibly on top of the raster so text stays selectable. */
-.text-layer {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  opacity: 1;
-  line-height: 1;
-  text-size-adjust: none;
-  forced-color-adjust: none;
-  transform-origin: 0 0;
-  z-index: 2;
-}
-
-.text-layer :is(span, br) {
-  position: absolute;
-  white-space: pre;
-  cursor: text;
-  transform-origin: 0 0;
-  color: transparent;
-}
-
-.text-layer span::selection { background: rgba(11, 98, 196, 0.35); }
-
-/* ---------- overlay ---------- */
-
-.overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
   align-items: center;
-  justify-content: center;
-  background: color-mix(in srgb, var(--bg-sunken) 88%, transparent);
-  z-index: 5;
+  min-width: 0;
+  white-space: nowrap;
 }
 
-.overlay-card {
-  max-width: 360px;
-  padding: 20px 24px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--bg-raised);
-  text-align: center;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
-}
+/* Deliberately quiet: saving is expected, so only a failure should draw the eye. */
+.save-state { overflow: hidden; text-overflow: ellipsis; }
+.save-state[data-state="error"] { color: var(--err); }
 
-.overlay-card p { margin: 0; }
-.overlay-card .detail {
-  margin-top: 8px;
-  color: var(--text-muted);
-  font-size: 13px;
-  white-space: pre-wrap;
-}
-
-.overlay-card .detail.error { color: var(--danger); text-align: left; }
-
-.progress {
-  height: 4px;
-  margin-top: 14px;
-  border-radius: 999px;
-  background: var(--bg-sunken);
+.engine-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-left: auto;
+  white-space: nowrap;
   overflow: hidden;
 }
 
-#progress-bar {
-  height: 100%;
-  width: 0;
-  background: var(--accent);
-  transition: width 200ms;
+/* Some languages say this at length; it gives way before anything else. */
+#engine-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ---------- warnings ---------- */
-
-.warnings {
+/* Hollow until the engine is here; pulsing while it loads; solid ink when ready. */
+.engine-status .dot {
   flex: none;
-  max-height: 22vh;
-  overflow: auto;
-  padding: 8px 14px;
-  background: var(--warning-bg);
-  border-top: 1px solid var(--warning-border);
-  font-size: 13px;
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--faint);
+  border-radius: 50%;
 }
 
-.warnings ul { margin: 4px 0 0; padding-left: 18px; }
-.warnings li { margin: 2px 0; }
+.engine-status[data-state="loading"] .dot { border-color: var(--ink); background: var(--ink); animation: pulse 1.2s ease-in-out infinite; }
+.engine-status[data-state="ready"] { color: var(--ink-2); }
+.engine-status[data-state="ready"] .dot { border-color: var(--ink); background: var(--ink); }
+.engine-status[data-state="error"] { color: var(--err); }
+.engine-status[data-state="error"] .dot { border-color: var(--err); background: var(--err); border-radius: 0; }
+
+@keyframes pulse {
+  50% { opacity: 0.3; }
+}
+
+/* ---------- the paper ---------- */
+
+/*
+ * Approximates the printed page: the same width, margins, size and leading
+ * the PDF uses, set in the same physical units. The paper stays white in dark
+ * mode because the PDF does.
+ */
+.paper {
+  --paper-width: 210mm;
+  --paper-margin: 20mm;
+  --paper-font-size: 11pt;
+  --paper-line-height: 1.6;
+  --ink: #1a1a1a;
+  --ink-muted: #5c5c5c;
+  --rule: #e0e0e0;
+  --tint: #f4f4f4;
+
+  width: min(var(--paper-width), 100%);
+  min-height: min(calc(var(--paper-width) * 1.414), 100%);
+  margin: 0 auto;
+  padding: min(var(--paper-margin), 7vw);
+  background: #ffffff;
+  color: var(--ink);
+  box-shadow: var(--shadow-paper);
+  /* The document's own language (set by src/preview/html.ts, faces in
+     src/fonts.css) wins; the page language's stack is the fallback. */
+  font-family: var(--paper-font-family, var(--paper-font));
+  font-size: var(--paper-font-size);
+  line-height: var(--paper-line-height);
+  overflow-wrap: break-word;
+  color-scheme: light;
+}
+
+.paper.justify p, .paper.justify li, .paper.justify dd { text-align: justify; }
+
+.paper > :first-child { margin-top: 0; }
+.paper > :last-child { margin-bottom: 0; }
+
+.paper :is(h1, h2, h3, h4, h5, h6) {
+  margin: 1.4em 0 0.6em;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.paper h1 { font-size: 1.9em; margin-top: 0.8em; }
+.paper h2 { font-size: 1.45em; padding-bottom: 0.25em; border-bottom: 1px solid var(--rule); }
+.paper h3 { font-size: 1.2em; }
+.paper h4 { font-size: 1.05em; }
+.paper :is(h5, h6) { font-size: 1em; color: var(--ink-muted); }
+
+.paper :is(p, ul, ol, dl, blockquote, pre, table, figure) { margin: 0 0 0.9em; }
+.paper :is(ul, ol) { padding-left: 1.6em; }
+.paper li > :is(ul, ol) { margin-bottom: 0; }
+.paper li + li { margin-top: 0.2em; }
+.paper li.task { list-style: none; margin-left: -1.3em; }
+.paper li.task input { margin: 0 0.35em 0 0; vertical-align: -0.1em; accent-color: #1a1a1a; }
+
+/* As in the PDF: links are the text's ink, underlined. */
+.paper a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+.paper a:hover { text-decoration-thickness: 2px; }
+
+.paper strong { font-weight: 700; }
+
+.paper blockquote {
+  padding: 0.1em 0 0.1em 1em;
+  border-left: 3px solid var(--rule);
+  color: var(--ink-muted);
+}
+
+.paper blockquote > :last-child { margin-bottom: 0; }
+
+.paper code {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: var(--tint);
+  font-family: var(--mono);
+  font-size: 0.88em;
+}
+
+.paper pre {
+  padding: 0.9em 1.1em;
+  border-radius: 6px;
+  background: var(--tint);
+  overflow-x: auto;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.paper pre code { padding: 0; background: none; font-size: 0.86em; }
+
+.paper table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.paper :is(th, td) {
+  padding: 0.45em 0.75em;
+  border: 1px solid var(--rule);
+  text-align: left;
+}
+
+.paper th { background: var(--tint); font-weight: 600; }
+
+.paper hr { margin: 1.8em 0; border: none; border-top: 1px solid var(--rule); }
+.paper img { max-width: 100%; height: auto; }
+.paper dt { font-weight: 700; }
+.paper dd { margin: 0 0 0.6em 1.6em; }
+
+.paper .diagram {
+  display: flex;
+  justify-content: center;
+  margin-left: 0;
+  margin-right: 0;
+  overflow-x: auto;
+}
+
+.paper .diagram svg { max-width: 100%; height: auto; }
+
+.paper :is(.diagram-pending, .diagram-error, .missing-image) {
+  display: block;
+  width: 100%;
+  padding: 1.4em;
+  border: 1px dashed var(--rule);
+  border-radius: 0;
+  color: var(--ink-muted);
+  font-size: 0.88em;
+  text-align: center;
+}
+
+.paper .diagram-error { color: #b3261e; border: 1px solid #b3261e; background: #fbefee; }
+/* Error box, stale render and export actions: src/diagram/figure.css, which
+   loads with Mermaid. */
+
+.paper .math-display { margin: 0.8em 0; overflow-x: auto; text-align: center; }
+.paper :is(.math-pending, .math-error) { font-family: var(--mono); font-size: 0.88em; color: var(--ink-muted); }
+.paper .math-error { color: #b3261e; text-decoration: underline wavy rgba(179, 38, 30, 0.45); }
+
+.paper .toc {
+  margin-bottom: 2em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid var(--rule);
+}
+
+.paper .toc p { font-weight: 700; font-size: 1.2em; }
+.paper .toc ul { list-style: none; padding: 0; margin: 0; }
+.paper .toc li { padding-left: calc(var(--depth) * 1.4em); color: var(--ink-muted); }
+
+/* An explicit page break (src/convert/breaks.ts); html.ts sets the label.
+   A hairline cut with a tracked mono label, like the interface's labels; the
+   paper is white in both themes, so the greys are the light theme's. */
+.paper .page-break {
+  height: 0;
+  margin: 2.2em 0;
+  border-top: 1px dashed #c4c4c4;
+  text-align: center;
+  user-select: none;
+}
+.paper .page-break::after {
+  content: var(--page-break-label, "");
+  position: relative;
+  top: -0.6em;
+  padding: 0 0.9em;
+  background: #ffffff;
+  color: #6b6b6b;
+  font: 400 10px/1.2 var(--control);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+.paper .footnotes-sep { margin: 2em 0 1em; }
+.paper .footnotes { font-size: 0.88em; color: var(--ink-muted); }
+
+/* ---------- notices ---------- */
+
+/*
+ * Impossible to miss, told apart by shape and tone: news and confirmations
+ * are solid ink; a warning is an outlined slip with a heavy ink edge and a
+ * triangle; an error is solid red, the one hue on the page. They slide in and
+ * (main.ts) back out.
+ */
+.warnings {
+  --notice: var(--ink);
+  --notice-text: var(--on-status);
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: max-content;
+  min-width: min(360px, calc(100% - 48px));
+  max-width: min(480px, calc(100% - 48px));
+  max-height: 50vh;
+  padding: 12px 10px 12px 14px;
+  border: 1px solid var(--notice);
+  background: var(--notice);
+  color: var(--notice-text);
+  box-shadow: var(--shadow-notice);
+  font: 500 14px/1.45 var(--sans);
+  animation: notice-in 220ms var(--ease);
+}
+
+.warnings[data-kind="warn"] {
+  --notice-text: var(--ink);
+  border-color: var(--ink);
+  background: var(--raised);
+  box-shadow: inset 4px 0 0 var(--ink), var(--shadow-notice);
+  padding-left: 18px;
+}
+
+.warnings[data-kind="error"], .warnings.error { --notice: var(--err); }
+
+@keyframes notice-in {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+.warnings-icon { width: 20px; height: 20px; margin-top: 0; }
+
+.warnings-body {
+  flex: 1;
+  min-width: 0;
+  max-height: calc(50vh - 24px);
+  overflow: auto;
+}
+
+.warnings ul { margin: 0; padding: 0; list-style: none; }
+.warnings li { overflow-wrap: anywhere; white-space: pre-wrap; }
+.warnings li + li { margin-top: 4px; }
+
+.warnings-detail {
+  margin: 4px 0 0;
+  font: 400 12px/1.5 var(--mono);
+  opacity: 0.85;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* The way out of the notice is a solid button in its own colours, reversed. */
+.warnings-action {
+  flex: none;
+  height: 28px;
+  margin: -4px 0;
+  padding: 0 12px;
+  background-color: var(--notice-text);
+  color: var(--notice);
+}
+
+.warnings[data-kind="warn"] .warnings-action { background-color: var(--ink); color: var(--raised); }
+.warnings-action:hover { opacity: 0.88; }
+
+.warnings-close {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  margin: -4px 0;
+  padding: 0;
+  color: inherit;
+  font: 400 18px/1 var(--sans);
+  letter-spacing: 0;
+  opacity: 0.72;
+}
+
+.warnings-close:hover { opacity: 1; }
+.warnings :focus-visible { outline-color: var(--notice-text); }
 
 /* ---------- drag and drop ---------- */
 
 .drop-hint {
   position: fixed;
-  inset: 0;
+  inset: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--accent) 16%, transparent);
-  border: 3px dashed var(--accent);
-  color: var(--text);
-  font-size: 18px;
-  font-weight: 600;
+  border: 1px dashed var(--ink);
+  background: color-mix(in srgb, var(--ground) 90%, transparent);
+  color: var(--ink);
+  font: 500 13px/1 var(--control);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
   z-index: 20;
   pointer-events: none;
 }
 
+/* ---------- full-screen editing ---------- */
+
+.icon-collapse { display: none; }
+.fullscreen .icon-expand { display: none; }
+.fullscreen .icon-collapse { display: block; }
+.fullscreen #fullscreen-toggle { color: var(--ink); }
+
+.fullscreen body { overflow: hidden; }
+.fullscreen :is(.toolbar, .intro, .about) { display: none; }
+
+.fullscreen .app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+.fullscreen .tool {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  max-width: none;
+}
+
+.fullscreen .actionbar {
+  grid-template-columns: var(--source-width, calc(50% - 20px)) minmax(0, 1fr);
+  column-gap: 40px;
+  padding: 8px 0;
+  border-top: 0;
+}
+
+.fullscreen .split {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  gap: 0;
+  padding-top: 16px;
+}
+
+.fullscreen .editor-pane { flex: 0 0 calc(50% - 20px); }
+.fullscreen .preview-pane { flex: 1; }
+.fullscreen :is(.editor-host, .scroller) { flex: 1; height: auto; }
+
+/* The gap between the panes is the handle; a hairline shows while dragging. */
+.fullscreen .divider {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 40px;
+  cursor: col-resize;
+}
+
+.fullscreen .divider::before {
+  content: "";
+  position: absolute;
+  top: 29px;
+  bottom: 12px;
+  left: 50%;
+  width: 1px;
+  background: var(--rule-strong);
+  opacity: 0;
+  transition: opacity 120ms;
+}
+
+.fullscreen .divider:hover::before, .fullscreen .divider.dragging::before { opacity: 1; }
+.fullscreen .statusbar { padding: 6px 0 8px; }
+
+/* ---------- the first screen ---------- */
+
+/*
+ * On a desktop the tool takes whatever the first screen has left under the
+ * header and intro, so both panes, the action row and the whole sheet are in
+ * view on arrival, however many lines the lead runs to. Laid out once, from
+ * the start: nothing shifts.
+ */
+@media (min-width: 1024px) and (min-height: 600px) {
+  .app { display: flex; flex-direction: column; min-height: 100vh; min-height: 100svh; }
+  .tool { display: flex; flex: 1 1 auto; flex-direction: column; }
+  /* Sized by the space left, never by the document in it. */
+  .split { flex: 1 1 0; grid-template-rows: minmax(0, 1fr); min-height: 420px; max-height: calc(880px + 45px); padding-top: 16px; }
+  :is(.editor-host, .scroller) { flex: 1 1 0; height: auto; min-height: 0; }
+}
+
+/* ---------- motion ---------- */
+
+/*
+ * On arrival the page settles into place in reading order: the title, the
+ * lead, the action row, then the source and the proof, whose crop marks draw
+ * in. Every frame is legible (nothing starts invisible), it is over in half a
+ * second, and it is transform and opacity only, so it costs no layout.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  /* `backwards`, not `both`: once over, nothing is left applied (no lingering
+     stacking context over the phone's bottom bar, no transform on a pane). */
+  .intro-title { animation: enter 360ms var(--ease) backwards; }
+  .intro-lead { animation: enter 360ms var(--ease) 40ms backwards; }
+  .actionbar { animation: fade 360ms var(--ease) 80ms backwards; }
+  .editor-pane { animation: enter 360ms var(--ease) 110ms backwards; }
+  .preview-pane { animation: enter 360ms var(--ease) 140ms backwards, marks 420ms var(--ease) 80ms backwards; }
+}
+
+@keyframes enter {
+  from { opacity: 0.4; transform: translateY(8px); }
+}
+
+@keyframes fade {
+  from { opacity: 0.4; }
+}
+
+@keyframes marks {
+  from {
+    background-size: 0 1px, 1px 0, 0 1px, 1px 0, 0 1px, 1px 0, 0 1px, 1px 0;
+  }
+}
+
 /* ---------- narrow screens ---------- */
 
-@media (max-width: 860px) {
-  .split { flex-direction: column; }
-  .editor-pane { flex: 0 0 38%; }
-  .divider { width: auto; height: 5px; cursor: row-resize; }
-  .preview-pane { border-left: none; border-top: 1px solid var(--border); }
-  .outline { position: absolute; inset: 0 auto 0 0; z-index: 4; }
-  .toolbar { overflow-x: auto; }
+/* Too narrow for every label (fitSourceActions in main.ts): the icons have titles. */
+.compact :is(#new-doc, #open-file) .label { display: none; }
+.compact :is(#new-doc, #open-file) { width: 36px; padding: 0; }
+
+@media (max-width: 1180px) {
+  .privacy li:nth-child(n + 4) { display: none; }
+  #new-doc .label, #open-file .label { display: none; }
+  #new-doc, #open-file { width: 36px; padding: 0; }
+}
+
+@media (max-width: 1023px) {
+  /* The panes stack; each keeps a comfortable fixed height. */
+  .split { grid-template-columns: minmax(0, 1fr); row-gap: 40px; }
+  :root { --pane-height: clamp(360px, 60vh, 720px); }
+  .privacy li:nth-child(n + 3) { display: none; }
+  /* One column of panes, so the row is one line: counts and layout, then actions. */
+  .actionbar, .fullscreen .actionbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; }
+  .actions-files { margin-left: 0; }
+  .actions-source { flex: 1 1 auto; }
+  .actions-source .actions-files { margin-left: auto; }
+
+  .fullscreen .split { flex-direction: column; }
+  .fullscreen .editor-pane { flex: 0 0 44%; }
+  .fullscreen .divider { width: auto; height: 24px; cursor: row-resize; }
+  .fullscreen .divider::before { inset: 50% 0 auto; width: auto; height: 1px; }
+}
+
+@media (max-width: 760px) {
+  :root { --gutter: 16px; --pane-height: 60dvh; --sheet-top: 12px; --bar: 67px; }
+  /* Room for the bottom bar, so it never covers the end of the page. */
+  body { padding-bottom: calc(var(--bar) + env(safe-area-inset-bottom)); }
+  .toolbar { gap: 12px; height: 52px; }
+  /* The claim that matters most: nothing is uploaded. */
+  .privacy li:first-child { display: none; }
+  .intro { padding-block: 8px 16px; }
+  .intro-lead { font-size: 15px; }
+
+  /* One line: the counts, then New, Open and Layout as icons (each titled). */
+  .actionbar, .fullscreen .actionbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+  }
+  .actions-source { display: contents; }
+  .stats { flex: 1 1 auto; min-width: 0; }
+  .actions-files { order: 1; margin-left: 0; gap: 4px; }
+  #settings-toggle { order: 2; }
+  #settings-toggle { height: 36px; padding: 0 4px 0 8px; }
+  #settings-toggle .label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  #new-doc, #open-file { border-color: transparent; background-color: transparent; }
+
+  /*
+   * Print and Download live in a bar along the bottom edge, in reach of the
+   * thumb whichever pane is showing; Download takes the width.
+   */
+  .actions-output {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9;
+    display: flex;
+    gap: 8px;
+    padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--rule-strong);
+    background: var(--ground);
+  }
+  .actions-output button { height: 46px; }
+  /* The row itself stays put; the bar rises into place instead. */
+  .actionbar { animation: none; }
+  .actions-output { animation: enter 360ms var(--ease) 120ms backwards; }
+  #download { flex: 1; }
+  #print { padding: 0 14px; }
+  #fullscreen-toggle { width: 46px; margin-left: 0; }
+  .fullscreen .app { height: calc(100dvh - var(--bar) - env(safe-area-inset-bottom)); }
+
+  /*
+   * One pane at a time, chosen with the Source / Proof switch. The other pane
+   * is hidden with `visibility`, not `display`, so it keeps its size and
+   * scroll position, and the preview keeps following the editor.
+   */
+  .view-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding-top: 14px;
+  }
+
+  .view-switch button {
+    height: 38px;
+    border-color: var(--rule-strong);
+    background-color: var(--raised);
+    color: var(--ink-2);
+    font-size: var(--size-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+  }
+
+  .view-switch button + button { margin-left: -1px; }
+
+  .view-switch button[aria-pressed="true"] {
+    border-color: var(--ink);
+    background-color: var(--ink);
+    color: var(--ground);
+  }
+
+  .split, .fullscreen .split {
+    display: grid;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+    padding-top: 4px;
+  }
+
+  .editor-pane, .preview-pane { grid-area: 1 / 1; }
+  .split .divider, .fullscreen .split .divider { display: none; }
+  .split[data-view="source"] .preview-pane,
+  .split[data-view="proof"] .editor-pane { visibility: hidden; }
+  /* The switch already names the pane. */
+  .pane-header { display: none; }
+  .editor-pane, .preview-pane { padding-top: 12px; }
+  .fullscreen .view-switch { padding-top: 12px; }
+  .statusbar { flex-wrap: wrap; row-gap: 4px; }
+  .warnings {
+    right: 12px;
+    bottom: calc(var(--bar) + 12px + env(safe-area-inset-bottom));
+    left: 12px;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+  }
+}
+
+@media (max-width: 440px) {
+  .brand-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* Nothing moves that does not have to: no entrances, sweeps, pulses or fades. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  ::details-content { transition: none !important; }
 }
 
 /* ---------- descriptive content ---------- */
 
+/*
+ * Below the tool, and rendered only as it nears the viewport, so its layout
+ * never competes with the tool's first paint.
+ */
 .about {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 56px 20px 72px;
-  color: var(--text);
-  line-height: 1.75;
-  border-top: 1px solid var(--border);
+  --measure: 65ch;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+  margin-top: 64px;
+  padding: 0 max(var(--gutter), calc((100% - 1232px) / 2));
+  color: var(--ink);
+  font: 400 16px/1.7 var(--sans);
 }
 
-.about h2 {
-  margin: 0 0 20px;
-  font-size: 24px;
+/*
+ * The about section and FAQ, collapsed: one quiet disclosure row that opens
+ * it. A native <details>, so every word is in the page and find-in-page and
+ * fragment links can open it.
+ */
+.about-more > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  border-block: 1px solid var(--rule);
+  color: var(--ink-2);
+  font: 400 var(--size-label)/1 var(--control);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  list-style: none;
+  cursor: pointer;
+}
+
+.about-more > summary::-webkit-details-marker { display: none; }
+
+.about-more > summary::after {
+  content: "+";
+  margin-left: auto;
+  color: var(--muted);
+  font: 400 15px/1 var(--mono);
+  letter-spacing: 0;
+}
+
+.about-more[open] > summary::after { content: "−"; }
+
+.about-more > summary:hover, .about-more[open] > summary { color: var(--ink); }
+.about-more > summary:hover::after { color: var(--ink); }
+.about-more > summary:focus-visible { outline-offset: -2px; }
+
+.about strong { font-weight: 600; color: var(--ink); }
+
+.about a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/*
+ * The footer. The specimen line above it is the signature: one typesetting,
+ * nine languages. Generated content with an empty alternative, so it is
+ * decoration to assistive technology and not text to a crawler.
+ */
+.about footer {
+  display: grid;
+  gap: 14px;
+  padding: 32px 0 48px;
+  color: var(--muted);
+  font: 400 12px/1.6 var(--control);
+  letter-spacing: 0.04em;
+}
+
+.about footer::before {
+  content: "Aa 永 あ 한 Ж ẞ Ệ" / "";
+  color: var(--ink);
+  font: 300 28px/1.2 var(--sans);
+  letter-spacing: 0;
+  word-spacing: 0.45em;
+}
+
+.about-more[open] + footer { margin-top: 88px; border-top: 1px solid var(--rule); }
+.about footer p { margin: 0; }
+.about footer strong { color: var(--ink); font-weight: 600; }
+
+.about :is(.languages, .guides-nav) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  font: 400 11px/1.6 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.about :is(.languages, .guides-nav) a { color: var(--muted); text-decoration: none; }
+.about :is(.languages, .guides-nav) a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+.about :is(.languages, .guides-nav) a[aria-current="page"] {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .about { margin-top: 48px; }
+  .about-more[open] + footer { margin-top: 56px; }
+}
+
+/* The inside of the section: headings, features, the FAQ, a landing page's steps and guides. */
+
+.about h2, .about h3 {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+
+/*
+ * The about section and each FAQ answer open to their height and close back,
+ * where the browser can animate a <details> (elsewhere they simply open).
+ * main.ts turns it off for a link that jumps into the section.
+ */
+.about details::details-content {
+  block-size: 0;
+  overflow-y: clip;
+  transition: block-size 320ms var(--ease), content-visibility 320ms allow-discrete;
+}
+
+/* Opening shows the content at once and grows to it; closing keeps it shown while it shrinks. */
+.about details[open]::details-content { block-size: auto; transition-property: block-size; }
+.about details.instant::details-content { transition: none; }
+
+/* As it scrolls into view, where the browser ties animation to scrolling. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .about-more > :is(h2, h3, p, ol, .features) {
+      animation: enter linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+.about-more > h2 {
+  max-width: 22em;
+  margin: 64px 0 20px;
+  font-size: clamp(26px, 3vw, 34px);
+  line-height: 1.15;
+}
+
+.about-more > p {
+  max-width: var(--measure);
+  margin: 0 0 14px;
+  color: var(--ink-2);
+  font-size: 17px;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+
+.about code {
+  font: 0.86em/1 var(--mono);
+  color: var(--ink);
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* Features: a two-column grid of short blocks, hairlines between rows. */
+.features {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 56px;
+  margin: 56px 0 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.feature {
+  padding: 28px 0 32px;
+  border-top: 1px solid var(--rule);
+}
+
+.feature :is(h3, h4) {
+  margin-bottom: 10px;
+  font-size: 19px;
   line-height: 1.3;
 }
 
-.about h3 {
-  margin: 36px 0 10px;
-  font-size: 17px;
+.feature p {
+  max-width: var(--measure);
+  margin: 0 0 10px;
+  color: var(--ink-2);
+  font-size: 15.5px;
+  text-wrap: pretty;
 }
 
-.about p {
-  margin: 0 0 14px;
-  color: var(--text-muted);
+.feature p:last-child { margin-bottom: 0; }
+
+/* The FAQ: disclosure rows between hairlines, a mono + / − at the end. */
+.about-more > h3 {
+  margin: 80px 0 16px;
+  font-size: clamp(24px, 2.6vw, 30px);
+  line-height: 1.2;
 }
 
-.about code {
-  padding: 1px 5px;
-  border-radius: 4px;
-  background: var(--bg-sunken);
-  border: 1px solid var(--border);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.9em;
+.about-more details {
+  max-width: 820px;
+  border-top: 1px solid var(--rule);
 }
 
-.about details {
-  margin: 8px 0;
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-sunken);
-}
+.about-more details:last-of-type { border-bottom: 1px solid var(--rule); }
 
-.about summary {
+.about-more details > summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 0;
+  font: 600 16px/1.45 var(--sans);
+  list-style: none;
   cursor: pointer;
-  font-weight: 600;
 }
 
-.about details p {
-  margin: 10px 0 0;
+.about-more details > summary::-webkit-details-marker { display: none; }
+
+.about-more details > summary::after {
+  content: "+";
+  flex: none;
+  width: 1ch;
+  color: var(--muted);
+  font: 400 17px/1 var(--mono);
+  text-align: center;
 }
 
-.about footer {
-  margin-top: 48px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-  color: var(--text-faint);
-  font-size: 13px;
+.about-more details[open] > summary::after { content: "−"; }
+.about-more details > summary:hover::after { color: var(--ink); }
+.about-more details > summary:focus-visible { outline-offset: 4px; }
+
+.about-more details p {
+  max-width: var(--measure);
+  margin: -4px 0 18px;
+  color: var(--ink-2);
+  text-wrap: pretty;
 }
 
-.about footer p {
+
+.feature h4 { margin: 0 0 10px; font-weight: 650; letter-spacing: -0.02em; }
+.guides .feature a { color: var(--ink); text-decoration: none; }
+.guides .feature a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.guides .feature p { color: var(--ink-2); }
+
+/* Steps: numbered in the control face, like the labels elsewhere. */
+.about ol.steps {
+  max-width: var(--measure);
   margin: 0;
-  color: inherit;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  border-bottom: 1px solid var(--rule);
 }
+.about ol.steps li {
+  display: grid;
+  grid-template-columns: 3ch minmax(0, 1fr);
+  gap: 4px 12px;
+  padding: 16px 0;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-2);
+  counter-increment: step;
+}
+.about ol.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  grid-row: span 2;
+  color: var(--faint);
+  font: 400 var(--size-label)/1.9 var(--control);
+  letter-spacing: var(--track-label);
+}
+.about ol.steps strong { color: var(--ink); }
+
+@media (max-width: 760px) {
+  .about-more > h2 { margin-top: 44px; }
+  .about-more > p { font-size: 16px; }
+  .features { grid-template-columns: minmax(0, 1fr); margin-top: 40px; }
+  .feature { padding: 22px 0 24px; }
+  .about-more > h3 { margin-top: 56px; }
+}
+
+/* ---------- landing pages ---------- */
+
+a.brand:hover .brand-name { text-decoration: underline; text-underline-offset: 3px; }
+
+
+@media (max-width: 760px) {
+  .lang .lang-current { display: none; }
+  .lang-list { min-width: 200px; }
+}
+
+/* Japanese breaks between phrases, not mid-word, where the browser can. */
+:root:lang(ja) :is(.intro-title, .intro-lead, .empty-title) { word-break: auto-phrase; }

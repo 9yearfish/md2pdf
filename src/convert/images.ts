@@ -23,6 +23,22 @@ export async function readImageFile(file: File): Promise<LocalImage> {
   };
 }
 
+/**
+ * The dropped image a Markdown `src` refers to: by the exact name, without a
+ * leading `./`, or else by its file name alone, so `docs/img/logo.png` in a
+ * README finds a dropped `logo.png`. Web addresses are never matched.
+ */
+export function findImage(images: ReadonlyMap<string, LocalImage>, src: string): LocalImage | undefined {
+  const exact = images.get(src) ?? images.get(src.replace(/^\.?\//, ''));
+  if (exact || /^[a-z][a-z0-9+.-]*:/i.test(src)) return exact;
+  const file = src.replace(/[?#].*$/, '').split('/').pop() ?? '';
+  try {
+    return images.get(decodeURIComponent(file)) ?? images.get(file);
+  } catch {
+    return images.get(file);
+  }
+}
+
 const DATA_URI = /^data:([^;,]+)(;base64)?,(.*)$/s;
 
 /** Decode a `data:` URI that the Markdown embeds directly. */

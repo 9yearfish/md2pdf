@@ -1,0 +1,11 @@
+requirementDiagram
+  requirement export_requirement {
+    id: 1
+    text: Documents export to PDF
+    risk: medium
+    verifymethod: test
+  }
+  element exporter {
+    type: module
+  }
+  exporter - satisfies -> export_requirement

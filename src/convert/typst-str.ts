@@ -28,3 +28,34 @@ export function tstr(value: string): string {
 export function tmarkup(value: string): string {
   return '#' + tstr(value);
 }
+
+const LETTER = /[\p{L}\p{N}]/u;
+
+/**
+ * Prose in markup position, with straight quotes handed to Typst's
+ * `smartquote`, which picks the marks the document language uses („…“ in
+ * German, «…» in French and Russian, 「…」 in Japanese). An apostrophe
+ * between two letters stays an apostrophe; `md-apos` (see preamble.ts) keeps
+ * it out of the full-width CJK face in Chinese and Japanese documents.
+ */
+export function tprose(value: string): string {
+  if (!/["']/.test(value)) return tmarkup(value);
+  const chars = [...value];
+  let out = '';
+  let run = '';
+  const flush = () => {
+    if (run) out += tmarkup(run);
+    run = '';
+  };
+  chars.forEach((ch, i) => {
+    if (ch !== '"' && ch !== "'") {
+      run += ch;
+      return;
+    }
+    flush();
+    if (ch === "'" && LETTER.test(chars[i - 1] ?? '') && LETTER.test(chars[i + 1] ?? '')) out += '#md-apos';
+    else out += ch === '"' ? '#smartquote()' : '#smartquote(double: false)';
+  });
+  flush();
+  return out;
+}

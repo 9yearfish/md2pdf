@@ -1,0 +1,14 @@
+classDiagram
+  class Invoice {
+    +String number
+    +Date issued
+    +total() Decimal
+  }
+  class LineItem {
+    +int quantity
+    +Decimal unitPrice
+  }
+  class Customer
+  Invoice "1" *-- "many" LineItem : contains
+  Customer "1" --> "*" Invoice : receives
+  <<interface>> Customer

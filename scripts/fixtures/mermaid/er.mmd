@@ -1,0 +1,12 @@
+erDiagram
+  CUSTOMER ||--o{ ORDER : places
+  ORDER ||--|{ ORDERLINE : contains
+  PRODUCT ||--o{ ORDERLINE : "appears in"
+  CUSTOMER {
+    string email PK
+    string fullName
+  }
+  ORDER {
+    int orderId PK
+    date placedOn
+  }

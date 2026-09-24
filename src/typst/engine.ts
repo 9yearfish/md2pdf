@@ -8,7 +8,9 @@ import { createTypstCompiler, CompileFormatEnum } from '@myriaddreamin/typst.ts/
 import type { TypstCompiler } from '@myriaddreamin/typst.ts/compiler';
 import { loadFonts, withAccessModel, withPackageRegistry } from '@myriaddreamin/typst.ts/options.init';
 import type { FsAccessModel, PackageRegistry } from '@myriaddreamin/typst.ts/internal.types';
-import { resolveFonts, fontSetKey, type FontSet } from './fonts';
+import { resolveFonts, fontSetKey, type FontOptions, type FontSet } from './fonts';
+import type { LangSetting } from '../convert/lang';
+import { withMathFonts } from './math-fonts';
 import { loadCompilerModule, shouldPrefetch } from './wasm-loader';
 
 const MAIN = '/main.typ';
@@ -24,6 +26,12 @@ export interface CompileRequest {
   assets: Asset[];
   /** Text used to decide which fonts are needed. */
   textForFonts: string;
+  /** The document language setting; `auto` when absent. */
+  lang?: LangSetting;
+  /** Fonts already resolved by `convert()`, so they are not resolved twice. */
+  fonts?: FontSet;
+  /** The document has formulas, so the maths font is needed too. */
+  hasMath?: boolean;
 }
 
 export interface CompileOutcome {
@@ -33,7 +41,12 @@ export interface CompileOutcome {
 }
 
 export class TypstCompileError extends Error {
-  constructor(message: string, readonly diagnostics: string[]) {
+  constructor(
+    message: string,
+    readonly diagnostics: string[],
+    /** As Typst reported them, with path and severity, for locating a failing formula. */
+    readonly raw: unknown[] = [],
+  ) {
     super(message);
     this.name = 'TypstCompileError';
   }
@@ -112,7 +125,7 @@ export async function compileToPdf(
   req: CompileRequest,
   onProgress: ProgressFn = () => {},
 ): Promise<CompileOutcome> {
-  const fonts = await resolveFonts(req.textForFonts);
+  const fonts = withMathFonts(req.fonts ?? (await resolveFonts(req.textForFonts, req.lang)), req.hasMath);
   const compiler = await getCompiler(fonts, onProgress);
   const key = fontSetKey(fonts);
 
@@ -140,30 +153,37 @@ export async function compileToPdf(
     throw new TypstCompileError(
       diagnostics[0] ?? 'Typst failed to produce a document.',
       diagnostics,
+      result.diagnostics ?? [],
     );
   }
   return { pdf: result.result, fonts, diagnostics };
 }
 
 /**
- * Pull the compiler down while the reader is still typing, so the first
- * conversion does not start with a 7 MB wait.
+ * Get the engine ready in the background, so that "download PDF" only has to
+ * typeset.
  *
- * Skipped on metered or slow connections: downloading that much of someone's
- * data allowance before they have asked for anything is exactly the surprise
- * this tool should avoid. Those visitors get the same download on their first
- * conversion, with a progress bar and having chosen it.
+ * This builds the compiler for the font tier the current text needs, which
+ * means fetching the engine and those fonts and instantiating the module.
+ * Calling it again with text of the same tier is free; a new tier rebuilds.
  *
- * This fetches rather than instantiates, because the font tier is not known
- * until there is a document and a compiler built for the wrong tier would only
- * be thrown away.
+ * Skipped on metered or slow connections: downloading several megabytes of
+ * someone's data allowance before they have asked for a PDF is exactly the
+ * surprise this tool should avoid. Those visitors get the same download when
+ * they first ask for a PDF. Returns whether preparation was started.
  */
-export function prewarm(): void {
-  if (!shouldPrefetch()) return;
-  const idle =
-    (window as { requestIdleCallback?: (fn: () => void) => void }).requestIdleCallback ??
-    ((fn: () => void) => setTimeout(fn, 1200));
-  idle(() => {
-    void loadCompilerModule(() => {}).catch(() => {});
-  });
+export function prepare(
+  text: string,
+  onProgress: ProgressFn,
+  lang: LangSetting = 'auto',
+  fontOptions: FontOptions = {},
+): Promise<boolean> {
+  if (!shouldPrefetch()) return Promise.resolve(false);
+  // No `hasMath` here on purpose: the warm-up never fetches the maths font
+  // (about 290 KB). It is fetched when a PDF with formulas is actually
+  // requested; `withMathFonts` only keeps it once a download has needed it,
+  // so the warmed compiler matches the one that download will use.
+  return resolveFonts(text, lang, fontOptions)
+    .then(fonts => getCompiler(withMathFonts(fonts), onProgress))
+    .then(() => true);
 }

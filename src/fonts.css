@@ -1,0 +1,229 @@
+/*
+ * Faces for the live preview. Imported by src/preview/html.ts.
+ *
+ * The same Noto faces as the PDF, as WOFF2 split by unicode-range, so the
+ * browser fetches a file only once text in its range is on screen: an English
+ * page loads the Latin core and nothing else, and the script faces load only
+ * for documents in those scripts. font-display: swap everywhere, so nothing
+ * waits on a font. The CJK faces are registered from JavaScript instead (see
+ * src/preview/fonts.ts), because whether a document needs the subset or the
+ * full face depends on every character in it.
+ *
+ * URLs are root-relative: localized pages live under /zh/, /ja/ and so on.
+ * `?v=` is FONT_REVISION from src/typst/fonts.ts; bump both together.
+ */
+
+@font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans-Regular.core.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-024F, U+02B0-02FF, U+0300-036F, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans-Regular.ext.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans-Bold.core.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-024F, U+02B0-02FF, U+0300-036F, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans-Bold.ext.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans-Italic.core.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0000-024F, U+02B0-02FF, U+0300-036F, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans-Italic.ext.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans-BoldItalic.core.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0000-024F, U+02B0-02FF, U+0300-036F, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans-BoldItalic.ext.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+
+/*
+ * Noto Sans without the punctuation Chinese and Japanese set full-width
+ * (quotes, dashes, ellipsis, middle dot), so those fall through to the CJK
+ * face as they do in the PDF, where Typst's `covers: "latin-in-cjk"` does the
+ * same. Used first in the zh/ja font stack (see previewFontStack).
+ */
+@font-face {
+  font-family: "md2pdf Latin in CJK";
+  src: url("/fonts/NotoSans-Regular.core.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00B6, U+00B8-024F, U+02B0-02FF, U+0300-036F, U+2000-2012, U+2015-2017, U+201A-201B, U+201E-2024, U+2028-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "md2pdf Latin in CJK";
+  src: url("/fonts/NotoSans-Regular.ext.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "md2pdf Latin in CJK";
+  src: url("/fonts/NotoSans-Bold.core.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00B6, U+00B8-024F, U+02B0-02FF, U+0300-036F, U+2000-2012, U+2015-2017, U+201A-201B, U+201E-2024, U+2028-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "md2pdf Latin in CJK";
+  src: url("/fonts/NotoSans-Bold.ext.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "md2pdf Latin in CJK";
+  src: url("/fonts/NotoSans-Italic.core.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0000-00B6, U+00B8-024F, U+02B0-02FF, U+0300-036F, U+2000-2012, U+2015-2017, U+201A-201B, U+201E-2024, U+2028-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "md2pdf Latin in CJK";
+  src: url("/fonts/NotoSans-Italic.ext.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+@font-face {
+  font-family: "md2pdf Latin in CJK";
+  src: url("/fonts/NotoSans-BoldItalic.core.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0000-00B6, U+00B8-024F, U+02B0-02FF, U+0300-036F, U+2000-2012, U+2015-2017, U+201A-201B, U+201E-2024, U+2028-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
+}
+@font-face {
+  font-family: "md2pdf Latin in CJK";
+  src: url("/fonts/NotoSans-BoldItalic.ext.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0250-02AF, U+0370-03FF, U+0400-052F, U+1E00-1EFF, U+1F00-1FFF, U+2150-218F, U+2200-2211, U+2213-22FF, U+2500-257F, U+2600-26FF;
+}
+
+/* Scripts with their own small face. */
+@font-face {
+  font-family: "Noto Sans Arabic";
+  src: url("/fonts/NotoSansArabic-Regular.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: "Noto Sans Arabic";
+  src: url("/fonts/NotoSansArabic-Bold.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: "Noto Sans Hebrew";
+  src: url("/fonts/NotoSansHebrew-Regular.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0590-05FF, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Noto Sans Hebrew";
+  src: url("/fonts/NotoSansHebrew-Bold.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0590-05FF, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Noto Sans Devanagari";
+  src: url("/fonts/NotoSansDevanagari-Regular.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0900-097F, U+1CD0-1CFF, U+A8E0-A8FF;
+}
+@font-face {
+  font-family: "Noto Sans Devanagari";
+  src: url("/fonts/NotoSansDevanagari-Bold.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0900-097F, U+1CD0-1CFF, U+A8E0-A8FF;
+}
+@font-face {
+  font-family: "Noto Sans Thai";
+  src: url("/fonts/NotoSansThai-Regular.woff2?v=2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F;
+}
+@font-face {
+  font-family: "Noto Sans Thai";
+  src: url("/fonts/NotoSansThai-Bold.woff2?v=2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F;
+}
+
+/* The browser hyphenates by the page's lang attribute, as Typst does by `lang`. */
+.paper.justify p,
+.paper.justify li,
+.paper.justify dd {
+  hyphens: auto;
+}
+/* Like the PDF, Thai is not justified: it has no spaces between words to stretch. */
+.paper.justify:lang(th) p,
+.paper.justify:lang(th) li,
+.paper.justify:lang(th) dd {
+  text-align: start;
+}
