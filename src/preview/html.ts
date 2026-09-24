@@ -6,6 +6,7 @@
  * milliseconds, styled to approximate the printed page. Pagination and exact
  * line breaks are the PDF's business and are not imitated here.
  */
+import { importWithRetry } from '../ui/retry-import';
 import type { MarkdownIt, Token } from 'markdown-it';
 import { createParser } from '../convert/markdown';
 import { isMathFence } from '../convert/math-syntax';
@@ -123,7 +124,8 @@ export class HtmlPreview {
       const figure = button?.closest<HTMLElement>('figure.diagram');
       const svg = figure && this.diagrams.get(figure.dataset.code ?? '')?.svg;
       if (!button || !svg) return;
-      this.exporter ??= import('../diagram/export');
+      this.exporter ??= importWithRetry(() => import('../diagram/export'));
+      this.exporter.catch(() => (this.exporter = null));
       void this.exporter.then(m => m.exportDiagram(button, svg, `diagram-${Number(figure.dataset.index) + 1}`));
     });
     onCjkFacesAllowed(() => {

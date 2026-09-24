@@ -8,6 +8,7 @@ import { HtmlPreview } from './preview/html';
 import { detectLanguage, normalizeLang, SUPPORTED_LANGUAGES } from './convert/lang';
 import { landing, lang, plural, rememberLanguage, sample, t } from './i18n/runtime';
 import { installErrorReporting, reportError } from './ui/errors';
+import { importWithRetry, isChunkLoadError } from './ui/retry-import';
 import { createEditor, type Editor } from './ui/editor';
 import { hideFrontMatter, layoutModule, loadLayout } from './layout/load';
 import {
@@ -28,10 +29,15 @@ import {
 let pdfSide: Promise<[typeof import('./convert/pipeline'), typeof import('./typst/engine')]> | null = null;
 let engineModule: typeof import('./typst/engine') | null = null;
 function loadPdfSide() {
-  pdfSide ??= Promise.all([import('./convert/pipeline'), import('./typst/engine')]).then(modules => {
+  pdfSide ??= Promise.all([
+    importWithRetry(() => import('./convert/pipeline')),
+    importWithRetry(() => import('./typst/engine')),
+  ]).then(modules => {
     engineModule = modules[1];
     return modules;
   });
+  // Never keep a failure: the next call must try again, not fail at once.
+  pdfSide.catch(() => (pdfSide = null));
   return pdfSide;
 }
 
@@ -360,6 +366,11 @@ async function buildPdf(button: HTMLButtonElement, label: HTMLElement, idleText:
       template: options.template,
       lang: options.lang,
     });
+    if (isChunkLoadError(error)) {
+      // The browser may remember the failed chunk until the page reloads.
+      showWarnings([t('pdfFailedShort')], 'error', { label: t('reloadPage'), run: () => location.reload() }, true, t('chunkFailed'));
+      return null;
+    }
     showWarnings([t('pdfFailedShort')], 'error', undefined, true, detail);
     return null;
   } finally {
@@ -1272,7 +1283,7 @@ function boot(): void {
 
 installErrorReporting();
 // The build in the footer, so a report from a phone can be matched to a deploy.
-document.querySelector('.colophon')?.insertAdjacentHTML('beforeend', `<span class="build">build ${__BUILD_ID__}</span>`);
+document.querySelector('.colophon')?.insertAdjacentHTML('beforeend', `<span class="build">version ${__BUILD_ID__}</span>`);
 
 try {
   boot();

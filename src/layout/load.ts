@@ -3,6 +3,8 @@
  * separate chunk, so the first page load does not carry it. It is fetched
  * right after first paint, and by the PDF pipeline if it is not there yet.
  */
+import { importWithRetry } from '../ui/retry-import';
+
 type LayoutModule = typeof import('./index');
 
 let loaded: LayoutModule | null = null;
@@ -13,7 +15,7 @@ export const layoutModule = (): LayoutModule | null => loaded;
 
 export function loadLayout(): Promise<LayoutModule> {
   if (!pending) {
-    pending = import('./index').then(m => (loaded = m));
+    pending = importWithRetry(() => import('./index')).then(m => (loaded = m));
     pending.catch(() => (pending = null)); // offline: try again next time
   }
   return pending;

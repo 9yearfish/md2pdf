@@ -123,6 +123,8 @@ export interface UiMessages {
   engineReady: string;
   engineFailed: string;
   networkFailed: string;
+  reloadPage: string;
+  chunkFailed: string;
 
   download: string;
   downloadGenerating: string;

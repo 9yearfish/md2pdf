@@ -188,6 +188,8 @@ const ja: Messages = {
     engineReady: 'PDF エンジン準備完了 · オフライン可',
     engineFailed: 'PDF エンジンの読み込みに失敗。ダウンロード時に再試行します',
     networkFailed: 'フォントまたは組版エンジンのダウンロード中に接続が切れ、再試行しても完了しませんでした。接続を確認して、もう一度お試しください。',
+    reloadPage: 'ページを再読み込み',
+    chunkFailed: '接続が途切れたため、アプリの一部を読み込めませんでした。ページを再読み込みすると直ります。下書きは保存されています。',
 
     download: 'PDF をダウンロード',
     downloadGenerating: '生成中…',

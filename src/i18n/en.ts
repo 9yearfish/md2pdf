@@ -189,6 +189,8 @@ const en: Messages = {
     engineReady: 'PDF engine ready · works offline',
     engineFailed: 'PDF engine failed to load; it will retry on download',
     networkFailed: 'The connection dropped while downloading fonts or the typesetting engine, even after retrying. Check your connection and try again.',
+    reloadPage: 'Reload page',
+    chunkFailed: 'Part of the app could not be loaded, probably because the connection dropped. Reloading the page fixes it; your draft is saved.',
 
     download: 'Download PDF',
     downloadGenerating: 'Generating…',

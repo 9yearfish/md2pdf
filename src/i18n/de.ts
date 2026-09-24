@@ -189,6 +189,8 @@ const de: Messages = {
     engineReady: 'PDF-Engine bereit · auch offline',
     engineFailed: 'PDF-Engine nicht geladen, neuer Versuch beim Download',
     networkFailed: 'Beim Laden der Schriften oder der Satz-Engine ist die Verbindung abgebrochen, auch nach erneuten Versuchen. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.',
+    reloadPage: 'Seite neu laden',
+    chunkFailed: 'Ein Teil der App konnte nicht geladen werden, vermutlich wegen eines Verbindungsabbruchs. Neu laden behebt es; Ihr Entwurf ist gespeichert.',
 
     download: 'PDF laden',
     downloadGenerating: 'Erzeuge …',

@@ -188,6 +188,8 @@ const ko: Messages = {
     engineReady: 'PDF 엔진 준비됨 · 오프라인 가능',
     engineFailed: 'PDF 엔진을 불러오지 못했습니다. 다운로드할 때 다시 시도합니다',
     networkFailed: '글꼴이나 조판 엔진을 내려받는 중에 연결이 끊겼고, 다시 시도해도 완료되지 않았습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.',
+    reloadPage: '페이지 새로고침',
+    chunkFailed: '연결이 끊겨 앱의 일부를 불러오지 못했습니다. 페이지를 새로고침하면 해결됩니다. 초안은 저장되어 있습니다.',
 
     download: 'PDF 다운로드',
     downloadGenerating: '생성 중…',

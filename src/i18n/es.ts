@@ -189,6 +189,8 @@ const es: Messages = {
     engineReady: 'Motor PDF listo · funciona sin conexión',
     engineFailed: 'No se pudo cargar el motor PDF; se reintentará al descargar',
     networkFailed: 'Se perdió la conexión al descargar las fuentes o el motor tipográfico, incluso tras reintentarlo. Comprueba tu conexión e inténtalo de nuevo.',
+    reloadPage: 'Recargar página',
+    chunkFailed: 'No se pudo cargar una parte de la aplicación, probablemente por un corte de conexión. Recargar la página lo soluciona; tu borrador está guardado.',
 
     download: 'Descargar PDF',
     downloadGenerating: 'Generando…',

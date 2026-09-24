@@ -195,6 +195,8 @@ const fr: Messages = {
     engineReady: 'Moteur PDF prêt · fonctionne hors ligne',
     engineFailed: 'Échec du chargement du moteur PDF ; nouvel essai au téléchargement',
     networkFailed: 'La connexion a été interrompue pendant le téléchargement des polices ou du moteur de composition, malgré de nouvelles tentatives. Vérifiez votre connexion et réessayez.',
+    reloadPage: 'Recharger la page',
+    chunkFailed: 'Une partie de l’application n’a pas pu se charger, sans doute à cause d’une coupure réseau. Recharger la page règle le problème ; votre brouillon est enregistré.',
 
     download: 'Télécharger le PDF',
     downloadGenerating: 'Génération…',

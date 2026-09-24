@@ -186,6 +186,8 @@ const zh: Messages = {
     engineReady: 'PDF 引擎就绪 · 可离线使用',
     engineFailed: 'PDF 引擎加载失败，下载时会重试',
     networkFailed: '下载字体或排版引擎时网络中断，自动重试后仍未成功。请检查网络后再试。',
+    reloadPage: '重新加载页面',
+    chunkFailed: '应用的一部分没能加载，可能是网络中断了。重新加载页面即可恢复，你的草稿已经保存。',
 
     download: '下载 PDF',
     downloadGenerating: '正在生成…',

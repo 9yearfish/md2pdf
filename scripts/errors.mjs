@@ -40,6 +40,28 @@ check(pdf.length === 1, 'a failed PDF is reported once per visit', `${pdf.length
 check(Boolean(pdf[0]?.build) && pdf[0]?.page === '/' && typeof pdf[0]?.detail?.chars === 'number', 'the report carries build, page and document facts', JSON.stringify(pdf[0]?.detail));
 check(Boolean(uncaught?.stack), 'an uncaught error is reported with its stack');
 check(!reports.some(r => r.includes(SECRET) || r.includes('7f3a9c')), 'no report contains the document text');
+// A code chunk that fails to load (a dropped connection): browsers remember
+// the failed module for the life of the page, so the notice offers a reload,
+// and after reloading the download works.
+{
+  const ctx = await browser.newContext({ serviceWorkers: 'block' });
+  await ctx.route('**/api/log', route => route.fulfill({ status: 204 }));
+  let aborted = 0;
+  await ctx.route(/\/assets\/engine-[\w-]+\.js$/, route => (aborted++ === 0 ? route.abort() : route.continue()));
+  const p = await ctx.newPage();
+  await p.goto(BASE + '/');
+  await p.waitForSelector('.cm-content', { timeout: 30000 });
+  await p.click('#download');
+  await p.waitForSelector('#warnings[data-kind="error"]:not([hidden])', { timeout: 60000 });
+  const action = await p.locator('#warnings .warnings-action').textContent().catch(() => '');
+  check(/reload/i.test(action ?? ''), 'a failed code chunk offers a page reload, not a network message', action ?? '');
+  const dl = p.waitForEvent('download', { timeout: 180000 }).catch(() => null);
+  await Promise.all([p.waitForEvent('load'), p.click('#warnings .warnings-action')]);
+  await p.waitForSelector('.cm-content', { timeout: 30000 });
+  await p.click('#download');
+  check(Boolean(await dl), 'after the reload the PDF downloads');
+  await ctx.close();
+}
 console.log(problems.length ? `FAIL: ${problems.join('; ')}` : 'all error-report checks passed');
 await browser.close();
 process.exit(problems.length ? 1 : 0);

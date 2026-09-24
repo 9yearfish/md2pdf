@@ -31,7 +31,10 @@ function pageKey(url) {
   return new Request(url.origin + url.pathname);
 }
 
-self.addEventListener('install', () => self.skipWaiting());
+// No skipWaiting/clients.claim: a new worker takes over at the next visit,
+// never in the middle of a page load. Taking over mid-load made Safari fail
+// in-flight chunk imports ("Importing a module script failed."). HTML is
+// network-first, so a deploy is still picked up at once.
 
 self.addEventListener('activate', event => {
   event.waitUntil(
@@ -54,7 +57,6 @@ self.addEventListener('activate', event => {
           await cache.delete(request);
         }
       }
-      await self.clients.claim();
     })(),
   );
 });

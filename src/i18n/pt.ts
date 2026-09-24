@@ -189,6 +189,8 @@ const pt: Messages = {
     engineReady: 'Motor de PDF pronto · funciona offline',
     engineFailed: 'Falha ao carregar o motor de PDF; nova tentativa ao baixar',
     networkFailed: 'A conexão caiu ao baixar as fontes ou o motor tipográfico, mesmo após novas tentativas. Verifique sua conexão e tente de novo.',
+    reloadPage: 'Recarregar página',
+    chunkFailed: 'Não foi possível carregar uma parte do app, provavelmente porque a conexão caiu. Recarregar a página resolve; seu rascunho está salvo.',
 
     download: 'Baixar PDF',
     downloadGenerating: 'Gerando…',
