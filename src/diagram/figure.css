@@ -9,8 +9,8 @@
    pinned here rather than taken from the page tokens that flip. */
 .paper .diagram {
   position: relative;
-  --diagram-err: #b3261e;
-  --diagram-err-soft: #fbefee;
+  --diagram-err: #fa0f00;
+  --diagram-err-soft: #fff0ef;
   --diagram-ink: #111111;
   --diagram-rule: #c4c4c4;
 }

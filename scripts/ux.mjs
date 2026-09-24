@@ -301,7 +301,7 @@ check(true, `every share image is a served 1200 x 630 PNG, the largest ${Math.ro
       /<title>[^<]* · Free MD2PDF<\/title>/.test((await get('/zh/deepseek-to-pdf/')).body.toString()),
     website: graph.find(n => n['@type'] === 'WebSite')?.name === 'Free MD2PDF',
     sample: html.includes('"sample":"# Free MD2PDF sample document\\n'),
-    wordmark: /<span class="brand-name"><span class="brand-free">Free<\/span> MD2PDF<\/span>/.test(html),
+    wordmark: /<span class="brand-name"><span class="brand-free">Free<\/span>MD2PDF<span class="brand-tld">\.com<\/span><\/span>/.test(html),
   };
   check(Object.values(brand).every(Boolean), 'the brand reads Free MD2PDF in the header, OG, JSON-LD and manifest', JSON.stringify(brand));
 }

@@ -122,6 +122,7 @@ export interface UiMessages {
   engineFonts: string;
   engineReady: string;
   engineFailed: string;
+  networkFailed: string;
 
   download: string;
   downloadGenerating: string;

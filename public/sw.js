@@ -7,7 +7,11 @@
  * Nothing about a user's document is ever cached: only the application's own
  * immutable assets are.
  */
+// Renamed on every build (vite.config.ts, swCacheName), so a deploy drops
+// the previous build's fingerprinted files instead of keeping them forever.
 const CACHE = 'md2pdf-v1';
+/** Owned by src/typst/wasm-loader.ts, which keeps exactly one engine version. */
+const ENGINE_CACHE = 'md2pdf-engine-v1';
 
 /** Fingerprinted or otherwise immutable by construction. */
 function isImmutable(url) {
@@ -15,7 +19,10 @@ function isImmutable(url) {
     url.origin === self.location.origin &&
     (url.pathname.startsWith('/assets/') ||
       url.pathname.startsWith('/fonts/') ||
-      url.pathname.endsWith('.wasm'))
+      url.pathname.endsWith('.wasm')) &&
+    // The engine parts are joined and stored by the loader itself; caching
+    // them here as well would keep a second 27 MB copy.
+    !/\/assets\/typst-engine-/.test(url.pathname)
   );
 }
 
@@ -30,7 +37,8 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     (async () => {
       for (const key of await caches.keys()) {
-        if (key !== CACHE) await caches.delete(key);
+        // Never the engine: deleting it would re-download 10 MB after every deploy.
+        if (key !== CACHE && key !== ENGINE_CACHE) await caches.delete(key);
       }
       // Font files fetched before fonts were versioned (`?v=` in
       // src/typst/fonts.ts) are dead weight, several megabytes of it; the

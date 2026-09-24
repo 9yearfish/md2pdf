@@ -194,6 +194,7 @@ const fr: Messages = {
     engineFonts: 'Chargement des polices…',
     engineReady: 'Moteur PDF prêt · fonctionne hors ligne',
     engineFailed: 'Échec du chargement du moteur PDF ; nouvel essai au téléchargement',
+    networkFailed: 'Impossible de télécharger le moteur PDF. Vérifiez votre connexion et réessayez.',
 
     download: 'Télécharger le PDF',
     downloadGenerating: 'Génération…',

@@ -18,6 +18,8 @@
  */
 
 :root {
+  /* The wordmark's "Free": Adobe's PDF red, the one hue outside errors. */
+  --brand-red: var(--err);
   --ink: #111111;
   --ink-2: #383838;
   --muted: #575757;
@@ -32,8 +34,9 @@
   --raised: #ffffff;
   --sheet: #ffffff;
   --sheet-edge: #dcdcdc;
-  --err: #b3261e;
-  --err-soft: #fbefee;
+  /* Adobe's PDF red: errors and the wordmark are the only hue on the page. */
+  --err: #fa0f00;
+  --err-soft: #fff0ef;
   --on-status: #ffffff;
   --shadow-sheet: 0 1px 2px rgba(0, 0, 0, 0.05), 0 14px 32px -18px rgba(0, 0, 0, 0.28);
   --shadow-notice: 0 12px 28px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08);
@@ -117,7 +120,7 @@
     --ink: #ececec; --ink-2: #c8c8c8; --muted: #a8a8a8; --faint: #939393; --mark: #5c5c5c;
     --rule: #2b2b2b; --rule-strong: #474747; --ground: #121212; --well: #191919; --raised: #1e1e1e;
     --sheet-edge: #2b2b2b;
-    --err: #f08a83; --err-soft: #2d1a18; --on-status: #121212;
+    --err: #fa0f00; --err-soft: #2b1210; --on-status: #121212;
     --accent-soft: rgba(236, 236, 236, 0.14); --selection: rgba(236, 236, 236, 0.2);
     --shadow-sheet: 0 14px 32px -12px rgba(0, 0, 0, 0.75);
     --shadow-notice: 0 12px 28px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.4);
@@ -129,7 +132,7 @@
   --ink: #ececec; --ink-2: #c8c8c8; --muted: #a8a8a8; --faint: #939393; --mark: #5c5c5c;
   --rule: #2b2b2b; --rule-strong: #474747; --ground: #121212; --well: #191919; --raised: #1e1e1e;
   --sheet-edge: #2b2b2b;
-  --err: #f08a83; --err-soft: #2d1a18; --on-status: #121212;
+  --err: #fa0f00; --err-soft: #2b1210; --on-status: #121212;
   --accent-soft: rgba(236, 236, 236, 0.14); --selection: rgba(236, 236, 236, 0.2);
   --shadow-sheet: 0 14px 32px -12px rgba(0, 0, 0, 0.75);
   --shadow-notice: 0 12px 28px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.4);
@@ -216,7 +219,7 @@ svg { flex: none; }
 
 .brand-mark { width: 20px; height: 20px; color: var(--ink); }
 /* The wordmark (BRAND): its first word in a lighter ink, the name in full ink. */
-.brand-free { color: var(--muted); font-weight: 400; }
+.brand-free { color: var(--brand-red); }
 
 /* Information, not a control: no border, no fill, no hover. */
 .privacy {
@@ -1016,13 +1019,13 @@ button.disclosure:focus-visible { outline-offset: -2px; }
   text-align: center;
 }
 
-.paper .diagram-error { color: #b3261e; border: 1px solid #b3261e; background: #fbefee; }
+.paper .diagram-error { color: #fa0f00; border: 1px solid #fa0f00; background: #fff0ef; }
 /* Error box, stale render and export actions: src/diagram/figure.css, which
    loads with Mermaid. */
 
 .paper .math-display { margin: 0.8em 0; overflow-x: auto; text-align: center; }
 .paper :is(.math-pending, .math-error) { font-family: var(--mono); font-size: 0.88em; color: var(--ink-muted); }
-.paper .math-error { color: #b3261e; text-decoration: underline wavy rgba(179, 38, 30, 0.45); }
+.paper .math-error { color: #fa0f00; text-decoration: underline wavy rgba(250, 15, 0, 0.45); }
 
 .paper .toc {
   margin-bottom: 2em;
@@ -1098,7 +1101,7 @@ button.disclosure:focus-visible { outline-offset: -2px; }
   padding-left: 18px;
 }
 
-.warnings[data-kind="error"], .warnings.error { --notice: var(--err); }
+.warnings[data-kind="error"], .warnings.error { --notice: var(--err); --notice-text: #ffffff; }
 
 @keyframes notice-in {
   from { opacity: 0; transform: translateY(10px); }

@@ -188,6 +188,7 @@ const ru: Messages = {
     engineFonts: 'Загрузка шрифтов…',
     engineReady: 'PDF-движок готов · работает офлайн',
     engineFailed: 'Движок не загрузился, повтор при скачивании',
+    networkFailed: 'Не удалось загрузить движок PDF. Проверьте подключение и попробуйте ещё раз.',
 
     download: 'Скачать PDF',
     downloadGenerating: 'Создание…',

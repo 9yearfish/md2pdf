@@ -188,6 +188,7 @@ const pt: Messages = {
     engineFonts: 'Carregando fontes…',
     engineReady: 'Motor de PDF pronto · funciona offline',
     engineFailed: 'Falha ao carregar o motor de PDF; nova tentativa ao baixar',
+    networkFailed: 'Não foi possível baixar o motor de PDF. Verifique sua conexão e tente de novo.',
 
     download: 'Baixar PDF',
     downloadGenerating: 'Gerando…',

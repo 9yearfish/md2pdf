@@ -61,6 +61,12 @@ async function toCacheStorage(bytes: ArrayBuffer): Promise<void> {
       compilerWasm,
       new Response(bytes, { headers: { 'content-type': 'application/wasm' } }),
     );
+    // Keep one version only: an engine upgrade changes the key, and the old
+    // 27 MB would otherwise stay on the device for good.
+    const current = new URL(compilerWasm, location.href).href;
+    for (const request of await cache.keys()) {
+      if (request.url !== current) await cache.delete(request);
+    }
   } catch {
     // Not being able to cache only costs a re-download next time.
   }

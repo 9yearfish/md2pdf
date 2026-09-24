@@ -65,9 +65,9 @@ export const DIAGRAM_DEFS = `// Mermaid diagrams: fit the width, then the page; 
 }
 // Square, a solid red title strip over a pale red body: the app's error style.
 #let md-diagram-error(title, message, excerpt) = block(
-  width: 100%, breakable: false, fill: rgb("#fdf1ef"), stroke: 0.75pt + rgb("#b3261e"),
+  width: 100%, breakable: false, fill: rgb("#fff0ef"), stroke: 0.75pt + rgb("#fa0f00"),
   {
-    block(width: 100%, fill: rgb("#b3261e"), inset: (x: 10pt, y: 6pt), below: 0pt,
+    block(width: 100%, fill: rgb("#fa0f00"), inset: (x: 10pt, y: 6pt), below: 0pt,
       text(fill: white, weight: "bold", title))
     block(width: 100%, inset: (x: 10pt, top: 7pt, bottom: 9pt), above: 0pt, {
       if message != "" { text(size: 0.9em, message) }

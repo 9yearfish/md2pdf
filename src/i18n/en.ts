@@ -188,6 +188,7 @@ const en: Messages = {
     engineFonts: 'Loading fonts…',
     engineReady: 'PDF engine ready · works offline',
     engineFailed: 'PDF engine failed to load; it will retry on download',
+    networkFailed: 'Could not download the PDF engine. Check your connection and try again.',
 
     download: 'Download PDF',
     downloadGenerating: 'Generating…',

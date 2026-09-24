@@ -195,9 +195,9 @@ export function buildMathPreamble(): string {
   eval(mode: "math", code, scope: md-mitex.scope),
 )
 #let md-math-error(display, source, message) = {
-  let body = text(fill: rgb("#b3261e"))[#raw(source) #text(size: 0.8em)[(#message)]]
+  let body = text(fill: rgb("#fa0f00"))[#raw(source) #text(size: 0.8em)[(#message)]]
   if display {
-    block(width: 100%, inset: (x: 8pt, y: 6pt), fill: rgb("#fdf1f0"), stroke: (left: 2pt + rgb("#b3261e")), body)
+    block(width: 100%, inset: (x: 8pt, y: 6pt), fill: rgb("#fff0ef"), stroke: (left: 2pt + rgb("#fa0f00")), body)
   } else {
     box(body)
   }

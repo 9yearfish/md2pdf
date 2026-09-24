@@ -185,6 +185,7 @@ const zh: Messages = {
     engineFonts: '正在加载字体…',
     engineReady: 'PDF 引擎就绪 · 可离线使用',
     engineFailed: 'PDF 引擎加载失败，下载时会重试',
+    networkFailed: 'PDF 引擎下载失败，请检查网络连接后重试。',
 
     download: '下载 PDF',
     downloadGenerating: '正在生成…',

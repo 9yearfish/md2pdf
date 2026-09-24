@@ -187,6 +187,7 @@ const ko: Messages = {
     engineFonts: '글꼴 불러오는 중…',
     engineReady: 'PDF 엔진 준비됨 · 오프라인 가능',
     engineFailed: 'PDF 엔진을 불러오지 못했습니다. 다운로드할 때 다시 시도합니다',
+    networkFailed: 'PDF 엔진을 내려받지 못했습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.',
 
     download: 'PDF 다운로드',
     downloadGenerating: '생성 중…',

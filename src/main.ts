@@ -339,9 +339,11 @@ async function buildPdf(button: HTMLButtonElement, label: HTMLElement, idleText:
     const detail =
       engineModule && error instanceof engineModule.TypstCompileError
         ? error.diagnostics.slice(0, 6).join('\n')
-        : error instanceof Error
-          ? error.message
-          : String(error);
+        : isNetworkError(error)
+          ? t('networkFailed')
+          : error instanceof Error
+            ? error.message
+            : String(error);
     showWarnings([t('pdfFailedShort')], 'error', undefined, true, detail);
     return null;
   } finally {
@@ -459,6 +461,17 @@ function suggestedFileName(): string {
     .slice(0, 60)
     .trim();
   return base ? `${base}-${SITE_HOST}.pdf` : `${SITE_HOST}.pdf`;
+}
+
+/**
+ * The engine or a font could not be fetched. The browser's own text for this
+ * ("Failed to fetch", "NetworkError when attempting to fetch resource") is
+ * English whatever the page's language, so it is replaced with ours.
+ */
+function isNetworkError(error: unknown): boolean {
+  if (error instanceof TypeError) return true;
+  const message = error instanceof Error ? error.message : String(error);
+  return /failed to (fetch|load)|networkerror|load failed|network request failed/i.test(message);
 }
 
 /* ---------- notices ---------- */

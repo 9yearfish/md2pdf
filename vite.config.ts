@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { appendFileSync, existsSync, readFileSync, statSync } from 'node:fs';
+import { appendFileSync, existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
@@ -326,10 +326,31 @@ function splitEngine(): Plugin {
   };
 }
 
+/**
+ * Give the service worker's asset cache a name unique to this build, so the
+ * worker's activate step clears the previous build's fingerprinted files.
+ * (The engine lives in its own cache, which survives this.)
+ */
+function swCacheName(): Plugin {
+  return {
+    name: 'md2pdf:sw-cache-name',
+    apply: 'build',
+    writeBundle(options) {
+      const dir = options.dir ?? 'dist';
+      const file = resolve(dir, 'sw.js');
+      if (!existsSync(file)) return;
+      const source = readFileSync(file, 'utf8');
+      const build = createHash('sha256').update(String(Date.now())).digest('hex').slice(0, 10);
+      if (!source.includes("const CACHE = 'md2pdf-v1';")) this.error('sw-cache-name: cache constant not found in sw.js');
+      writeFileSync(file, source.replace("const CACHE = 'md2pdf-v1';", `const CACHE = 'md2pdf-${build}';`));
+    },
+  };
+}
+
   export default defineConfig(({ mode }) => {
     const siteUrl = loadEnv(mode, process.cwd(), 'VITE_').VITE_SITE_URL ?? 'https://freemd2pdf.com';
     return {
-    plugins: [avoidEval(), temmlMinified(), i18nPages(siteUrl), i18nRedirectTag(), earlyHints(), splitEngine()],
+    plugins: [avoidEval(), temmlMinified(), i18nPages(siteUrl), i18nRedirectTag(), earlyHints(), splitEngine(), swCacheName()],
     define: {
       __WASM_BYTES__: JSON.stringify(compilerWasmBytes),
       // Replaced with the part URLs by splitEngine() in production builds.

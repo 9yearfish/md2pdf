@@ -188,6 +188,7 @@ const es: Messages = {
     engineFonts: 'Cargando fuentes…',
     engineReady: 'Motor PDF listo · funciona sin conexión',
     engineFailed: 'No se pudo cargar el motor PDF; se reintentará al descargar',
+    networkFailed: 'No se pudo descargar el motor PDF. Comprueba tu conexión e inténtalo de nuevo.',
 
     download: 'Descargar PDF',
     downloadGenerating: 'Generando…',
