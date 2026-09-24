@@ -30,6 +30,16 @@ const TOTAL_BYTES = __WASM_BYTES__;
 
 export const compilerWasmUrl = compilerWasm;
 
+/**
+ * Cloudflare Pages refuses files over 25 MiB and the compiler is 27 MiB, so
+ * the production build splits it into parts (see `splitEngine` in
+ * vite.config.ts) and writes their URLs here, separated by `|`. They are
+ * fetched in parallel and joined back into the one module. In development the
+ * placeholder is left as is and the whole file is fetched.
+ */
+const PART_LIST: string = __WASM_PARTS__;
+const PARTS = PART_LIST.startsWith('/') ? PART_LIST.split('|') : [compilerWasm];
+
 let inFlight: Promise<BufferSource> | null = null;
 
 async function fromCacheStorage(): Promise<ArrayBuffer | null> {
@@ -57,24 +67,36 @@ async function toCacheStorage(bytes: ArrayBuffer): Promise<void> {
 }
 
 async function download(onProgress: (progress: DownloadProgress) => void): Promise<ArrayBuffer> {
-  const response = await fetch(compilerWasm);
-  if (!response.ok) throw new Error(`failed to load the typesetting engine (${response.status})`);
+  // Progress is the sum over all parts, which arrive in parallel.
+  const received = new Array<number>(PARTS.length).fill(0);
+  const report = () =>
+    onProgress({ loaded: received.reduce((a, b) => a + b, 0), total: TOTAL_BYTES, fromCache: false });
 
-  if (!response.body) return response.arrayBuffer();
+  const parts = await Promise.all(
+    PARTS.map(async (url, index) => {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`failed to load the typesetting engine (${response.status})`);
+      if (!response.body) {
+        const whole = new Uint8Array(await response.arrayBuffer());
+        received[index] = whole.length;
+        report();
+        return [whole];
+      }
+      const reader = response.body.getReader();
+      const chunks: Uint8Array[] = [];
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        received[index] += value.length;
+        report();
+      }
+      return chunks;
+    }),
+  );
 
-  const reader = response.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let loaded = 0;
-
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-    loaded += value.length;
-    onProgress({ loaded, total: TOTAL_BYTES, fromCache: false });
-  }
-
-  const bytes = new Uint8Array(loaded);
+  const chunks = parts.flat();
+  const bytes = new Uint8Array(chunks.reduce((n, c) => n + c.length, 0));
   let offset = 0;
   for (const chunk of chunks) {
     bytes.set(chunk, offset);

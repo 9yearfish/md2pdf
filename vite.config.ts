@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { appendFileSync, existsSync, readFileSync, statSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
@@ -280,12 +281,59 @@ function earlyHints(): Plugin {
   };
 }
 
+const WASM_PARTS_PLACEHOLDER = '__MD2PDF_WASM_PARTS__';
+/** Cloudflare Pages rejects files larger than 25 MiB; stay well under it. */
+const WASM_PART_BYTES = 20 * 1024 * 1024;
+
+/**
+ * Split the 27 MiB compiler into parts Cloudflare Pages accepts.
+ *
+ * Each part keeps the .wasm extension so it is served as application/wasm and
+ * compressed at the edge like the whole file was. The loader fetches the
+ * parts in parallel and joins them; see src/typst/wasm-loader.ts. The part
+ * names carry a hash of the whole module, so they stay immutable.
+ */
+function splitEngine(): Plugin {
+  return {
+    name: 'md2pdf:split-engine',
+    apply: 'build',
+    enforce: 'post',
+    generateBundle(_options, bundle) {
+      const key = Object.keys(bundle).find(k => /typst_ts_web_compiler_bg-[\w-]+\.wasm$/.test(k));
+      if (!key) return;
+      const asset = bundle[key];
+      if (asset.type !== 'asset' || typeof asset.source === 'string') return;
+      const bytes = asset.source;
+      const hash = createHash('sha256').update(bytes).digest('hex').slice(0, 10);
+      const count = Math.ceil(bytes.length / WASM_PART_BYTES);
+      const size = Math.ceil(bytes.length / count);
+      const urls: string[] = [];
+      for (let i = 0; i < count; i++) {
+        const fileName = `assets/typst-engine-${hash}.${i}.wasm`;
+        this.emitFile({ type: 'asset', fileName, source: bytes.subarray(i * size, (i + 1) * size) });
+        urls.push('/' + fileName);
+      }
+      delete bundle[key];
+      let replaced = 0;
+      for (const chunk of Object.values(bundle)) {
+        if (chunk.type === 'chunk' && chunk.code.includes(WASM_PARTS_PLACEHOLDER)) {
+          chunk.code = chunk.code.split(WASM_PARTS_PLACEHOLDER).join(urls.join('|'));
+          replaced++;
+        }
+      }
+      if (!replaced) this.error('split-engine: the loader placeholder was not found in any chunk');
+    },
+  };
+}
+
   export default defineConfig(({ mode }) => {
     const siteUrl = loadEnv(mode, process.cwd(), 'VITE_').VITE_SITE_URL ?? 'https://freemd2pdf.com';
     return {
-    plugins: [avoidEval(), temmlMinified(), i18nPages(siteUrl), i18nRedirectTag(), earlyHints()],
+    plugins: [avoidEval(), temmlMinified(), i18nPages(siteUrl), i18nRedirectTag(), earlyHints(), splitEngine()],
     define: {
       __WASM_BYTES__: JSON.stringify(compilerWasmBytes),
+      // Replaced with the part URLs by splitEngine() in production builds.
+      __WASM_PARTS__: JSON.stringify(WASM_PARTS_PLACEHOLDER),
     },
     build: {
       target: 'es2022',
