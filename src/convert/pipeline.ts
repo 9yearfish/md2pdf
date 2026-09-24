@@ -12,6 +12,7 @@ import { toTree, type Node } from './tree';
 import { buildMathPreamble, buildPreamble, type DocumentOptions } from './preamble';
 import { isMathFence } from './math-syntax';
 import { renderDiagram, type DiagramFailure } from '../diagram/mermaid';
+import { reportError } from '../ui/errors';
 import { normalizeLang, type LangSetting } from './lang';
 import { diagramFontFamily, resolveFonts, type FontSet } from '../typst/fonts';
 import { registerFaces } from '../preview/fonts';
@@ -171,6 +172,12 @@ export async function convert(
           markup: typst!.diagramErrorMarkup({ title, message, excerpt: failure.excerpt }),
         });
         warnings.push(t('diagramError', { detail: [title, message].filter(Boolean).join(': ') }));
+        // Not the diagram's source (that is document content): its type and
+        // Mermaid's message, flagged by whether Mermaid named a syntax line.
+        reportError('diagram', error, {
+          type: code.trim().split(/\s+/)[0]?.slice(0, 24) ?? '',
+          syntax: failure.line !== undefined || failure.unknownType !== undefined,
+        });
       }
     }),
   );

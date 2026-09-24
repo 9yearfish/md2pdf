@@ -1813,3 +1813,5 @@ footer .colophon img { width: 24px; height: 24px; border-radius: 6px; flex: none
   .privacy { padding-right: 0; }
   .privacy .dup { display: none; }
 }
+
+footer .colophon .build { margin-left: auto; color: var(--faint); font: 400 11px/1 var(--mono); letter-spacing: 0.04em; white-space: nowrap; }

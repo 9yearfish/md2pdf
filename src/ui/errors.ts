@@ -7,7 +7,7 @@
  * caller passes (template, whether the document has maths, …). Each distinct
  * error is sent once per visit, and at most MAX_PER_VISIT in total.
  */
-export type ErrorKind = 'error' | 'rejection' | 'pdf' | 'engine' | 'network';
+export type ErrorKind = 'error' | 'rejection' | 'pdf' | 'engine' | 'network' | 'diagram';
 
 const ENDPOINT = '/api/log';
 const MAX_PER_VISIT = 10;
@@ -15,7 +15,7 @@ const sent = new Set<string>();
 let engineState = () => document.documentElement.dataset.engine ?? '';
 
 function describe(error: unknown): { message: string; stack?: string } {
-  if (error instanceof Error) return { message: `${error.name}: ${error.message}`, stack: error.stack };
+  if (error instanceof Error) return { message: `${error.name}: ${error.message}`.slice(0, 500), stack: error.stack };
   if (typeof error === 'string') return { message: error };
   try {
     return { message: JSON.stringify(error) ?? String(error) };

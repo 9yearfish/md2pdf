@@ -6,7 +6,7 @@
  * never echoes anything back, so it cannot be used to read data.
  */
 const LIMITS = { kind: 16, message: 500, stack: 2000, page: 200, locale: 16, build: 40, engine: 24, detail: 600, ua: 300 };
-const KINDS = new Set(['error', 'rejection', 'pdf', 'engine', 'network']);
+const KINDS = new Set(['error', 'rejection', 'pdf', 'engine', 'network', 'diagram']);
 
 const clip = (value, max) => (typeof value === 'string' ? value.slice(0, max) : null);
 

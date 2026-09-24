@@ -1271,6 +1271,8 @@ function boot(): void {
 }
 
 installErrorReporting();
+// The build in the footer, so a report from a phone can be matched to a deploy.
+document.querySelector('.colophon')?.insertAdjacentHTML('beforeend', `<span class="build">build ${__BUILD_ID__}</span>`);
 
 try {
   boot();

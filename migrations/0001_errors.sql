@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS errors (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   ts TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-  kind TEXT NOT NULL,          -- error | rejection | pdf | engine | network
+  kind TEXT NOT NULL,          -- error | rejection | pdf | engine | network | diagram
   message TEXT NOT NULL,
   stack TEXT,
   page TEXT,                   -- path only, e.g. /ja/chatgpt-to-pdf/
