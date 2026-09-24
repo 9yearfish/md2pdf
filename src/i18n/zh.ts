@@ -168,7 +168,7 @@ const zh: Messages = {
       },
     ],
     footer:
-      `<strong>${BRAND}</strong> · 在浏览器里把 Markdown 转成 PDF，流程图以矢量嵌入，中文排版正确。文档不会上传。`,
+      `<strong class="colophon-mark"><span class="brand-free">free</span>md2pdf.com</strong> · 在浏览器里把 Markdown 转成 PDF，流程图以矢量嵌入，中文排版正确。文档不会上传。`,
     languagesHeading: '语言',
   },
 
@@ -185,7 +185,7 @@ const zh: Messages = {
     engineFonts: '正在加载字体…',
     engineReady: 'PDF 引擎就绪 · 可离线使用',
     engineFailed: 'PDF 引擎加载失败，下载时会重试',
-    networkFailed: 'PDF 引擎下载失败，请检查网络连接后重试。',
+    networkFailed: '下载字体或排版引擎时网络中断，自动重试后仍未成功。请检查网络后再试。',
 
     download: '下载 PDF',
     downloadGenerating: '正在生成…',

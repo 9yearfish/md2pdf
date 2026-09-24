@@ -1,0 +1,12 @@
+# Cloudflare Pages configuration (read by the Git-connected build).
+# Static assets come from dist/; the one Pages Function is functions/api/log.js.
+name = "freemd2pdf"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-09-01"
+
+# Error reports (npm run errors, or the D1 console in the dashboard).
+[[d1_databases]]
+binding = "ERRORS"
+database_name = "freemd2pdf-errors"
+database_id = "3eb0fdd0-fa55-4407-9470-b156728a40bd"
+migrations_dir = "migrations"

@@ -177,7 +177,7 @@ const fr: Messages = {
       },
     ],
     footer:
-      `<strong>${BRAND}</strong> · Markdown en PDF dans votre navigateur, avec des diagrammes Mermaid vectoriels. Rien n’est envoyé.`,
+      `<strong class="colophon-mark"><span class="brand-free">free</span>md2pdf.com</strong> · Markdown en PDF dans votre navigateur, avec des diagrammes Mermaid vectoriels. Rien n’est envoyé.`,
     languagesHeading: 'Langues',
   },
 
@@ -194,7 +194,7 @@ const fr: Messages = {
     engineFonts: 'Chargement des polices…',
     engineReady: 'Moteur PDF prêt · fonctionne hors ligne',
     engineFailed: 'Échec du chargement du moteur PDF ; nouvel essai au téléchargement',
-    networkFailed: 'Impossible de télécharger le moteur PDF. Vérifiez votre connexion et réessayez.',
+    networkFailed: 'La connexion a été interrompue pendant le téléchargement des polices ou du moteur de composition, malgré de nouvelles tentatives. Vérifiez votre connexion et réessayez.',
 
     download: 'Télécharger le PDF',
     downloadGenerating: 'Génération…',

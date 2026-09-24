@@ -171,7 +171,7 @@ const ru: Messages = {
       },
     ],
     footer:
-      `<strong>${BRAND}</strong> · Markdown в PDF прямо в браузере, диаграммы Mermaid — в векторе. Ничего не загружается.`,
+      `<strong class="colophon-mark"><span class="brand-free">free</span>md2pdf.com</strong> · Markdown в PDF прямо в браузере, диаграммы Mermaid — в векторе. Ничего не загружается.`,
     languagesHeading: 'Языки',
   },
 
@@ -188,7 +188,7 @@ const ru: Messages = {
     engineFonts: 'Загрузка шрифтов…',
     engineReady: 'PDF-движок готов · работает офлайн',
     engineFailed: 'Движок не загрузился, повтор при скачивании',
-    networkFailed: 'Не удалось загрузить движок PDF. Проверьте подключение и попробуйте ещё раз.',
+    networkFailed: 'Соединение оборвалось при загрузке шрифтов или движка вёрстки, повторные попытки не помогли. Проверьте подключение и попробуйте ещё раз.',
 
     download: 'Скачать PDF',
     downloadGenerating: 'Создание…',

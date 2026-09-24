@@ -328,6 +328,21 @@ images, as does clearing the site's data in the browser. See `src/ui/draft.ts`.
 The service worker caches only the application's own immutable assets; it never
 caches any part of a document.
 
+### Error reports
+
+Failures in the field are sent to `/api/log`, a Pages Function
+(`functions/api/log.js`) that writes them to the D1 database
+`freemd2pdf-errors` (binding `ERRORS` in `wrangler.toml`; schema in
+`migrations/`). A report holds the error message and stack, the page path and
+language, the build id, the engine state and a few non-content facts about the
+document (length, whether it has maths or diagrams, template, language). It
+never holds the document's text, and a test (`scripts/errors.mjs`) checks that.
+Each distinct error is sent once per visit, at most ten per visit; the country
+comes from Cloudflare's request metadata.
+
+See what is failing: `npm run errors` (the last 7 days, grouped), or the D1
+console in the Cloudflare dashboard.
+
 ## What a visit actually costs
 
 Opening the page downloads **82 KB** (index.html, the app's JS and CSS, and the

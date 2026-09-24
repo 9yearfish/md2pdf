@@ -282,6 +282,8 @@ function earlyHints(): Plugin {
 }
 
 const WASM_PARTS_PLACEHOLDER = '__MD2PDF_WASM_PARTS__';
+/** Identifies this build in error reports and in the service worker's cache name. */
+const BUILD_ID = createHash('sha256').update(String(Date.now())).digest('hex').slice(0, 10);
 /** Cloudflare Pages rejects files larger than 25 MiB; stay well under it. */
 const WASM_PART_BYTES = 20 * 1024 * 1024;
 
@@ -340,7 +342,7 @@ function swCacheName(): Plugin {
       const file = resolve(dir, 'sw.js');
       if (!existsSync(file)) return;
       const source = readFileSync(file, 'utf8');
-      const build = createHash('sha256').update(String(Date.now())).digest('hex').slice(0, 10);
+      const build = BUILD_ID;
       if (!source.includes("const CACHE = 'md2pdf-v1';")) this.error('sw-cache-name: cache constant not found in sw.js');
       writeFileSync(file, source.replace("const CACHE = 'md2pdf-v1';", `const CACHE = 'md2pdf-${build}';`));
     },
@@ -355,6 +357,7 @@ function swCacheName(): Plugin {
       __WASM_BYTES__: JSON.stringify(compilerWasmBytes),
       // Replaced with the part URLs by splitEngine() in production builds.
       __WASM_PARTS__: JSON.stringify(WASM_PARTS_PLACEHOLDER),
+      __BUILD_ID__: JSON.stringify(BUILD_ID),
     },
     build: {
       target: 'es2022',

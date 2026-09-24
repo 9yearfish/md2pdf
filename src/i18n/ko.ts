@@ -170,7 +170,7 @@ const ko: Messages = {
       },
     ],
     footer:
-      `<strong>${BRAND}</strong> · 브라우저에서 Markdown을 PDF로 변환, Mermaid 다이어그램은 벡터 그대로. 문서는 업로드되지 않습니다.`,
+      `<strong class="colophon-mark"><span class="brand-free">free</span>md2pdf.com</strong> · 브라우저에서 Markdown을 PDF로 변환, Mermaid 다이어그램은 벡터 그대로. 문서는 업로드되지 않습니다.`,
     languagesHeading: '언어',
   },
 
@@ -187,7 +187,7 @@ const ko: Messages = {
     engineFonts: '글꼴 불러오는 중…',
     engineReady: 'PDF 엔진 준비됨 · 오프라인 가능',
     engineFailed: 'PDF 엔진을 불러오지 못했습니다. 다운로드할 때 다시 시도합니다',
-    networkFailed: 'PDF 엔진을 내려받지 못했습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.',
+    networkFailed: '글꼴이나 조판 엔진을 내려받는 중에 연결이 끊겼고, 다시 시도해도 완료되지 않았습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.',
 
     download: 'PDF 다운로드',
     downloadGenerating: '생성 중…',

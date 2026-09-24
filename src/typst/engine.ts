@@ -156,7 +156,11 @@ export async function compileToPdf(
       result.diagnostics ?? [],
     );
   }
-  return { pdf: result.result, fonts, diagnostics };
+  // Copy the bytes out. The result can be a view into the compiler's WASM
+  // memory, which is detached as soon as that memory grows (the next font
+  // load or compile). A cached PDF kept as that view downloaded fine once,
+  // then threw on the second click ("TypeError: … detached").
+  return { pdf: new Uint8Array(result.result), fonts, diagnostics };
 }
 
 /**

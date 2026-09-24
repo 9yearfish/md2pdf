@@ -171,7 +171,7 @@ const pt: Messages = {
       },
     ],
     footer:
-      `<strong>${BRAND}</strong> · Markdown para PDF no seu navegador, com diagramas Mermaid em vetor. Nada é enviado.`,
+      `<strong class="colophon-mark"><span class="brand-free">free</span>md2pdf.com</strong> · Markdown para PDF no seu navegador, com diagramas Mermaid em vetor. Nada é enviado.`,
     languagesHeading: 'Idiomas',
   },
 
@@ -188,7 +188,7 @@ const pt: Messages = {
     engineFonts: 'Carregando fontes…',
     engineReady: 'Motor de PDF pronto · funciona offline',
     engineFailed: 'Falha ao carregar o motor de PDF; nova tentativa ao baixar',
-    networkFailed: 'Não foi possível baixar o motor de PDF. Verifique sua conexão e tente de novo.',
+    networkFailed: 'A conexão caiu ao baixar as fontes ou o motor tipográfico, mesmo após novas tentativas. Verifique sua conexão e tente de novo.',
 
     download: 'Baixar PDF',
     downloadGenerating: 'Gerando…',

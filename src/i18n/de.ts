@@ -171,7 +171,7 @@ const de: Messages = {
       },
     ],
     footer:
-      `<strong>${BRAND}</strong> · Markdown in PDF umwandeln, direkt im Browser, mit Mermaid-Diagrammen als Vektorgrafik. Nichts wird hochgeladen.`,
+      `<strong class="colophon-mark"><span class="brand-free">free</span>md2pdf.com</strong> · Markdown in PDF umwandeln, direkt im Browser, mit Mermaid-Diagrammen als Vektorgrafik. Nichts wird hochgeladen.`,
     languagesHeading: 'Sprachen',
   },
 
@@ -188,7 +188,7 @@ const de: Messages = {
     engineFonts: 'Schriften werden geladen …',
     engineReady: 'PDF-Engine bereit · auch offline',
     engineFailed: 'PDF-Engine nicht geladen, neuer Versuch beim Download',
-    networkFailed: 'Die PDF-Engine konnte nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.',
+    networkFailed: 'Beim Laden der Schriften oder der Satz-Engine ist die Verbindung abgebrochen, auch nach erneuten Versuchen. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.',
 
     download: 'PDF laden',
     downloadGenerating: 'Erzeuge …',

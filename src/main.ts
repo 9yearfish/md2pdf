@@ -7,6 +7,7 @@ import { isSupportedImage, readImageFile, type LocalImage } from './convert/imag
 import { HtmlPreview } from './preview/html';
 import { detectLanguage, normalizeLang, SUPPORTED_LANGUAGES } from './convert/lang';
 import { landing, lang, plural, rememberLanguage, sample, t } from './i18n/runtime';
+import { installErrorReporting, reportError } from './ui/errors';
 import { createEditor, type Editor } from './ui/editor';
 import { hideFrontMatter, layoutModule, loadLayout } from './layout/load';
 import {
@@ -277,7 +278,10 @@ function scheduleWarmUp(delay = 1500): void {
         .then(started => {
           if (started) setEngineState('ready', t('engineReady'));
         })
-        .catch(() => setEngineState('error', t('engineFailed')));
+        .catch(error => {
+          setEngineState('error', t('engineFailed'));
+          reportError('engine', error);
+        });
     });
   }, delay);
 }
@@ -319,9 +323,14 @@ async function buildPdf(button: HTMLButtonElement, label: HTMLElement, idleText:
       const [{ convert }, { compileToPdf }] = await loadPdfSide();
       const result = await convert(source, options, images);
       // With formulas, a broken one is set aside instead of failing the PDF.
-      const { outcome, warnings: mathNotes } = result.hasMath
-        ? await (await import('./math/typst-math')).compileRecovering(result, onEngineProgress)
-        : { outcome: await compileToPdf(result, onEngineProgress), warnings: [] };
+      // Fonts and the engine arrive over the network; on a flaky line a fetch
+      // can drop mid-way. Retry those (a failed load is never cached), not
+      // real errors, before telling the reader.
+      const { outcome, warnings: mathNotes } = await withNetworkRetry(async () =>
+        result.hasMath
+          ? await (await import('./math/typst-math')).compileRecovering(result, onEngineProgress)
+          : { outcome: await compileToPdf(result, onEngineProgress), warnings: [] as string[] },
+      );
       setEngineState('ready', t('engineReady'));
       built = { key, pdf: outcome.pdf };
 
@@ -344,6 +353,13 @@ async function buildPdf(button: HTMLButtonElement, label: HTMLElement, idleText:
           : error instanceof Error
             ? error.message
             : String(error);
+    reportError(isNetworkError(error) ? 'network' : 'pdf', error, {
+      chars: source.length,
+      math: /\$[^$\n]+\$|\$\$/.test(source),
+      mermaid: source.includes('```mermaid'),
+      template: options.template,
+      lang: options.lang,
+    });
     showWarnings([t('pdfFailedShort')], 'error', undefined, true, detail);
     return null;
   } finally {
@@ -469,9 +485,22 @@ function suggestedFileName(): string {
  * English whatever the page's language, so it is replaced with ours.
  */
 function isNetworkError(error: unknown): boolean {
-  if (error instanceof TypeError) return true;
+  // Only the browsers' own wording for a failed fetch: a TypeError on its own
+  // is just as likely a bug, and must not be reported as a network problem.
   const message = error instanceof Error ? error.message : String(error);
-  return /failed to (fetch|load)|networkerror|load failed|network request failed/i.test(message);
+  return /failed to fetch|failed to load|networkerror|load failed|network request failed|network connection was lost/i.test(message);
+}
+
+/** Run `task`, retrying twice (after 1.5 s, then 3 s) when the network drops. */
+async function withNetworkRetry<T>(task: () => Promise<T>): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await task();
+    } catch (error) {
+      if (attempt >= 2 || !isNetworkError(error)) throw error;
+      await new Promise(resolve => setTimeout(resolve, 1500 * 2 ** attempt));
+    }
+  }
 }
 
 /* ---------- notices ---------- */
@@ -1241,9 +1270,12 @@ function boot(): void {
   requestAnimationFrame(() => scheduleWarmUp(300));
 }
 
+installErrorReporting();
+
 try {
   boot();
 } catch (error) {
+  reportError('error', error, { at: 'boot' });
   // A failure here leaves a page that looks fine but does nothing, which is
   // the worst way to fail. Say so instead.
   showWarnings([t('initFailed', { detail: error instanceof Error ? error.message : String(error) })], true);

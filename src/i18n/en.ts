@@ -171,7 +171,7 @@ const en: Messages = {
       },
     ],
     footer:
-      `<strong>${BRAND}</strong> · Markdown to PDF in your browser, with Mermaid diagrams as vectors. Nothing is uploaded.`,
+      `<strong class="colophon-mark"><span class="brand-free">free</span>md2pdf.com</strong> · Markdown to PDF in your browser, with Mermaid diagrams as vectors. Nothing is uploaded.`,
     languagesHeading: 'Languages',
   },
 
@@ -188,7 +188,7 @@ const en: Messages = {
     engineFonts: 'Loading fonts…',
     engineReady: 'PDF engine ready · works offline',
     engineFailed: 'PDF engine failed to load; it will retry on download',
-    networkFailed: 'Could not download the PDF engine. Check your connection and try again.',
+    networkFailed: 'The connection dropped while downloading fonts or the typesetting engine, even after retrying. Check your connection and try again.',
 
     download: 'Download PDF',
     downloadGenerating: 'Generating…',

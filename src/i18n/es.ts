@@ -171,7 +171,7 @@ const es: Messages = {
       },
     ],
     footer:
-      `<strong>${BRAND}</strong> · Markdown a PDF en tu navegador, con diagramas Mermaid vectoriales. No se sube nada.`,
+      `<strong class="colophon-mark"><span class="brand-free">free</span>md2pdf.com</strong> · Markdown a PDF en tu navegador, con diagramas Mermaid vectoriales. No se sube nada.`,
     languagesHeading: 'Idiomas',
   },
 
@@ -188,7 +188,7 @@ const es: Messages = {
     engineFonts: 'Cargando fuentes…',
     engineReady: 'Motor PDF listo · funciona sin conexión',
     engineFailed: 'No se pudo cargar el motor PDF; se reintentará al descargar',
-    networkFailed: 'No se pudo descargar el motor PDF. Comprueba tu conexión e inténtalo de nuevo.',
+    networkFailed: 'Se perdió la conexión al descargar las fuentes o el motor tipográfico, incluso tras reintentarlo. Comprueba tu conexión e inténtalo de nuevo.',
 
     download: 'Descargar PDF',
     downloadGenerating: 'Generando…',

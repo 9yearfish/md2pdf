@@ -170,7 +170,7 @@ const ja: Messages = {
       },
     ],
     footer:
-      `<strong>${BRAND}</strong> · ブラウザで Markdown を PDF に変換。Mermaid の図はベクターのまま。文書はアップロードされません。`,
+      `<strong class="colophon-mark"><span class="brand-free">free</span>md2pdf.com</strong> · ブラウザで Markdown を PDF に変換。Mermaid の図はベクターのまま。文書はアップロードされません。`,
     languagesHeading: '言語',
   },
 
@@ -187,7 +187,7 @@ const ja: Messages = {
     engineFonts: 'フォントを読み込み中…',
     engineReady: 'PDF エンジン準備完了 · オフライン可',
     engineFailed: 'PDF エンジンの読み込みに失敗。ダウンロード時に再試行します',
-    networkFailed: 'PDF エンジンをダウンロードできませんでした。接続を確認して、もう一度お試しください。',
+    networkFailed: 'フォントまたは組版エンジンのダウンロード中に接続が切れ、再試行しても完了しませんでした。接続を確認して、もう一度お試しください。',
 
     download: 'PDF をダウンロード',
     downloadGenerating: '生成中…',
