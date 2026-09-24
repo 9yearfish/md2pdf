@@ -103,7 +103,7 @@ const pt: Messages = {
       {
         heading: 'Um motor tipográfico de verdade',
         body: [
-          'Por baixo dos panos está o Typst, um sistema moderno de composição tipográfica compilado para WebAssembly para rodar no navegador. Ele cuida da paginação, das linhas viúvas e órfãs, do sumário, dos números de página, das notas de rodapé e dos marcadores do PDF, e faz o realce de código com o destacador embutido. O motor tem cerca de 7 MB: carrega em segundo plano, sem você perceber, enquanto escreve, fica guardado no seu dispositivo e depois funciona offline.',
+          'Por baixo dos panos está o Typst, um sistema moderno de composição tipográfica compilado para WebAssembly para rodar no navegador. Ele cuida da paginação, das linhas viúvas e órfãs, do sumário, dos números de página, das notas de rodapé e dos marcadores do PDF, e faz o realce de código com o destacador embutido. O motor tem cerca de 10 MB: carrega em segundo plano, sem você perceber, enquanto escreve, fica guardado no seu dispositivo e depois funciona offline.',
         ],
       },
       {
@@ -148,7 +148,7 @@ const pt: Messages = {
       {
         question: 'Quanto tempo leva o primeiro PDF?',
         answer: [
-          'A página em si tem só algumas dezenas de kilobytes e abre na hora. O motor tipográfico tem cerca de 7 MB e é baixado discretamente em segundo plano depois que a página carrega, normalmente antes de você terminar de escrever; a barra de status lá embaixo mostra o andamento. Com a economia de dados ativada ou em conexões lentas, ele não é baixado antes, e sim no seu primeiro download. Ele fica guardado no seu dispositivo, então as próximas conversões funcionam offline também.',
+          'A página em si tem só algumas dezenas de kilobytes e abre na hora. O motor tipográfico tem cerca de 10 MB e é baixado discretamente em segundo plano depois que a página carrega, normalmente antes de você terminar de escrever; a barra de status lá embaixo mostra o andamento. Ele fica guardado no seu dispositivo, então as próximas conversões funcionam offline também.',
         ],
       },
       {
@@ -181,13 +181,12 @@ const pt: Messages = {
     paperHint: '{paper} · a paginação final é a do PDF',
 
     engineIdle: 'Motor de PDF em espera',
-    engineWillLoad: 'O motor de PDF vai carregar em segundo plano (cerca de 7 MB)',
+    engineWillLoad: 'O motor de PDF vai carregar em segundo plano (cerca de 10 MB)',
     engineCached: 'Motor de PDF em cache',
     engineDownloading: 'Carregando o motor de PDF em segundo plano {pct}%',
     engineStarting: 'Iniciando o motor de PDF…',
     engineFonts: 'Carregando fontes…',
     engineReady: 'Motor de PDF pronto · funciona offline',
-    engineSaveData: 'Economia de dados: o motor de PDF carrega ao baixar',
     engineFailed: 'Falha ao carregar o motor de PDF; nova tentativa ao baixar',
 
     download: 'Baixar PDF',

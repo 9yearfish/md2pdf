@@ -74,7 +74,8 @@ async function download(onProgress: (progress: DownloadProgress) => void): Promi
 
   const parts = await Promise.all(
     PARTS.map(async (url, index) => {
-      const response = await fetch(url);
+      // Low priority: the page's own resources must never wait behind 10 MB.
+      const response = await fetch(url, { priority: 'low' } as RequestInit);
       if (!response.ok) throw new Error(`failed to load the typesetting engine (${response.status})`);
       if (!response.body) {
         const whole = new Uint8Array(await response.arrayBuffer());
@@ -138,17 +139,11 @@ export async function isEngineCached(): Promise<boolean> {
 }
 
 /**
- * Whether it is reasonable to pull 7 MB down before the reader has asked for
- * anything. On a metered or slow connection it is not: it would be exactly the
- * surprise this tool should avoid.
+ * The engine is always fetched in the background as soon as the page has
+ * painted, whatever the connection reports, so a download only has to
+ * typeset. (Chrome's connection estimate misreads distant or proxied visitors
+ * as slow, and a data-saver exception made the first PDF feel broken.)
  */
 export function shouldPrefetch(): boolean {
-  const connection = (
-    navigator as Navigator & {
-      connection?: { saveData?: boolean; effectiveType?: string };
-    }
-  ).connection;
-  if (!connection) return true;
-  if (connection.saveData) return false;
-  return !['slow-2g', '2g', '3g'].includes(connection.effectiveType ?? '');
+  return true;
 }

@@ -179,6 +179,20 @@ export function prepare(
   fontOptions: FontOptions = {},
 ): Promise<boolean> {
   if (!shouldPrefetch()) return Promise.resolve(false);
+  return warm(text, onProgress, lang, fontOptions);
+}
+
+function warm(text: string, onProgress: ProgressFn, lang: LangSetting, fontOptions: FontOptions): Promise<boolean> {
+  // Start the engine download straight away, rather than after the font tier
+  // is known, and fetch that tier's fonts alongside it: the compiler's own
+  // font loading then finds them in the HTTP cache instead of queueing after
+  // the 10 MB module.
+  void loadCompilerModule(({ loaded, total }) => onProgress({ stage: 'downloading-engine', loaded, total })).catch(() => {});
+  void resolveFonts(text, lang, fontOptions)
+    .then(fonts => {
+      for (const url of withMathFonts(fonts).urls) void fetch(url, { priority: 'low' } as RequestInit).catch(() => {});
+    })
+    .catch(() => {});
   // No `hasMath` here on purpose: the warm-up never fetches the maths font
   // (about 290 KB). It is fetched when a PDF with formulas is actually
   // requested; `withMathFonts` only keeps it once a download has needed it,

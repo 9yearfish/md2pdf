@@ -103,7 +103,7 @@ const en: Messages = {
       {
         heading: 'A real typesetting engine',
         body: [
-          'Under the hood is Typst, a modern typesetting system compiled to WebAssembly so it runs in the browser. It handles pagination, widows and orphans, the table of contents, page numbers, footnotes and PDF bookmarks, and highlights code with its built-in highlighter. The engine is about 7 MB: it loads silently in the background while you write, is cached on your device, and works offline after that.',
+          'Under the hood is Typst, a modern typesetting system compiled to WebAssembly so it runs in the browser. It handles pagination, widows and orphans, the table of contents, page numbers, footnotes and PDF bookmarks, and highlights code with its built-in highlighter. The engine is about 10 MB: it loads silently in the background while you write, is cached on your device, and works offline after that.',
         ],
       },
       {
@@ -148,7 +148,7 @@ const en: Messages = {
       {
         question: 'How long does the first PDF take?',
         answer: [
-          'The page itself is only a few dozen kilobytes and opens instantly. The typesetting engine is about 7 MB and downloads quietly in the background after the page loads, usually before you have finished writing; the status bar at the bottom shows where it is. On data-saver mode or a slow connection it is not fetched in advance but when you first download. It is cached on your device, so later conversions work offline too.',
+          'The page itself is only a few dozen kilobytes and opens instantly. The typesetting engine is about 10 MB and downloads quietly in the background after the page loads, usually before you have finished writing; the status bar at the bottom shows where it is. It is cached on your device, so later conversions work offline too.',
         ],
       },
       {
@@ -181,13 +181,12 @@ const en: Messages = {
     paperHint: '{paper} · page breaks follow the downloaded PDF',
 
     engineIdle: 'PDF engine on standby',
-    engineWillLoad: 'PDF engine will load in the background (about 7 MB)',
+    engineWillLoad: 'PDF engine will load in the background (about 10 MB)',
     engineCached: 'PDF engine cached',
     engineDownloading: 'Loading PDF engine in the background {pct}%',
     engineStarting: 'Starting PDF engine…',
     engineFonts: 'Loading fonts…',
     engineReady: 'PDF engine ready · works offline',
-    engineSaveData: 'Data saver: the PDF engine loads when you download',
     engineFailed: 'PDF engine failed to load; it will retry on download',
 
     download: 'Download PDF',

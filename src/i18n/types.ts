@@ -121,7 +121,6 @@ export interface UiMessages {
   engineStarting: string;
   engineFonts: string;
   engineReady: string;
-  engineSaveData: string;
   engineFailed: string;
 
   download: string;

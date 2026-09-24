@@ -457,6 +457,7 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
  * full screen last.
  */
 .actionbar {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   column-gap: 56px;
@@ -1739,3 +1740,23 @@ a.brand:hover .brand-name { text-decoration: underline; text-underline-offset: 3
 
 /* Japanese breaks between phrases, not mid-word, where the browser can. */
 :root:lang(ja) :is(.intro-title, .intro-lead, .empty-title) { word-break: auto-phrase; }
+
+/* The PDF engine's background download, drawn along the action row's bottom
+   hairline: a thin ink line that fills as the bytes arrive, then fades once
+   the engine is ready. */
+.actionbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  width: calc(var(--engine-progress, 0) * 100%);
+  background: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  transition: width 240ms ease-out, opacity 600ms ease;
+}
+html[data-engine="loading"] .actionbar::after { opacity: 1; }
+html[data-engine="ready"] .actionbar::after { opacity: 0; transition-delay: 0s, 700ms; }
+@media (prefers-reduced-motion: reduce) { .actionbar::after { transition: none; } }
+

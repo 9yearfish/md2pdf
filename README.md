@@ -338,10 +338,13 @@ The engine is the one big item and there is no way around it: it is a real
 typesetting system compiled to WebAssembly. `wasm-opt -Oz` was tried and makes
 it worse — 27.0 MB shrinks to 25.4 MB uncompressed but compresses to 6.91 MB
 instead of 6.88 MB. So it is handled rather than shrunk: nothing waits on it,
-because the preview does not need it; it downloads silently after the page has
-loaded; it is skipped on metered or slow connections until someone actually
-asks for a PDF; the status bar shows its progress; and it is kept in Cache
-Storage so it never happens twice.
+because the preview does not need it; it starts downloading at low priority as
+soon as the page has painted, whatever the connection or data-saver setting
+reports, in two parts fetched in parallel (Cloudflare Pages caps files at 25
+MiB; see `splitEngine` in vite.config.ts), with the fonts fetched alongside;
+the action row shows a progress line and the status bar a percentage; and it
+is kept in Cache Storage so it never happens twice. Over Cloudflare's
+on-the-fly brotli it is about 9.8 MB on the wire.
 
 ## Known constraints
 - Raw HTML in Markdown is not supported beyond `<br>` and the page-break

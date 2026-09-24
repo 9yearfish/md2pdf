@@ -51,8 +51,11 @@ const red = value => {
 
 const browser = await chromium.launch({ executablePath: CHROMIUM });
 const errors = [];
-async function open(options = {}, path = '/') {
+async function open(options = {}, path = '/', setup = async () => {}) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'en-US', serviceWorkers: 'block', ...options });
+  // Anything that must hold from the first request, e.g. blocking the engine,
+  // which starts downloading right after the first frame.
+  await setup(context);
   const page = await context.newPage();
   page.on('pageerror', e => errors.push(`pageerror: ${e.message}`));
   await page.goto(BASE + path);
@@ -121,8 +124,7 @@ for (const colorScheme of ['light', 'dark']) {
 
   // An error is the one red thing.
   {
-    const { context, page } = await open({ colorScheme });
-    await context.route(/\.wasm(\?|$)/, route => route.abort());
+    const { context, page } = await open({ colorScheme }, '/', ctx => ctx.route(/\.wasm(\?|$)/, route => route.abort()));
     await page.click('#download');
     await page.waitForSelector('#warnings[data-kind="error"]:not([hidden])', { timeout: 60000 });
     const bg = await page.evaluate(() => getComputedStyle(document.getElementById('warnings')).backgroundColor);

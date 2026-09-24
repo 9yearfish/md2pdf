@@ -2,7 +2,7 @@
 import './styles.css';
 import { DEFAULT_OPTIONS, type DocumentOptions, type PaperSize } from './convert/preamble';
 import type { EngineProgress } from './typst/engine';
-import { isEngineCached } from './typst/wasm-loader';
+import { isEngineCached, loadCompilerModule } from './typst/wasm-loader';
 import { isSupportedImage, readImageFile, type LocalImage } from './convert/images';
 import { HtmlPreview } from './preview/html';
 import { detectLanguage, normalizeLang, SUPPORTED_LANGUAGES } from './convert/lang';
@@ -218,9 +218,14 @@ function syncScroll(): void {
 
 /* ---------- engine ---------- */
 
-function setEngineState(state: 'idle' | 'loading' | 'ready' | 'error', text: string): void {
+function setEngineState(state: 'idle' | 'loading' | 'ready' | 'error', text: string, fraction?: number): void {
   engineStatus.dataset.state = state;
   engineText.textContent = text;
+  // Drives the progress line along the action row (styles.css, [data-engine]).
+  const root = document.documentElement;
+  root.dataset.engine = state;
+  if (fraction !== undefined) root.style.setProperty('--engine-progress', String(fraction));
+  else if (state === 'ready') root.style.setProperty('--engine-progress', '1');
 }
 
 /** Shared by the background warm-up and an explicit download. */
@@ -228,7 +233,7 @@ function onEngineProgress(progress: EngineProgress): void {
   switch (progress.stage) {
     case 'downloading-engine': {
       const pct = progress.total ? Math.min(100, Math.round((progress.loaded / progress.total) * 100)) : 0;
-      setEngineState('loading', t('engineDownloading', { pct }));
+      setEngineState('loading', t('engineDownloading', { pct }), pct / 100);
       if (exporting) progressLabel.textContent = t('downloadEngine', { pct });
       break;
     }
@@ -271,7 +276,6 @@ function scheduleWarmUp(delay = 1500): void {
         .then(([, { prepare }]) => prepare(text, onEngineProgress, resolved?.options.lang ?? options.lang, resolved?.fontOptions))
         .then(started => {
           if (started) setEngineState('ready', t('engineReady'));
-          else setEngineState('idle', t('engineSaveData'));
         })
         .catch(() => setEngineState('error', t('engineFailed')));
     });
@@ -1207,10 +1211,21 @@ function boot(): void {
     },
   );
 
-  // Warm the PDF engine only after the page has fully loaded, so the 7 MB
-  // never competes with what the visitor is looking at.
-  if (document.readyState === 'complete') scheduleWarmUp(800);
-  else window.addEventListener('load', () => scheduleWarmUp(800), { once: true });
+  // Start the engine as soon as the page has painted. Waiting for the load
+  // event cost about two seconds (Mermaid, the editor and web fonts all hold
+  // it back); the download is low priority, so it doesn't slow what the
+  // visitor is looking at.
+  // The engine download itself needs nothing else, so it starts right after
+  // the first frame instead of queueing behind the idle callback, the layout
+  // module and the PDF-side chunks the rest of the warm-up waits for.
+  requestAnimationFrame(() =>
+    setTimeout(() => {
+      void loadCompilerModule(({ loaded, total, fromCache }) => {
+        if (!fromCache) onEngineProgress({ stage: 'downloading-engine', loaded, total });
+      }).catch(() => {});
+    }, 50),
+  );
+  requestAnimationFrame(() => scheduleWarmUp(300));
 }
 
 try {

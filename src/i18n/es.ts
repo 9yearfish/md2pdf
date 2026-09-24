@@ -103,7 +103,7 @@ const es: Messages = {
       {
         heading: 'Un motor tipográfico de verdad',
         body: [
-          'Por dentro funciona Typst, un sistema moderno de composición tipográfica compilado a WebAssembly para que se ejecute en el navegador. Se encarga de la paginación, las líneas viudas y huérfanas, el índice, los números de página, las notas al pie y los marcadores del PDF, y resalta el código con su resaltador integrado. El motor ocupa unos 7 MB: se carga en segundo plano, sin que lo notes, mientras escribes; queda guardado en tu dispositivo y a partir de entonces funciona sin conexión.',
+          'Por dentro funciona Typst, un sistema moderno de composición tipográfica compilado a WebAssembly para que se ejecute en el navegador. Se encarga de la paginación, las líneas viudas y huérfanas, el índice, los números de página, las notas al pie y los marcadores del PDF, y resalta el código con su resaltador integrado. El motor ocupa unos 10 MB: se carga en segundo plano, sin que lo notes, mientras escribes; queda guardado en tu dispositivo y a partir de entonces funciona sin conexión.',
         ],
       },
       {
@@ -148,7 +148,7 @@ const es: Messages = {
       {
         question: '¿Cuánto tarda el primer PDF?',
         answer: [
-          'La página en sí pesa apenas unas decenas de kilobytes y se abre al instante. El motor tipográfico ocupa unos 7 MB y se descarga discretamente en segundo plano después de cargar la página, normalmente antes de que termines de escribir; la barra de estado inferior indica cómo va. Con el modo de ahorro de datos o una conexión lenta no se descarga por adelantado, sino la primera vez que descargas un PDF. Queda guardado en tu dispositivo, así que las conversiones siguientes también funcionan sin conexión.',
+          'La página en sí pesa apenas unas decenas de kilobytes y se abre al instante. El motor tipográfico ocupa unos 10 MB y se descarga discretamente en segundo plano después de cargar la página, normalmente antes de que termines de escribir; la barra de estado inferior indica cómo va. Queda guardado en tu dispositivo, así que las conversiones siguientes también funcionan sin conexión.',
         ],
       },
       {
@@ -181,13 +181,12 @@ const es: Messages = {
     paperHint: '{paper} · la paginación final es la del PDF',
 
     engineIdle: 'Motor PDF en espera',
-    engineWillLoad: 'El motor PDF se cargará en segundo plano (unos 7 MB)',
+    engineWillLoad: 'El motor PDF se cargará en segundo plano (unos 10 MB)',
     engineCached: 'Motor PDF en caché',
     engineDownloading: 'Cargando el motor PDF en segundo plano {pct}%',
     engineStarting: 'Iniciando el motor PDF…',
     engineFonts: 'Cargando fuentes…',
     engineReady: 'Motor PDF listo · funciona sin conexión',
-    engineSaveData: 'Ahorro de datos: el motor PDF se carga al descargar',
     engineFailed: 'No se pudo cargar el motor PDF; se reintentará al descargar',
 
     download: 'Descargar PDF',

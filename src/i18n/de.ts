@@ -103,7 +103,7 @@ const de: Messages = {
       {
         heading: 'Eine echte Satz-Engine',
         body: [
-          'Unter der Haube arbeitet Typst, ein modernes Satzsystem, das nach WebAssembly kompiliert im Browser läuft. Es kümmert sich um Seitenumbruch, Schusterjungen und Hurenkinder, Inhaltsverzeichnis, Seitenzahlen, Fußnoten und PDF-Lesezeichen und hebt Code mit seinem eingebauten Highlighter hervor. Die Engine ist etwa 7 MB groß: Sie lädt still im Hintergrund, während du schreibst, wird auf deinem Gerät zwischengespeichert und funktioniert danach auch offline.',
+          'Unter der Haube arbeitet Typst, ein modernes Satzsystem, das nach WebAssembly kompiliert im Browser läuft. Es kümmert sich um Seitenumbruch, Schusterjungen und Hurenkinder, Inhaltsverzeichnis, Seitenzahlen, Fußnoten und PDF-Lesezeichen und hebt Code mit seinem eingebauten Highlighter hervor. Die Engine ist etwa 10 MB groß: Sie lädt still im Hintergrund, während du schreibst, wird auf deinem Gerät zwischengespeichert und funktioniert danach auch offline.',
         ],
       },
       {
@@ -148,7 +148,7 @@ const de: Messages = {
       {
         question: 'Wie lange dauert das erste PDF?',
         answer: [
-          'Die Seite selbst hat nur ein paar Dutzend Kilobyte und öffnet sich sofort. Die Satz-Engine ist etwa 7 MB groß und lädt nach dem Seitenaufruf still im Hintergrund, meist noch bevor du fertig geschrieben hast; die Statusleiste unten zeigt den Stand. Im Datensparmodus oder bei langsamer Verbindung wird sie nicht vorab geladen, sondern erst beim ersten Download. Danach liegt sie auf deinem Gerät, spätere Umwandlungen klappen also auch offline.',
+          'Die Seite selbst hat nur ein paar Dutzend Kilobyte und öffnet sich sofort. Die Satz-Engine ist etwa 10 MB groß und lädt nach dem Seitenaufruf still im Hintergrund, meist noch bevor du fertig geschrieben hast; die Statusleiste unten zeigt den Stand. Danach liegt sie auf deinem Gerät, spätere Umwandlungen klappen also auch offline.',
         ],
       },
       {
@@ -181,13 +181,12 @@ const de: Messages = {
     paperHint: '{paper} · Seitenumbrüche wie im PDF',
 
     engineIdle: 'PDF-Engine bereit zum Laden',
-    engineWillLoad: 'PDF-Engine lädt im Hintergrund (ca. 7 MB)',
+    engineWillLoad: 'PDF-Engine lädt im Hintergrund (ca. 10 MB)',
     engineCached: 'PDF-Engine zwischengespeichert',
     engineDownloading: 'PDF-Engine lädt im Hintergrund {pct} %',
     engineStarting: 'PDF-Engine startet …',
     engineFonts: 'Schriften werden geladen …',
     engineReady: 'PDF-Engine bereit · auch offline',
-    engineSaveData: 'Datensparmodus: Engine lädt beim Download',
     engineFailed: 'PDF-Engine nicht geladen, neuer Versuch beim Download',
 
     download: 'PDF laden',

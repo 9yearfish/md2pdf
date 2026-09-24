@@ -154,7 +154,7 @@ const fr: Messages = {
       {
         question: 'Combien de temps prend le premier PDF ?',
         answer: [
-          'La page elle-même ne pèse que quelques dizaines de kilo-octets et s’ouvre instantanément. Le moteur de composition fait environ 7 Mo et se télécharge discrètement en arrière-plan une fois la page chargée, en général avant que vous ayez fini d’écrire ; la barre d’état en bas indique où il en est. En mode économie de données ou sur une connexion lente, il n’est pas téléchargé à l’avance mais lors de votre premier téléchargement. Il reste en cache sur votre appareil, si bien que les conversions suivantes fonctionnent aussi hors ligne.',
+          'La page elle-même ne pèse que quelques dizaines de kilo-octets et s’ouvre instantanément. Le moteur de composition fait environ 7 Mo et se télécharge discrètement en arrière-plan une fois la page chargée, en général avant que vous ayez fini d’écrire ; la barre d’état en bas indique où il en est. Il reste en cache sur votre appareil, si bien que les conversions suivantes fonctionnent aussi hors ligne.',
         ],
       },
       {
@@ -193,7 +193,6 @@ const fr: Messages = {
     engineStarting: 'Démarrage du moteur PDF…',
     engineFonts: 'Chargement des polices…',
     engineReady: 'Moteur PDF prêt · fonctionne hors ligne',
-    engineSaveData: 'Économie de données : le moteur PDF se charge au téléchargement',
     engineFailed: 'Échec du chargement du moteur PDF ; nouvel essai au téléchargement',
 
     download: 'Télécharger le PDF',

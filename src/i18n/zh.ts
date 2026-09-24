@@ -102,7 +102,7 @@ const zh: Messages = {
       {
         heading: '排版由真正的排版引擎完成',
         body: [
-          '底层用的是 Typst —— 一个编译成 WebAssembly、可以在浏览器里运行的现代排版系统。分页、孤行控制、目录、页码、脚注和 PDF 书签都由它处理，代码高亮也由它内置的高亮器完成。引擎约 7 MB，会在你编辑时于后台静默加载，缓存在本机，之后可以离线使用。',
+          '底层用的是 Typst —— 一个编译成 WebAssembly、可以在浏览器里运行的现代排版系统。分页、孤行控制、目录、页码、脚注和 PDF 书签都由它处理，代码高亮也由它内置的高亮器完成。引擎约 10 MB，会在你编辑时于后台静默加载，缓存在本机，之后可以离线使用。',
         ],
       },
       {
@@ -147,7 +147,7 @@ const zh: Messages = {
       {
         question: '第一次下载 PDF 要等多久？',
         answer: [
-          '页面本身只有几十 KB，打开是即时的。排版引擎约 7 MB，会在页面打开后于后台静默下载，通常在你写完之前就已就绪，底部状态栏会显示它的状态。使用流量节省模式或慢速网络时不会预先下载，而是在你点击下载时才加载。引擎会缓存在本机，之后离线也能用。',
+          '页面本身只有几十 KB，打开是即时的。排版引擎约 10 MB，会在页面打开后于后台静默下载，通常在你写完之前就已就绪，底部状态栏会显示它的状态。引擎会缓存在本机，之后离线也能用。',
         ],
       },
       {
@@ -178,13 +178,12 @@ const zh: Messages = {
     paperHint: '{paper} · 分页以下载的 PDF 为准',
 
     engineIdle: 'PDF 引擎待命',
-    engineWillLoad: 'PDF 引擎将在后台加载（约 7 MB）',
+    engineWillLoad: 'PDF 引擎将在后台加载（约 10 MB）',
     engineCached: 'PDF 引擎已缓存',
     engineDownloading: 'PDF 引擎后台加载中 {pct}%',
     engineStarting: '正在启动 PDF 引擎…',
     engineFonts: '正在加载字体…',
     engineReady: 'PDF 引擎就绪 · 可离线使用',
-    engineSaveData: '省流量模式：PDF 引擎将在下载时加载',
     engineFailed: 'PDF 引擎加载失败，下载时会重试',
 
     download: '下载 PDF',
