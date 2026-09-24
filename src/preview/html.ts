@@ -263,8 +263,12 @@ export class HtmlPreview {
         if (!first || !match) continue;
         first.content = first.content.slice(match[0].length);
         const box = new state.Token('html_inline', '', 0);
-        box.content = `<input type="checkbox" disabled${match[1] === ' ' ? '' : ' checked'}> `;
+        // The item's text labels its checkbox, so it has an accessible name.
+        box.content = `<label><input type="checkbox" disabled${match[1] === ' ' ? '' : ' checked'}> `;
         inline.children!.unshift(box);
+        const close = new state.Token('html_inline', '', 0);
+        close.content = '</label>';
+        inline.children!.push(close);
         tokens[i - 2].attrJoin('class', 'task');
       }
     });

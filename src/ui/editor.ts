@@ -145,6 +145,8 @@ async function buildCodeMirror(
     state: EditorState.create({
       doc: textarea.value,
       extensions: [
+        // The textarea's accessible name carries over to the editing surface.
+        EditorView.contentAttributes.of({ 'aria-label': textarea.getAttribute('aria-label') ?? 'Markdown' }),
         drawSelection(),
         rectangularSelection(),
         crosshairCursor(),
