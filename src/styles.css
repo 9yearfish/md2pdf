@@ -1646,7 +1646,8 @@ button.disclosure:focus-visible { outline-offset: -2px; }
 }
 
 .about-more details {
-  max-width: 820px;
+  /* Full width, like the feature and guide grids above it; the answer text
+     keeps its reading measure below. */
   border-top: 1px solid var(--rule);
 }
 

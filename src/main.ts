@@ -427,11 +427,34 @@ function save(pdf: Uint8Array): string {
   return link.download;
 }
 
+/** The site's own host, e.g. freemd2pdf.com, from the build's canonical origin. */
+const SITE_HOST = (() => {
+  try {
+    return new URL(import.meta.env.VITE_SITE_URL ?? '').hostname || 'freemd2pdf.com';
+  } catch {
+    return 'freemd2pdf.com';
+  }
+})();
+
+/**
+ * "<first heading>-freemd2pdf.com.pdf". The heading is read as plain text:
+ * Markdown emphasis, code and link syntax are dropped, and `#Title` without
+ * the space counts too, since that is how people often type it.
+ */
 function suggestedFileName(): string {
   const source = doc.getValue();
-  const heading = layoutModule()?.resolveDocument(source, options).meta.title || /^#\s+(.+)$/m.exec(source)?.[1]?.trim();
-  const base = (heading || 'document').replace(/[\\/:*?"<>|]/g, '').slice(0, 60);
-  return `${base || 'document'}.pdf`;
+  const heading =
+    layoutModule()?.resolveDocument(source, options).meta.title ||
+    /^#[ \t]*([^#\s].*?)[ \t#]*$/m.exec(source)?.[1];
+  const base = (heading ?? '')
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/[*_`~]/g, '')
+    .replace(/[\\/:*?"<>|\u0000-\u001f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 60)
+    .trim();
+  return base ? `${base}-${SITE_HOST}.pdf` : `${SITE_HOST}.pdf`;
 }
 
 /* ---------- notices ---------- */

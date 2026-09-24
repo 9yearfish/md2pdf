@@ -49,6 +49,8 @@ check(true, 'engine warmed in the background', `${Math.round((Date.now() - start
 const t = Date.now();
 const pdf = await downloadPdf(page);
 check(pdf.header === '%PDF-', 'download produces a PDF', `${pdf.size} bytes in ${Date.now() - t} ms, ${pdf.name}`);
+// The file is named after the first heading, then the site: "<heading>-freemd2pdf.com.pdf".
+check(pdf.name === '新标题-freemd2pdf.com.pdf', 'download is named <first heading>-<site host>.pdf', pdf.name);
 
 await page.screenshot({ path: `${OUT}/md2pdf-app.png` });
 
