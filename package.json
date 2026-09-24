@@ -13,6 +13,7 @@
     "test:scripts": "node scripts/scripts-render.mjs",
     "test:pages": "node scripts/pages.mjs",
     "icons": "python3 scripts/icons.py",
+    "indexnow": "node scripts/indexnow.mjs",
     "og": "node scripts/og.mjs"
   },
   "dependencies": {
