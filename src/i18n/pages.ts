@@ -392,11 +392,14 @@ function aboutSection(ref: PageRef): string {
     ...body.map(line => `  ${line}`),
     '</details>',
     '<footer>',
-    `  <p>${about.footer}</p>`,
     ...footerNav(ref),
     `  <nav class="languages" aria-label="${escapeHtml(about.languagesHeading)}">`,
     ...languageLinks(ref, '    '),
     '  </nav>',
+    // The brand line closes the page, like a colophon.
+    '  <p class="colophon">' +
+      '<img src="/logo-48.png" srcset="/logo-48.png 1x, /logo-96.png 2x" width="24" height="24" alt="" loading="lazy" />' +
+      `<span>${about.footer}</span></p>`,
     '</footer>',
   ];
   return parts.join('\n      ');
@@ -756,7 +759,6 @@ export function manifest(): string {
       background_color: '#f4f4f4',
       theme_color: '#f4f4f4',
       icons: [
-        { src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' },
         { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
         { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
       ],

@@ -282,7 +282,7 @@ for (const file of images.keys()) {
 check(true, `every share image is a served 1200 x 630 PNG, the largest ${Math.round(largest / 1024)} KB`);
 {
   const html = (await get('/')).body.toString();
-  const icons = ['/favicon.svg', '/apple-touch-icon.png', '/manifest.webmanifest'];
+  const icons = ['/favicon.ico', '/favicon-32.png', '/apple-touch-icon.png', '/manifest.webmanifest'];
   const linked = icons.every(i => html.includes(`href="${i}"`));
   const served = (await Promise.all(icons.map(get))).every(r => r.status === 200);
   const themes = [...html.matchAll(/<meta name="theme-color" content="(#[0-9a-f]{6})" media="\(prefers-color-scheme: (light|dark)\)"/g)];

@@ -217,7 +217,7 @@ svg { flex: none; }
   white-space: nowrap;
 }
 
-.brand-mark { width: 20px; height: 20px; color: var(--ink); }
+.brand-mark { width: 24px; height: 24px; border-radius: 6px; flex: none; }
 /* The wordmark (BRAND): its first word in a lighter ink, the name in full ink. */
 .brand-free { color: var(--brand-red); }
 
@@ -1763,3 +1763,14 @@ html[data-engine="loading"] .actionbar::after { opacity: 1; }
 html[data-engine="ready"] .actionbar::after { opacity: 0; transition-delay: 0s, 700ms; }
 @media (prefers-reduced-motion: reduce) { .actionbar::after { transition: none; } }
 
+
+/* The brand line closes the page: the app icon, then the one-line description. */
+footer .colophon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+}
+footer .colophon img { width: 24px; height: 24px; border-radius: 6px; flex: none; }

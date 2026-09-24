@@ -12,6 +12,7 @@
     "fonts": "python3 scripts/prepare_fonts.py",
     "test:scripts": "node scripts/scripts-render.mjs",
     "test:pages": "node scripts/pages.mjs",
+    "icons": "python3 scripts/icons.py",
     "og": "node scripts/og.mjs"
   },
   "dependencies": {

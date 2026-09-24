@@ -35,7 +35,13 @@ https://:version.:project.pages.dev/*
 /llms-full.txt
   Cache-Control: public, max-age=3600
 
-/favicon.svg
+/favicon.ico
+  Cache-Control: public, max-age=86400
+/favicon-32.png
+  Cache-Control: public, max-age=86400
+/logo-48.png
+  Cache-Control: public, max-age=86400
+/logo-96.png
   Cache-Control: public, max-age=86400
 /apple-touch-icon.png
   Cache-Control: public, max-age=86400

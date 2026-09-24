@@ -1,12 +1,11 @@
 /**
- * Renders the share images and the app icons into public/:
+ * Renders the share images into public/ (app icons and favicons come from
+ * brand/logo.png via scripts/icons.py; run `npm run icons` first):
  *
  *   public/og/<code>[-<slug>].png   1200 x 630, one per page (src/i18n/pages.ts
  *                                   names them), in the page's language: its
  *                                   <h1>, the brand, and a proof sheet with
  *                                   crop marks
- *   public/apple-touch-icon.png     180 x 180
- *   public/icon-192.png, icon-512.png   for the web manifest
  *
  * Run `npm run og` after changing a page's heading, then commit the PNGs; the
  * build fails if a page's image is missing. Text is set with the bundled Noto
@@ -15,7 +14,7 @@
  * stays well under 80 KB.
  */
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -52,8 +51,8 @@ const FACES = [
   face('OG KR', 'NotoSansKR-Bold.full.otf', 700),
 ].join('\n');
 
-/** The brand mark: a page with a folded corner and three lines of text. */
-const MARK = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.75h8.5L19.25 7.5v13.75H6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14.25 2.75V7.75h5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12.5h7M9 15.5h7M9 18.5h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+/** The brand mark: the app icon (brand/logo.png, sized by scripts/icons.py). */
+const LOGO = `data:image/png;base64,${readFileSync(join(PUBLIC, 'logo-96.png')).toString('base64')}`;
 
 function card({ lang, code, title, tagline, claims }) {
   const cjk = CJK[code];
@@ -67,8 +66,8 @@ ${FACES}
 html, body { width: ${OG_WIDTH}px; height: ${OG_HEIGHT}px; overflow: hidden; }
 body { position: relative; background: #f4f4f4; color: #111; font-family: ${sans}; }
 .brand { position: absolute; left: 72px; top: 64px; display: flex; align-items: center; gap: 14px; font: 400 26px/1 ${mono}; letter-spacing: 0.02em; }
-.brand svg { width: 34px; height: 34px; }
-.brand b { color: #6b6b6b; font-weight: 400; }
+.brand .logo { width: 44px; height: 44px; border-radius: 10px; }
+.brand b { color: #fa0f00; font-weight: 400; }
 h1 { position: absolute; left: 72px; top: 150px; width: 640px; font-size: ${size}px; line-height: 1.12; font-weight: 700; letter-spacing: ${cjk ? '0' : '-0.025em'}; text-wrap: balance; word-break: ${code === 'ja' ? 'auto-phrase' : 'normal'}; }
 h1 span { display: block; margin-top: 10px; color: #575757; font-weight: 400; }
 .claims { position: absolute; left: 72px; bottom: 60px; width: 640px; padding-top: 22px; border-top: 1px solid #c4c4c4; color: #3a3a3a; font: 400 ${cjk ? 19 : 17}px/1.4 ${mono}; letter-spacing: ${cjk ? '0.06em' : '0.16em'}; text-transform: uppercase; }
@@ -82,7 +81,7 @@ h1 span { display: block; margin-top: 10px; color: #575757; font-weight: 400; }
 .flow i { display: block; width: 58px; height: 28px; border: 1.5px solid #555; background: #efefef; }
 .flow b { display: block; flex: 1; height: 1.5px; background: #555; }
 </style></head><body>
-<div class="brand">${MARK}<span><b>${esc(BRAND.split(' ')[0])}</b> ${esc(BRAND.split(' ').slice(1).join(' '))}</span></div>
+<div class="brand"><img class="logo" src="${LOGO}" alt=""><span><b>${esc(BRAND.split(' ')[0])}</b>${esc(BRAND.split(' ').slice(1).join(' '))}.com</span></div>
 <h1>${esc(title)}<span>${esc(tagline.replace(/^[\s:：]+/, ''))}</span></h1>
 <div class="claims">${esc(claims)}</div>
 <div class="sheet">
@@ -101,21 +100,16 @@ ${[
 </body></html>`;
 }
 
-function icon(size) {
-  const pad = Math.round(size * 0.16);
-  return `<!doctype html><html><head><style>
-* { margin: 0; } html, body { width: ${size}px; height: ${size}px; background: #111; color: #f4f4f4; }
-svg { position: absolute; inset: ${pad}px; width: ${size - 2 * pad}px; height: ${size - 2 * pad}px; }
-</style></head><body>${MARK}</body></html>`;
-}
 
-/** Grey palette, maximum compression: grey text on grey needs few levels. */
+/** Small palette, high compression: mostly grey, plus the brand red. */
 function optimise(files) {
   const script = `
 import sys
 from PIL import Image
 for path in sys.argv[1:]:
-    image = Image.open(path).convert('L').quantize(colors=48, dither=Image.Dither.NONE)
+    # A small colour palette, not greyscale: the logo and the red "Free"
+    # must keep their colour; everything else is grey and needs few levels.
+    image = Image.open(path).convert('RGB').quantize(colors=64, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
     image.save(path, optimize=True)
 `;
   try {
@@ -147,11 +141,7 @@ for (const ref of PAGES) {
   await render(card({ lang: messages.locale.lang, code: messages.locale.code, title, tagline, claims }), OG_WIDTH, OG_HEIGHT, out);
   written.push(out);
 }
-for (const [name, size] of [['apple-touch-icon.png', 180], ['icon-192.png', 192], ['icon-512.png', 512]]) {
-  const out = join(PUBLIC, name);
-  await render(icon(size), size, size, out);
-  written.push(out);
-}
+// App icons and favicons are resized from brand/logo.png by scripts/icons.py.
 await browser.close();
 
 optimise(written);
