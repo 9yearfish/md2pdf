@@ -203,6 +203,10 @@ function head(ref: PageRef, origin: string): string {
     `<meta property="og:image:height" content="${OG_HEIGHT}" />`,
     `<meta property="og:image:alt" content="${escapeHtml(heading)}" />`,
     '<meta name="twitter:card" content="summary_large_image" />',
+    // X falls back to og:title/og:description, but some clients and card
+    // checkers read only the twitter: names.
+    `<meta name="twitter:title" content="${escapeHtml(copy?.title ?? meta.ogTitle)}" />`,
+    `<meta name="twitter:description" content="${escapeHtml(copy?.description ?? meta.ogDescription)}" />`,
     `<meta name="twitter:image" content="${origin}${ogImagePath(ref)}" />`,
     `<meta name="twitter:image:alt" content="${escapeHtml(heading)}" />`,
   ];
