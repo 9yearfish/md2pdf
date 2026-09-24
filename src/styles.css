@@ -226,7 +226,7 @@ svg { flex: none; }
   display: flex;
   gap: 20px;
   min-width: 0;
-  margin: 0 0 0 auto;
+  margin: 0;
   padding: 0;
   list-style: none;
   color: var(--faint);
@@ -236,7 +236,11 @@ svg { flex: none; }
   white-space: nowrap;
 }
 
+.privacy-wrap { min-width: 0; margin-left: auto; }
 .privacy li { display: inline-flex; align-items: center; gap: 7px; }
+.privacy .dup { display: none; }
+/* The wordmark reads in lowercase, like the domain it names. */
+.brand-name { text-transform: lowercase; }
 .privacy .icon { width: 14px; height: 14px; color: var(--ink-2); }
 
 /* The page's <h1> and one line of lead: enough to know what this is, then the tool. */
@@ -1297,7 +1301,6 @@ button.disclosure:focus-visible { outline-offset: -2px; }
 .compact :is(#new-doc, #open-file) { width: 36px; padding: 0; }
 
 @media (max-width: 1180px) {
-  .privacy li:nth-child(n + 4) { display: none; }
   #new-doc .label, #open-file .label { display: none; }
   #new-doc, #open-file { width: 36px; padding: 0; }
 }
@@ -1306,7 +1309,6 @@ button.disclosure:focus-visible { outline-offset: -2px; }
   /* The panes stack; each keeps a comfortable fixed height. */
   .split { grid-template-columns: minmax(0, 1fr); row-gap: 40px; }
   :root { --pane-height: clamp(360px, 60vh, 720px); }
-  .privacy li:nth-child(n + 3) { display: none; }
   /* One column of panes, so the row is one line: counts and layout, then actions. */
   .actionbar, .fullscreen .actionbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; }
   .actions-files { margin-left: 0; }
@@ -1324,8 +1326,6 @@ button.disclosure:focus-visible { outline-offset: -2px; }
   /* Room for the bottom bar, so it never covers the end of the page. */
   body { padding-bottom: calc(var(--bar) + env(safe-area-inset-bottom)); }
   .toolbar { gap: 12px; height: 52px; }
-  /* The claim that matters most: nothing is uploaded. */
-  .privacy li:first-child { display: none; }
   .intro { padding-block: 8px 16px; }
   .intro-lead { font-size: 15px; }
 
@@ -1424,16 +1424,7 @@ button.disclosure:focus-visible { outline-offset: -2px; }
   }
 }
 
-@media (max-width: 440px) {
-  .brand-name {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-}
+
 
 /* Nothing moves that does not have to: no entrances, sweeps, pulses or fades. */
 @media (prefers-reduced-motion: reduce) {
@@ -1778,4 +1769,47 @@ footer .colophon img { width: 24px; height: 24px; border-radius: 6px; flex: none
 /* Footer links are small text: give each a comfortable touch target on phones. */
 @media (max-width: 760px) {
   .about :is(.languages, .guides-nav) a { display: inline-block; padding: 6px 0; }
+}
+
+/* Narrower screens: the claims leave the header line for a row of their own,
+   all five on one line (never stacked); on phones that row runs as a slow,
+   seamless loop, like paper feeding through a printer. */
+@media (max-width: 1180px) {
+  .toolbar { flex-wrap: wrap; height: auto; column-gap: 16px; row-gap: 0; padding-top: 14px; }
+  .toolbar > .lang { margin-left: auto; }
+  .privacy-wrap {
+    order: 3;
+    flex: 1 0 100%;
+    margin: 12px 0 0;
+    padding-block: 10px;
+    border-top: 1px solid var(--rule);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .privacy-wrap::-webkit-scrollbar { display: none; }
+}
+
+@media (max-width: 760px) {
+  .privacy-wrap {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 20px, #000 calc(100% - 20px), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 20px, #000 calc(100% - 20px), transparent);
+  }
+  .privacy {
+    width: max-content;
+    /* The trailing gap makes both copies the same width, so -50% loops cleanly. */
+    padding-right: 20px;
+    animation: privacy-feed 26s linear infinite;
+  }
+  .privacy .dup { display: inline-flex; }
+  .privacy-wrap:hover .privacy, .privacy-wrap:active .privacy { animation-play-state: paused; }
+}
+
+@keyframes privacy-feed { to { transform: translateX(-50%); } }
+
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  /* Still: one line the reader can swipe, without the loop's copy. */
+  .privacy-wrap { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+  .privacy { padding-right: 0; }
+  .privacy .dup { display: none; }
 }

@@ -466,13 +466,12 @@ export function renderPage(template: string, ref: PageRef, origin: string, redir
     if (key === 'brandName') return escapeHtml(BRAND.split(' ').slice(1).join(' '));
     if (key === 'paperHint') return escapeHtml(fill(messages.ui.paperHint, { paper: 'A4' }));
     if (key === 'privacyItems') {
-      return messages.page.privacyBadge
-        .split(' · ')
-        .map(
-          (item, i) =>
-            `<li><svg class="icon" aria-hidden="true"><use href="#${PRIVACY_ICONS[i] ?? 'i-check'}"/></svg>${escapeHtml(item)}</li>`,
-        )
-        .join('');
+      const items = messages.page.privacyBadge.split(' · ');
+      const li = (item: string, i: number, extra = '') =>
+        `<li${extra}><svg class="icon" aria-hidden="true"><use href="#${PRIVACY_ICONS[i] ?? 'i-check'}"/></svg>${escapeHtml(item)}</li>`;
+      // A second, hidden-from-assistive-tech copy lets the phone layout run the
+      // line as a seamless loop; it is display:none everywhere else.
+      return items.map((item, i) => li(item, i)).join('') + items.map((item, i) => li(item, i, ' class="dup" aria-hidden="true"')).join('');
     }
     const [section, name] = key.split('.');
     const table =
