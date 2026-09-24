@@ -1757,9 +1757,13 @@ html[data-engine="ready"] .actionbar::after { opacity: 0; transition-delay: 0s, 
 
 /* The brand line closes the page: the app icon, then the one-line description. */
 footer .colophon {
-  display: flex;
+  /* Icon, the line, then the version at the far end; on phones the version
+     drops under the line so the text keeps the full width. */
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
+  column-gap: 10px;
+  row-gap: 6px;
   margin-top: 22px;
   padding-top: 18px;
   border-top: 1px solid var(--rule);
@@ -1814,4 +1818,9 @@ footer .colophon img { width: 24px; height: 24px; border-radius: 6px; flex: none
   .privacy .dup { display: none; }
 }
 
-footer .colophon .build { margin-left: auto; color: var(--faint); font: 400 11px/1 var(--mono); letter-spacing: 0.04em; white-space: nowrap; }
+footer .colophon .build { color: var(--faint); font: 400 11px/1 var(--mono); letter-spacing: 0.04em; white-space: nowrap; }
+@media (max-width: 760px) {
+  footer .colophon { grid-template-columns: 24px minmax(0, 1fr); align-items: start; }
+  footer .colophon img { margin-top: 1px; }
+  footer .colophon .build { grid-column: 2; }
+}
