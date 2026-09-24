@@ -289,8 +289,28 @@ Cloudflare Pages' 25 MiB limit.
 
 ## Privacy
 
-The Content-Security-Policy has no `connect-src` beyond `'self'`, which is what
-makes "nothing is uploaded" an enforced property rather than a promise.
+Documents never leave the browser: parsing, typesetting and PDF generation all
+run in the tab, and no code in the app sends document text, images or the PDF
+anywhere.
+
+The site does use **Cloudflare Web Analytics**, which Cloudflare Pages injects
+into every page: a script from `https://static.cloudflareinsights.com` that
+sends an anonymous beacon to `https://cloudflareinsights.com`. It sets no
+cookies and records page visits (URL, referrer, timing, country); it never sees
+document content. The Content-Security-Policy in `public/_headers` allows
+exactly those two origins beyond `'self'` (`script-src` and `connect-src`
+respectively) and nothing else, so the browser still blocks every other
+destination. The site copy says the same: the page connects only to the site
+itself and to Cloudflare's cookie-free visit counter.
+
+To remove the analytics, turn off Web Analytics for the Pages project in the
+Cloudflare dashboard (otherwise Cloudflare keeps injecting the script, and the
+CSP would then block it and report violations), and remove
+`https://static.cloudflareinsights.com` from `script-src` and
+`https://cloudflareinsights.com` from `connect-src` in `public/_headers`. The
+CSP is then back to `connect-src 'self' blob: data:`, and the copy's mention of
+the visit counter in `src/i18n/` can go too.
+
 `frame-src 'self' blob:` exists only for Print's hidden PDF frame (without
 it, `default-src 'self'` blocks the Blob URL). `X-Frame-Options: DENY` and
 `frame-ancestors 'none'` still stop other sites from framing the app; they do

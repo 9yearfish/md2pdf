@@ -41,7 +41,7 @@ const de: LandingDictionary<'de'> = {
         {
           heading: 'Privat, weil es gar nicht anders geht',
           body: [
-            'In ChatGPT-Antworten steckt oft Unfertiges: Code, Vertragsentwürfe, Lernzettel. Hier verlassen sie dein Gerät nie. Die Content Security Policy der Seite verbietet, irgendetwas irgendwohin zu senden; die Umwandlung passiert komplett in diesem Tab.',
+            'In ChatGPT-Antworten steckt oft Unfertiges: Code, Vertragsentwürfe, Lernzettel. Hier verlassen sie dein Gerät nie: Die Umwandlung passiert komplett in diesem Tab. Die Content Security Policy der Seite erlaubt Verbindungen nur zu dieser Seite und zum cookiefreien Besucherzähler von Cloudflare, der deinen Text nie sieht.',
           ],
         },
       ],
@@ -198,7 +198,7 @@ for jahre in (5, 10, 15, 20):
         {
           question: 'Wird etwas, das ich einfüge, an einen Server geschickt?',
           answer: [
-            'Nein. Die Umwandlung läuft komplett in deinem Browser; die Seite darf deinen Text nirgendwohin senden. Dein Entwurf liegt nur in diesem Browser. Kostenlos ist das Ganze auch – ohne Anmeldung und ohne Wasserzeichen.',
+            'Nein. Die Umwandlung läuft komplett in deinem Browser; die Seite sendet deinen Text nirgendwohin. Dein Entwurf liegt nur in diesem Browser. Kostenlos ist das Ganze auch – ohne Anmeldung und ohne Wasserzeichen.',
           ],
         },
       ],
@@ -301,7 +301,7 @@ export function freigabeStufen(betrag: number): Freigabe[] {
         {
           heading: 'Kein Konto, kein Upload',
           body: [
-            'Hier gibt es nichts, wo du dich anmelden müsstest. Der Konverter läuft in deinem Browser, und die Seite darf das, was du einfügst, an keinen Server schicken.',
+            'Hier gibt es nichts, wo du dich anmelden müsstest. Der Konverter läuft in deinem Browser, und die Seite schickt das, was du einfügst, an keinen Server.',
           ],
         },
       ],
@@ -446,7 +446,7 @@ console.log(heizkosten({ waermebedarf: 20000, jaz: 3.5, strompreis: 0.28 }).toFi
         {
           question: 'Wird mein Diagramm zum Rendern auf einen Server geladen?',
           answer: [
-            'Nein. Mermaid läuft in deinem Browser, die PDF-Engine ebenfalls. Die Seite darf dein Dokument nirgendwohin senden. Kostenlos ist es auch – ohne Anmeldung und ohne Wasserzeichen.',
+            'Nein. Mermaid läuft in deinem Browser, die PDF-Engine ebenfalls. Die Seite sendet dein Dokument nirgendwohin. Kostenlos ist es auch – ohne Anmeldung und ohne Wasserzeichen.',
           ],
         },
       ],

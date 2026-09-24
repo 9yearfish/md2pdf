@@ -41,7 +41,7 @@ const pt: LandingDictionary<'pt'> = {
         {
           heading: 'Privado por construção',
           body: [
-            'Respostas do ChatGPT costumam ter coisas de trabalho: código, contratos, anotações de estudo. Aqui elas nunca saem do seu dispositivo. A política de segurança de conteúdo (CSP) da página proíbe enviar qualquer coisa para qualquer lugar, então a conversão acontece inteira nesta aba.',
+            'Respostas do ChatGPT costumam ter coisas de trabalho: código, contratos, anotações de estudo. Aqui elas nunca saem do seu dispositivo: a conversão acontece inteira nesta aba. A política de segurança de conteúdo (CSP) da página só permite conexões com este site e com o contador de visitas sem cookies da Cloudflare, que nunca vê o seu texto.',
           ],
         },
       ],
@@ -173,7 +173,7 @@ print(round(sac[0], 2), round(sac[-1], 2))
         {
           heading: 'Nada sai do seu navegador',
           body: [
-            'A conversão roda localmente nesta aba. A política de segurança de conteúdo (CSP) da página proíbe enviar seu texto para qualquer servidor, inclusive o nosso.',
+            'A conversão roda localmente nesta aba. Seu texto não é enviado a servidor nenhum, nem ao nosso; a política de segurança de conteúdo (CSP) da página só permite conexões com este site e com o contador de visitas sem cookies da Cloudflare, que nunca o vê.',
           ],
         },
       ],
@@ -305,7 +305,7 @@ for angulo in (15, 30, 45, 60, 75):
         {
           heading: 'Sem conta e sem upload',
           body: [
-            'Não há nada para entrar ou cadastrar. O conversor roda no seu navegador, e a página não tem permissão para enviar o que você cola para servidor nenhum.',
+            'Não há nada para entrar ou cadastrar. O conversor roda no seu navegador, e a página nunca envia o que você cola para servidor nenhum.',
           ],
         },
       ],
@@ -453,7 +453,7 @@ console.log(etanol < gasolina ? 'Etanol' : 'Gasolina', etanol.toFixed(3), gasoli
         {
           question: 'Meu diagrama é enviado para algum servidor de renderização?',
           answer: [
-            'Não. O Mermaid roda no seu navegador, assim como o motor de PDF. A página não tem permissão para enviar seu documento para lugar nenhum.',
+            'Não. O Mermaid roda no seu navegador, assim como o motor de PDF. A página nunca envia seu documento para lugar nenhum.',
           ],
         },
       ],
@@ -552,7 +552,7 @@ stateDiagram-v2
         {
           heading: 'Imagens: é só arrastar',
           body: [
-            'A página nunca se conecta a outro servidor, então não baixa imagens da internet. As imagens guardadas no repositório são fáceis: solte os arquivos na página e cada referência a elas é preenchida, não importa a pasta indicada no README. As que ficam hospedadas em outro lugar, inclusive os selos do shields.io no topo de muitos README, aparecem no PDF como um aviso curto de «imagem indisponível»; apague essas linhas ou baixe a imagem e arraste para cá.',
+            'A política de segurança da página bloqueia imagens de outros sites, então ela não baixa imagens da internet. As imagens guardadas no repositório são fáceis: solte os arquivos na página e cada referência a elas é preenchida, não importa a pasta indicada no README. As que ficam hospedadas em outro lugar, inclusive os selos do shields.io no topo de muitos README, aparecem no PDF como um aviso curto de «imagem indisponível»; apague essas linhas ou baixe a imagem e arraste para cá.',
           ],
         },
         {
@@ -572,7 +572,7 @@ stateDiagram-v2
         {
           question: 'Por que as imagens sumiram do PDF?',
           answer: [
-            'Imagens com caminho relativo, como <code>docs/arquitetura.png</code>, são arquivos do repositório, e esta página não enxerga o seu repositório: arraste esses arquivos para a página e eles são incorporados. Imagens referenciadas por endereço web, selos incluídos, nunca são baixadas, porque aqui nada pode se conectar a outros servidores.',
+            'Imagens com caminho relativo, como <code>docs/arquitetura.png</code>, são arquivos do repositório, e esta página não enxerga o seu repositório: arraste esses arquivos para a página e eles são incorporados. Imagens referenciadas por endereço web, selos incluídos, nunca são baixadas, porque a política de segurança da página bloqueia imagens de outros servidores.',
           ],
         },
         {

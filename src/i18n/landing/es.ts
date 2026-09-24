@@ -41,7 +41,7 @@ const es: LandingDictionary<'es'> = {
         {
           heading: 'Privado por diseño',
           body: [
-            'Las respuestas de ChatGPT suelen contener trabajo a medias: código, contratos, apuntes. Aquí no salen de tu dispositivo. La política de seguridad de contenido de la página prohíbe enviar nada a ningún sitio, así que la conversión ocurre entera en esta pestaña.',
+            'Las respuestas de ChatGPT suelen contener trabajo a medias: código, contratos, apuntes. Aquí no salen de tu dispositivo: la conversión ocurre entera en esta pestaña. La política de seguridad de contenido de la página solo permite conectar con este sitio y con el contador de visitas sin cookies de Cloudflare, que nunca ve tu texto.',
           ],
         },
       ],
@@ -165,7 +165,7 @@ for anios in (15, 20, 25, 30):
         {
           heading: 'Nada sale de tu navegador',
           body: [
-            'La conversión se hace en local, en esta pestaña. La política de seguridad de contenido de la página prohíbe enviar tu texto a cualquier servidor, incluido el nuestro.',
+            'La conversión se hace en local, en esta pestaña. Tu texto no se envía a ningún servidor, tampoco al nuestro; la política de seguridad de contenido de la página solo permite conectar con este sitio y con el contador de visitas sin cookies de Cloudflare, que nunca lo ve.',
           ],
         },
       ],
@@ -283,7 +283,7 @@ print(resultado)  # 1
         {
           heading: 'Sin cuenta y sin subir nada',
           body: [
-            'No hay que iniciar sesión en ningún sitio. El conversor funciona en tu navegador y la página no tiene permitido enviar lo que pegas a ningún servidor.',
+            'No hay que iniciar sesión en ningún sitio. El conversor funciona en tu navegador y la página nunca envía lo que pegas a ningún servidor.',
           ],
         },
       ],
@@ -429,7 +429,7 @@ console.log(\`Total: \${total} €, por persona: \${(total / viajeros).toFixed(2
         {
           question: '¿Se sube mi diagrama a algún servidor para dibujarlo?',
           answer: [
-            'No. Mermaid funciona en tu navegador, igual que el motor del PDF. La página no tiene permitido enviar tu documento a ningún sitio.',
+            'No. Mermaid funciona en tu navegador, igual que el motor del PDF. La página nunca envía tu documento a ningún sitio.',
           ],
         },
       ],
@@ -526,7 +526,7 @@ Edita cualquier bloque a la izquierda y la vista previa te sigue; pulsa **Descar
         {
           heading: 'Imágenes: arrástralas',
           body: [
-            'La página nunca se conecta a otro servidor, así que no descarga imágenes de internet. Las imágenes guardadas en el repositorio son fáciles: suelta los archivos en la página y cada referencia a ellas se completa, sea cual sea la carpeta que indique el README. Las que están alojadas en otro sitio, incluidas las insignias de shields.io que encabezan muchos README, aparecen en el PDF como un breve aviso de «imagen no disponible»; borra esas líneas o descarga la imagen y arrástrala.',
+            'La política de seguridad de la página bloquea las imágenes de otros sitios, así que no descarga imágenes de internet. Las imágenes guardadas en el repositorio son fáciles: suelta los archivos en la página y cada referencia a ellas se completa, sea cual sea la carpeta que indique el README. Las que están alojadas en otro sitio, incluidas las insignias de shields.io que encabezan muchos README, aparecen en el PDF como un breve aviso de «imagen no disponible»; borra esas líneas o descarga la imagen y arrástrala.',
           ],
         },
         {
@@ -546,7 +546,7 @@ Edita cualquier bloque a la izquierda y la vista previa te sigue; pulsa **Descar
         {
           question: '¿Por qué faltan las imágenes en el PDF?',
           answer: [
-            'Las imágenes con rutas relativas, como <code>docs/arquitectura.png</code>, son archivos del repositorio, y esta página no puede ver tu repositorio: arrastra esos archivos a la página y quedan incrustados. Las imágenes enlazadas con una dirección web, insignias incluidas, no se descargan nunca, porque aquí no se permite conectar con otros servidores.',
+            'Las imágenes con rutas relativas, como <code>docs/arquitectura.png</code>, son archivos del repositorio, y esta página no puede ver tu repositorio: arrastra esos archivos a la página y quedan incrustados. Las imágenes enlazadas con una dirección web, insignias incluidas, no se descargan nunca, porque la política de seguridad de la página bloquea las imágenes de otros servidores.',
           ],
         },
         {

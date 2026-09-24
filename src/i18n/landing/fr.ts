@@ -47,7 +47,7 @@ const fr: LandingDictionary<'fr'> = {
         {
           heading: 'Confidentiel par conception',
           body: [
-            'Les réponses de ChatGPT contiennent souvent du travail en cours : code, contrats, fiches de révision. Ici, elles ne quittent jamais votre appareil. La politique de sécurité du contenu de la page interdit tout envoi vers un serveur ; la conversion se fait entièrement dans cet onglet.',
+            'Les réponses de ChatGPT contiennent souvent du travail en cours : code, contrats, fiches de révision. Ici, elles ne quittent jamais votre appareil : la conversion se fait entièrement dans cet onglet. La politique de sécurité du contenu de la page n’autorise que ce site et le compteur de visites sans cookies de Cloudflare, qui ne voit jamais votre texte.',
           ],
         },
       ],
@@ -170,7 +170,7 @@ for annees in (15, 20, 25):
         {
           heading: 'Sans compte, sans envoi',
           body: [
-            'Il n’y a rien à quoi se connecter. Le convertisseur tourne dans votre navigateur, et la page n’a pas le droit d’envoyer ce que vous collez à un serveur, quel qu’il soit.',
+            'Il n’y a rien à quoi se connecter. Le convertisseur tourne dans votre navigateur, et la page n’envoie jamais ce que vous collez à un serveur, quel qu’il soit.',
           ],
         },
       ],
@@ -318,7 +318,7 @@ console.log(\`Économie annuelle : \${(gaz - pac).toFixed(0)} €\`);
         {
           question: 'Mon diagramme est-il envoyé sur un serveur de rendu ?',
           answer: [
-            'Non. Mermaid tourne dans votre navigateur, tout comme le moteur PDF. La page n’a pas le droit d’envoyer votre document où que ce soit.',
+            'Non. Mermaid tourne dans votre navigateur, tout comme le moteur PDF. La page n’envoie jamais votre document où que ce soit.',
           ],
         },
       ],

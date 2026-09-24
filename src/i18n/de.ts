@@ -118,7 +118,7 @@ const de: Messages = {
       {
         question: 'Wird mein Dokument auf einen Server hochgeladen?',
         answer: [
-          'Nein. Einlesen, Satz und PDF-Erzeugung passieren komplett in deinem Browser. Die Content Security Policy der Seite verbietet Netzwerkanfragen an jede andere Adresse als die Seite selbst – „nichts wird hochgeladen“ ist also kein Versprechen, sondern eine Einschränkung, die dein Browser durchsetzt.',
+          'Nein. Einlesen, Satz und PDF-Erzeugung passieren komplett in deinem Browser. Text, Bilder und PDF verlassen dein Gerät nie. Die Content Security Policy der Seite erlaubt Verbindungen nur zur Seite selbst und zum anonymen, cookiefreien Besucherzähler von Cloudflare, der Seitenaufrufe zählt und nie dein Dokument erhält; alle anderen Ziele blockiert dein Browser.',
         ],
       },
       {

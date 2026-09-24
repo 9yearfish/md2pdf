@@ -41,7 +41,7 @@ const en: LandingDictionary<'en'> = {
         {
           heading: 'Private by construction',
           body: [
-            'ChatGPT answers often contain work in progress: code, contracts, study notes. Here they never leave your device. The page’s Content Security Policy forbids sending anything anywhere, so the conversion happens entirely in this tab.',
+            'ChatGPT answers often contain work in progress: code, contracts, study notes. Here they never leave your device: the conversion happens entirely in this tab. The page’s Content Security Policy allows connections only to this site and to Cloudflare’s cookie-free visit counter, which never sees your text.',
           ],
         },
       ],
@@ -195,7 +195,7 @@ for years in (1, 5, 10, 20):
         {
           question: 'Is anything I paste sent to a server?',
           answer: [
-            'No. The conversion runs entirely in your browser; the page is not allowed to send your text anywhere. Your draft is kept only in this browser.',
+            'No. The conversion runs entirely in your browser; the page never sends your text anywhere. Your draft is kept only in this browser.',
           ],
         },
       ],
@@ -298,7 +298,7 @@ export function take(bucket: Bucket, now: number, rate: number, capacity: number
         {
           heading: 'Nothing leaves your browser',
           body: [
-            'The conversion runs locally in this tab. The page’s Content Security Policy forbids sending your text to any server, including ours.',
+            'The conversion runs locally in this tab. Your text is never sent to any server, including ours; the page’s Content Security Policy allows connections only to this site and to Cloudflare’s cookie-free visit counter, which never sees it.',
           ],
         },
       ],
@@ -415,7 +415,7 @@ print(solve(2, -3, -5))  # (2.5, -1.0)
         {
           heading: 'No account, no upload',
           body: [
-            'There is nothing to sign in to. The converter runs in your browser, and the page is not allowed to send what you paste to any server.',
+            'There is nothing to sign in to. The converter runs in your browser, and the page never sends what you paste to any server.',
           ],
         },
       ],
@@ -554,7 +554,7 @@ console.log(payback({ cost: 9800, kwhPerYear: 6000, selfUse: 0.6, price: 0.22, e
         {
           question: 'Is my diagram uploaded to a rendering server?',
           answer: [
-            'No. Mermaid runs in your browser, and so does the PDF engine. The page is not allowed to send your document anywhere.',
+            'No. Mermaid runs in your browser, and so does the PDF engine. The page never sends your document anywhere.',
           ],
         },
       ],
@@ -653,7 +653,7 @@ Edit any block on the left and the preview follows; press **Download PDF** for t
         {
           heading: 'Images: drag them in',
           body: [
-            'The page never contacts another server, so it does not fetch images from the web. Images stored in the repository are easy: drop the files onto the page and every reference to them, whatever folder the README names, is filled in. Images that live elsewhere, including the badges from shields.io at the top of many READMEs, show up in the PDF as a short “image unavailable” note; delete those lines, or download the image and drop it in.',
+            'The page’s security policy blocks images from other websites, so it does not fetch images from the web. Images stored in the repository are easy: drop the files onto the page and every reference to them, whatever folder the README names, is filled in. Images that live elsewhere, including the badges from shields.io at the top of many READMEs, show up in the PDF as a short “image unavailable” note; delete those lines, or download the image and drop it in.',
           ],
         },
         {
@@ -673,7 +673,7 @@ Edit any block on the left and the preview follows; press **Download PDF** for t
         {
           question: 'Why are the images missing from my PDF?',
           answer: [
-            'Relative images such as <code>docs/architecture.png</code> are files in the repository, and this page cannot see your repository: drop the image files onto the page and they are embedded. Images referenced by a web address, badges included, are never fetched, because nothing here is allowed to contact another server.',
+            'Relative images such as <code>docs/architecture.png</code> are files in the repository, and this page cannot see your repository: drop the image files onto the page and they are embedded. Images referenced by a web address, badges included, are never fetched, because the page’s security policy blocks images from other servers.',
           ],
         },
         {
@@ -795,7 +795,7 @@ MIT
         {
           heading: 'Nothing leaves your machine',
           body: [
-            'Instruction files tend to mention internal hostnames, directory layouts and deployment steps. This page typesets them in your browser and cannot send them anywhere: its Content Security Policy forbids connections to other servers.',
+            'Instruction files tend to mention internal hostnames, directory layouts and deployment steps. This page typesets them in your browser and never sends them anywhere: its Content Security Policy blocks every server except this site and Cloudflare’s anonymous visit counter, which never sees your files.',
           ],
         },
       ],
