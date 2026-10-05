@@ -72,6 +72,8 @@ const de: Messages = {
     live: 'Live',
     viewSwitch: 'Ansicht',
     fullscreen: 'Vollbild-Bearbeitung',
+    fullscreenPreview: 'PDF-Vorschau im Vollbild',
+    previewUnavailable: 'Dieser Browser kann PDFs hier nicht anzeigen. Öffnen Sie die PDF-Datei.',
     heroTitle: 'Markdown zu PDF',
     heroTagline: ': gesetzt im Browser.',
     heroLead: 'Markdown einfügen oder hineinziehen und ein sauber gesetztes PDF herunterladen, mit Mermaid-Diagrammen als Vektorgrafik. Das Dokument verlässt den Browser nie.',

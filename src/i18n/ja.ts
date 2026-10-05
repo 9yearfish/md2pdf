@@ -71,6 +71,8 @@ const ja: Messages = {
     live: 'ライブ',
     viewSwitch: '表示',
     fullscreen: '全画面で編集',
+    fullscreenPreview: 'PDF を全画面でプレビュー',
+    previewUnavailable: 'このブラウザーでは PDF を埋め込み表示できません。PDF を開いて確認してください。',
     heroTitle: 'Markdown を PDF に',
     heroTagline: '：ブラウザの中で組版。',
     heroLead: 'Markdown を貼り付けるかドロップするだけで、きちんと組版された PDF をダウンロードできます。Mermaid の図はベクターのまま。文書がブラウザの外に出ることはありません。',

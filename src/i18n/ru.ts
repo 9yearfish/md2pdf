@@ -72,6 +72,8 @@ const ru: Messages = {
     live: 'Вживую',
     viewSwitch: 'Показать',
     fullscreen: 'Полноэкранное редактирование',
+    fullscreenPreview: 'Полноэкранный просмотр PDF',
+    previewUnavailable: 'Этот браузер не может отобразить PDF здесь. Откройте PDF для просмотра.',
     heroTitle: 'Markdown в PDF',
     heroTagline: ': вёрстка прямо в браузере.',
     heroLead: 'Вставьте или перетащите Markdown и скачайте аккуратно свёрстанный PDF с векторными диаграммами Mermaid. Документ никогда не покидает браузер.',

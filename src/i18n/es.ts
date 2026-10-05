@@ -72,6 +72,8 @@ const es: Messages = {
     live: 'En vivo',
     viewSwitch: 'Mostrar',
     fullscreen: 'Edición a pantalla completa',
+    fullscreenPreview: 'Vista previa del PDF a pantalla completa',
+    previewUnavailable: 'Este navegador no puede mostrar PDF aquí. Abre el PDF para verlo.',
     heroTitle: 'Markdown a PDF',
     heroTagline: ': maquetado en tu navegador.',
     heroLead: 'Pega o arrastra Markdown y descarga un PDF bien compuesto, con los diagramas Mermaid en vectorial. Tu documento nunca sale del navegador.',

@@ -72,6 +72,8 @@ const pt: Messages = {
     live: 'Ao vivo',
     viewSwitch: 'Mostrar',
     fullscreen: 'Edição em tela cheia',
+    fullscreenPreview: 'Prévia do PDF em tela cheia',
+    previewUnavailable: 'Este navegador não pode exibir PDFs aqui. Abra o PDF para visualizar.',
     heroTitle: 'Markdown para PDF',
     heroTagline: ': diagramado no seu navegador.',
     heroLead: 'Cole ou arraste Markdown e baixe um PDF bem diagramado, com os diagramas Mermaid em vetor. Seu documento nunca sai do navegador.',

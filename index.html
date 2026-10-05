@@ -39,6 +39,7 @@
       <symbol id="i-paste" viewBox="0 0 16 16"><path d="M5.5 2.75h-2.75v11.5h10.5V2.75H10.5M5.5 1.75h5v2.5h-5zM5.25 8.25h5.5M5.25 11h3.5" /></symbol>
       <symbol id="i-error" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25" /><path d="M5.75 5.75l4.5 4.5M10.25 5.75l-4.5 4.5" /></symbol>
       <symbol id="i-check" viewBox="0 0 16 16"><path d="M3 8.5l3.25 3.25L13 5" /></symbol>
+      <symbol id="i-preview" viewBox="0 0 16 16"><path d="M1.5 8s2.5-4.5 6.5-4.5S14.5 8 14.5 8s-2.5 4.5-6.5 4.5S1.5 8 1.5 8z" /><circle cx="8" cy="8" r="2" /></symbol>
     </svg>
 
     <div class="app">
@@ -87,6 +88,9 @@
             <button id="fullscreen-toggle" class="ghost icon-only" type="button" aria-pressed="false" title="{{page.fullscreen}}" aria-label="{{page.fullscreen}}">
               <svg class="icon icon-expand" aria-hidden="true"><use href="#i-expand" /></svg>
               <svg class="icon icon-collapse" aria-hidden="true"><use href="#i-collapse" /></svg>
+            </button>
+            <button id="pdf-preview-toggle" class="ghost icon-only" type="button" aria-haspopup="dialog" aria-controls="pdf-preview" title="{{page.fullscreenPreview}}" aria-label="{{page.fullscreenPreview}}">
+              <svg class="icon" aria-hidden="true"><use href="#i-preview" /></svg>
             </button>
           </div>
         </div>
@@ -146,6 +150,7 @@
                     <svg class="icon" aria-hidden="true"><use href="#i-open" /></svg>
                     <span>{{page.open}}</span>
                   </button>
+                  <button id="empty-example" class="secondary" type="button">{{ui.loadExample}}</button>
                 </div>
               </div>
               <textarea
@@ -189,6 +194,15 @@
     </section>
 
     <div id="drop-hint" class="drop-hint" hidden>{{page.dropHint}}</div>
+
+    <dialog id="pdf-preview" class="pdf-preview" aria-label="{{page.fullscreenPreview}}">
+      <button id="pdf-preview-close" class="secondary" type="button" autofocus>{{ui.close}} <span aria-hidden="true">×</span></button>
+      <div id="pdf-preview-status" class="pdf-preview-status" role="status">{{ui.downloadGenerating}}</div>
+      <div id="pdf-preview-fallback" class="pdf-preview-status" hidden>
+        <p>{{page.previewUnavailable}}</p>
+        <a id="pdf-preview-open" target="_blank" rel="noopener">{{ui.printOpen}}</a>
+      </div>
+    </dialog>
 
     <!--i18n:data-->
     <script type="module" src="/src/main.ts"></script>

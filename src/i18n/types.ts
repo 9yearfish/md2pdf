@@ -93,6 +93,8 @@ export interface PageMessages {
   viewSwitch: string;
   /** The toggle that lets the tool fill the window. */
   fullscreen: string;
+  fullscreenPreview: string;
+  previewUnavailable: string;
   /** The intro above the tool: title, its muted continuation, one sentence. */
   heroTitle: string;
   heroTagline: string;

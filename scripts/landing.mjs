@@ -407,18 +407,18 @@ for (const width of [1440, 390]) {
   const box = sel => page.evaluate(s => { const r = document.querySelector(s).getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom }; }, sel);
   const rows = async () => ({
     stats: await box('#stats'), layout: await box('#settings-toggle'), open: await box('#open-file'),
-    print: await box('#print'), download: await box('#download'), full: await box('#fullscreen-toggle'),
+    print: await box('#print'), download: await box('#download'), full: await box('#fullscreen-toggle'), preview: await box('#pdf-preview-toggle'),
     editor: await box('#editor-pane .editor-host'), sheet: await box('#scroller'),
   });
   let b = await rows();
   if (width === 1440) {
-    check(Math.abs(b.full.r - b.sheet.r) <= 1 && b.print.l >= b.sheet.l, '1440: Print, Download and full screen sit over the proof, flush with the sheet', `${b.full.r} vs ${b.sheet.r}`);
+    check(Math.abs(b.preview.r - b.sheet.r) <= 1 && b.print.l >= b.sheet.l && b.preview.l >= b.full.r, '1440: output actions sit over the proof, with PDF preview last and flush with the sheet', `${b.preview.r} vs ${b.sheet.r}`);
     check(b.open.r <= b.editor.r + 1 && b.layout.l > b.stats.r, '1440: counts, Layout, New and Open sit over the source');
     check(new Set([b.stats, b.layout, b.open, b.print, b.download].map(x => Math.round((x.t + x.b) / 2))).size === 1, '1440: one row');
     await page.click('#fullscreen-toggle');
     await page.waitForTimeout(300);
     b = await rows();
-    check(Math.abs(b.full.r - b.sheet.r) <= 1 && b.print.l >= b.sheet.l && b.open.r <= b.editor.r + 1, 'full screen: the row still follows the panes');
+    check(Math.abs(b.preview.r - b.sheet.r) <= 1 && b.print.l >= b.sheet.l && b.open.r <= b.editor.r + 1, 'full screen: the row still follows the panes');
     await page.click('#fullscreen-toggle');
   } else {
     // One line for the counts and Layout; Print and Download in the bottom bar, below them.

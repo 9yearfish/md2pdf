@@ -10,6 +10,7 @@ import { landing, lang, plural, rememberLanguage, sample, t } from './i18n/runti
 import { installErrorReporting, reportError } from './ui/errors';
 import { importWithRetry, isChunkLoadError } from './ui/retry-import';
 import { createEditor, type Editor } from './ui/editor';
+import { bindPdfPreview } from './ui/pdf-preview';
 import { hideFrontMatter, layoutModule, loadLayout } from './layout/load';
 import {
   Autosave,
@@ -55,6 +56,7 @@ const downloadButton = el<HTMLButtonElement>('download');
 const downloadLabel = el<HTMLSpanElement>('download-label');
 const printButton = el<HTMLButtonElement>('print');
 const printLabel = el<HTMLSpanElement>('print-label');
+const pdfPreviewButton = el<HTMLButtonElement>('pdf-preview-toggle');
 const scroller = el<HTMLDivElement>('scroller');
 const warnings = el<HTMLDivElement>('warnings');
 const stats = el<HTMLSpanElement>('stats');
@@ -315,6 +317,7 @@ async function buildPdf(button: HTMLButtonElement, label: HTMLElement, idleText:
   progressLabel = label;
   downloadButton.disabled = true;
   printButton.disabled = true;
+  pdfPreviewButton.disabled = true;
   button.classList.add('busy');
   label.textContent = t('downloadGenerating');
   // The print head sweeps the sheet for as long as this takes.
@@ -377,6 +380,7 @@ async function buildPdf(button: HTMLButtonElement, label: HTMLElement, idleText:
     exporting = false;
     downloadButton.disabled = false;
     printButton.disabled = false;
+    pdfPreviewButton.disabled = false;
     button.classList.remove('busy');
     previewPane.classList.remove('printing');
     label.textContent = idleText;
@@ -800,6 +804,15 @@ function bindControls(): void {
 
   el('open-file').addEventListener('click', () => fileInput.click());
   el('empty-open').addEventListener('click', () => fileInput.click());
+  el('empty-example').addEventListener('click', () => {
+    if (doc.getValue().trim()) return;
+    replaceText(sample);
+    renderPreview();
+    autosave.touch();
+    doc.focus();
+    showResultOnPhone();
+  });
+  bindPdfPreview(label => buildPdf(pdfPreviewButton, label, t('downloadGenerating')));
   bindPasteButton();
   fileInput.addEventListener('change', () => {
     void acceptFiles([...(fileInput.files ?? [])]);
@@ -960,6 +973,8 @@ function openAboutFor(hash: string): void {
 
 function bindKeyboard(): void {
   document.addEventListener('keydown', event => {
+    // The modal owns Escape; preserve the editing mode underneath it.
+    if (el<HTMLDialogElement>('pdf-preview').open) return;
     const meta = event.ctrlKey || event.metaKey;
     if (meta && event.key.toLowerCase() === 's') {
       event.preventDefault();

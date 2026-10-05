@@ -72,6 +72,8 @@ const en: Messages = {
     live: 'Live',
     viewSwitch: 'Show',
     fullscreen: 'Full-screen editing',
+    fullscreenPreview: 'Full-screen PDF preview',
+    previewUnavailable: 'This browser cannot display PDFs here. Open the PDF to view it.',
     heroTitle: 'Markdown to PDF',
     heroTagline: ': typeset in your browser.',
     heroLead: 'Paste or drop in Markdown and download a properly typeset PDF, with Mermaid diagrams kept as vectors. Your document never leaves the browser.',

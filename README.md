@@ -7,6 +7,9 @@ browser, and nothing is ever uploaded.
 
 Left pane edits, right pane previews as you type. "Download PDF" typesets the
 real file; "Print" sends that same file to the printer.
+The eye button beside full-screen editing opens a full-window preview of that
+actual PDF, including its page breaks. Close it or press Escape to return.
+Blank documents offer "Load example" to restore the current page's demo.
 
 ## How it works
 

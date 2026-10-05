@@ -71,6 +71,8 @@ const ko: Messages = {
     live: '실시간',
     viewSwitch: '보기',
     fullscreen: '전체 화면 편집',
+    fullscreenPreview: 'PDF 전체 화면 미리보기',
+    previewUnavailable: '이 브라우저에서는 PDF를 여기에 표시할 수 없습니다. PDF를 열어 확인하세요.',
     heroTitle: 'Markdown을 PDF로',
     heroTagline: ': 브라우저 안에서 조판합니다.',
     heroLead: 'Markdown을 붙여넣거나 끌어다 놓으면 제대로 조판된 PDF를 내려받을 수 있습니다. Mermaid 다이어그램은 벡터 그대로 남습니다. 문서는 브라우저 밖으로 나가지 않습니다.',

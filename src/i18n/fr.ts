@@ -78,6 +78,8 @@ const fr: Messages = {
     live: 'En direct',
     viewSwitch: 'Afficher',
     fullscreen: 'Édition plein écran',
+    fullscreenPreview: 'Aperçu PDF en plein écran',
+    previewUnavailable: 'Ce navigateur ne peut pas afficher de PDF ici. Ouvrez le PDF pour le consulter.',
     heroTitle: 'Markdown en PDF',
     heroTagline: ' : composé dans votre navigateur.',
     heroLead: 'Collez ou déposez du Markdown et téléchargez un PDF correctement composé, avec des diagrammes Mermaid vectoriels. Votre document ne quitte jamais le navigateur.',

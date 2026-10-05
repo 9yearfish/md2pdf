@@ -71,6 +71,8 @@ const zh: Messages = {
     live: '实时',
     viewSwitch: '显示',
     fullscreen: '全屏编辑',
+    fullscreenPreview: '全屏预览 PDF',
+    previewUnavailable: '此浏览器不支持内嵌 PDF 预览，请打开 PDF 查看。',
     heroTitle: 'Markdown 转 PDF',
     heroTagline: '：在浏览器里完成排版。',
     heroLead: '粘贴或拖入 Markdown，下载排版精良的 PDF，Mermaid 图表保持矢量。文档从不离开你的浏览器。',
