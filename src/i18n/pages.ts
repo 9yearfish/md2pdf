@@ -427,6 +427,28 @@ function intro(ref: PageRef): string {
   );
 }
 
+/** High-intent use cases stay visible above the editor without replacing it. */
+function featuredGuides(ref: PageRef): string {
+  if (ref.slug) return '';
+  const preferred: LandingSlug[] = ['chatgpt-to-pdf', 'mermaid-to-pdf', 'readme-to-pdf', 'claude-to-pdf'];
+  const pages = preferred
+    .map(slug => PAGES.find(p => p.messages === ref.messages && p.slug === slug))
+    .filter((p): p is PageRef => Boolean(p));
+  if (!pages.length) return '';
+  const dictionary = LANDING_COPY[codeOf(ref.messages)];
+  return [
+    `<section class="featured-guides" aria-labelledby="featured-guides-heading">`,
+    `  <div class="featured-guides-head"><h2 id="featured-guides-heading">${escapeHtml(dictionary.hubHeading)}</h2><span>${escapeHtml(ref.messages.page.heroTitle)}</span></div>`,
+    '  <nav class="featured-guides-list">',
+    ...pages.map(p => {
+      const copy = landingCopy(p)!;
+      return `    <a class="featured-guide" href="${pagePath(p)}"><strong>${escapeHtml(copy.navLabel)}</strong><span>${escapeHtml(copy.navBlurb)}</span></a>`;
+    }),
+    '  </nav>',
+    '</section>',
+  ].join('\n');
+}
+
 function runtimeData(ref: PageRef): string {
   const { messages } = ref;
   const copy = landingCopy(ref);
@@ -447,6 +469,7 @@ export function renderPage(template: string, ref: PageRef, origin: string, redir
     '<!--i18n:head-->': head(ref, origin),
     '<!--i18n:switcher-->': switcher(ref),
     '<!--i18n:intro-->': intro(ref),
+    '<!--i18n:featured-->': featuredGuides(ref),
     '<!--i18n:about-->': aboutSection(ref),
     '<!--i18n:data-->': runtimeData(ref),
   };

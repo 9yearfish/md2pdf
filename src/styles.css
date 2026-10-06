@@ -1487,6 +1487,61 @@ button.disclosure:focus-visible { outline-offset: -2px; }
   font: 400 16px/1.7 var(--sans);
 }
 
+/* High-intent routes are visible before the editor, while the editor remains the primary tool. */
+.featured-guides {
+  width: min(1232px, calc(100% - 2 * var(--gutter)));
+  margin: 0 auto 24px;
+  border-block: 1px solid var(--rule);
+  padding: 14px 0;
+}
+
+.featured-guides-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font: 400 10px/1.2 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.featured-guides-head h2 {
+  margin: 0;
+  color: var(--ink-2);
+  font: 500 11px/1.2 var(--control);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.featured-guides-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.featured-guide {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 160ms var(--ease), background-color 160ms var(--ease);
+}
+
+.featured-guide:hover { border-color: var(--ink); background: var(--paper-2); }
+.featured-guide strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 12px/1.2 var(--control); }
+.featured-guide span { overflow: hidden; color: var(--muted); font: 400 10px/1.35 var(--control); text-overflow: ellipsis; white-space: nowrap; }
+
+@media (max-width: 760px) {
+  .featured-guides { width: calc(100% - 2 * var(--gutter)); margin-bottom: 16px; }
+  .featured-guides-head { margin-bottom: 8px; }
+  .featured-guides-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 /*
  * The about section and FAQ, collapsed: one quiet disclosure row that opens
  * it. A native <details>, so every word is in the page and find-in-page and

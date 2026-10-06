@@ -246,10 +246,12 @@ for (const p of pages) {
 
 for (const code of ALL) {
   const about = attr(home[code], /<section class="about">([\s\S]*?)<\/section>/) ?? '';
+  const featured = attr(home[code], /<section class="featured-guides"[^>]*>([\s\S]*?)<\/section>/) ?? '';
   const guides = attr(about, /<div class="features guides">([\s\S]*?)<\/div>\s*<h3>/) ?? '';
   const footer = attr(about, /<nav class="guides-nav"[^>]*>([\s\S]*?)<\/nav>/) ?? '';
   const mine = pages.filter(p => p.code === code).map(p => p.path);
   const linked = list => mine.filter(path => list.includes(`href="${path}"`));
+  check(Boolean(featured) && featured.includes(`href="${homePath(code)}chatgpt-to-pdf/"`) && featured.includes(`href="${homePath(code)}mermaid-to-pdf/"`), `${homePath(code)} exposes featured use cases before the tool`);
   check(linked(guides).length === mine.length && linked(footer).length === mine.length, `${homePath(code)} links all ${mine.length} of its landing pages from the about section and footer`);
 }
 for (const p of pages) {
