@@ -9,6 +9,8 @@ Left pane edits, right pane previews as you type. "Download PDF" typesets the
 real file; "Print" sends that same file to the printer.
 The eye button beside full-screen editing opens a full-window preview of that
 actual PDF, including its page breaks. Close it or press Escape to return.
+Full-screen editing lasts only until the page is reloaded; every visit starts
+with the ordinary page.
 Blank documents offer "Load example" to restore the current page's demo.
 
 ## How it works
@@ -755,7 +757,9 @@ Speed for visitors everywhere comes from three things:
   55 pages, and inlining it would add those bytes to every navigation. The
   service worker registers after `load`, does nothing at install, keeps pages
   network-first and uses navigation preload, so a returning visit's HTML is
-  not held up by it.
+  not held up by it. Localhost previews do not register it; loading a fresh
+  preview unregisters an older local registration. An already cached page still
+  needs the server or manual service-worker removal to load this fix.
 
 After the first deploy, check that the engine is served compressed:
 
@@ -773,10 +777,11 @@ These cost real debugging time and are easy to hit again:
 
 - The product is called **Free MD2PDF** (`BRAND` in `src/i18n/constants.ts`,
   the one place its written form lives; the domain is freemd2pdf.com), but internal identifiers keep `md2pdf`: the
-  `md2pdf:draft:v1`, `md2pdf:lang` and `md2pdf:fullscreen` storage keys, the
+  `md2pdf:draft:v1` and `md2pdf:lang` storage keys, the
   `md2pdf` IndexedDB database, the Cache Storage and service-worker cache
   names, CSS classes, module names and the `md-*` Typst helpers. Renaming any
-  of them would silently drop visitors' drafts and caches.
+  of them would silently drop visitors' drafts and caches. The old
+  `md2pdf:fullscreen` key is deleted on load and is no longer written.
 
 - `scripts/serve-dist.mjs` reads `_headers` once, at start-up. After changing
   the CSP (or any header), restart `npm run preview`, or the tests run

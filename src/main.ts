@@ -1209,32 +1209,15 @@ function bindPasteButton(): void {
 /**
  * The page normally scrolls, with the tool as one part of it. Full-screen
  * editing gives the tool the whole window instead (CSS: html.fullscreen).
- * It is remembered per browser; storage may be unavailable, which only means
- * it is not remembered.
+ * This is a temporary view for the current page, never a saved preference.
  */
-const FULLSCREEN_KEY = 'md2pdf:fullscreen';
-
 const isFullscreen = () => document.documentElement.classList.contains('fullscreen');
 
-function setFullscreen(on: boolean, remember = true): void {
+function setFullscreen(on: boolean): void {
   document.documentElement.classList.toggle('fullscreen', on);
+  document.querySelector<HTMLElement>('.featured-guides')?.toggleAttribute('hidden', on);
   el('fullscreen-toggle').setAttribute('aria-pressed', String(on));
   if (on) window.scrollTo(0, 0);
-  if (!remember) return;
-  try {
-    if (on) localStorage.setItem(FULLSCREEN_KEY, '1');
-    else localStorage.removeItem(FULLSCREEN_KEY);
-  } catch {
-    // Private mode and the like: it still works, it just is not remembered.
-  }
-}
-
-function restoreFullscreen(): void {
-  try {
-    if (localStorage.getItem(FULLSCREEN_KEY) === '1') setFullscreen(true, false);
-  } catch {
-    // Nothing stored, nothing to restore.
-  }
 }
 
 /* ---------- boot ---------- */
@@ -1259,7 +1242,13 @@ function boot(): void {
     topLine: () => 0,
   };
 
-  restoreFullscreen();
+  // Remove the preference written by older versions. Reloads always start
+  // with the ordinary home page, even for people who previously used full screen.
+  try {
+    localStorage.removeItem('md2pdf:fullscreen');
+  } catch {
+    // Storage may be unavailable.
+  }
   bindControls();
   applyOptions();
   // The preview is part of first paint; nothing about it waits on a download.
@@ -1308,10 +1297,15 @@ try {
   // the worst way to fail. Say so instead.
   showWarnings([t('initFailed', { detail: error instanceof Error ? error.message : String(error) })], true);
 }
-// Hold the engine and fonts across visits; they are several megabytes that
-// never change. Failure here is not worth surfacing: it only costs a re-fetch.
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => {
-    void navigator.serviceWorker.register('/sw.js').catch(() => {});
-  });
+// The production worker keeps the engine and fonts across visits. On a local
+// preview it can instead serve an old page after the server has stopped, so
+// remove any existing registration there and never install a new one.
+if ('serviceWorker' in navigator) {
+  if (['localhost', '127.0.0.1', '[::1]'].includes(location.hostname)) {
+    void navigator.serviceWorker.getRegistration('/').then(registration => registration?.unregister()).catch(() => {});
+  } else if (import.meta.env.PROD) {
+    window.addEventListener('load', () => {
+      void navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  }
 }

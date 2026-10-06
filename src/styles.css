@@ -1186,7 +1186,7 @@ button.disclosure:focus-visible { outline-offset: -2px; }
 .fullscreen #fullscreen-toggle { color: var(--ink); }
 
 .fullscreen body { overflow: hidden; }
-.fullscreen :is(.toolbar, .intro, .about) { display: none; }
+.fullscreen :is(.toolbar, .intro, .featured-guides, .about) { display: none; }
 
 .fullscreen .app {
   display: flex;

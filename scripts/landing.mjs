@@ -400,6 +400,24 @@ const pathOf = page => new URL(page.url()).pathname + new URL(page.url()).search
   await context.close();
 }
 
+{
+  const { context, page } = await open();
+  await page.goto(BASE + '/zh/');
+  await page.waitForSelector('.cm-content', { timeout: 30000 });
+  check(await page.locator('.featured-guides').isVisible(), '/zh/: featured guides show outside full screen');
+  await page.evaluate(() => localStorage.setItem('md2pdf:fullscreen', '1'));
+  await page.reload();
+  await page.waitForSelector('.cm-content', { timeout: 30000 });
+  check(await page.locator('.featured-guides').isVisible() && await page.evaluate(() => localStorage.getItem('md2pdf:fullscreen')) === null, '/zh/: old full-screen preference is removed on reload');
+  await page.click('#fullscreen-toggle');
+  check(await page.locator('.featured-guides').isHidden() && await page.locator('.editor-pane').isVisible() && await page.locator('.preview-pane').isVisible(), '/zh/: full screen shows writing and preview without featured guides');
+  check(await page.evaluate(() => localStorage.getItem('md2pdf:fullscreen')) === null, '/zh/: opening full screen writes no preference');
+  await page.reload();
+  await page.waitForSelector('.cm-content', { timeout: 30000 });
+  check(await page.locator('.featured-guides').isVisible() && await page.locator('#fullscreen-toggle').getAttribute('aria-pressed') === 'false', '/zh/: reload returns to the ordinary home page');
+  await context.close();
+}
+
 // The action row sits on the panes' grid; the about section is collapsed, never hidden.
 for (const width of [1440, 390]) {
   const { context, page } = await open();
