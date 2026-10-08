@@ -41,7 +41,7 @@ const es: LandingDictionary<'es'> = {
         {
           heading: 'Privado por diseño',
           body: [
-            'Las respuestas de ChatGPT suelen contener trabajo a medias: código, contratos, apuntes. Aquí no salen de tu dispositivo: la conversión ocurre entera en esta pestaña. La política de seguridad de contenido de la página solo permite conectar con este sitio y con el contador de visitas sin cookies de Cloudflare, que nunca ve tu texto.',
+            'Las respuestas de ChatGPT suelen contener trabajo a medias: código, contratos, apuntes. Aquí no salen de tu dispositivo: la conversión ocurre entera en esta pestaña. La política de seguridad de contenido solo permite conectar con este sitio y con las analíticas sin cookies de Cloudflare y Google, que nunca ven tu texto.',
           ],
         },
       ],
@@ -165,7 +165,7 @@ for anios in (15, 20, 25, 30):
         {
           heading: 'Nada sale de tu navegador',
           body: [
-            'La conversión se hace en local, en esta pestaña. Tu texto no se envía a ningún servidor, tampoco al nuestro; la política de seguridad de contenido de la página solo permite conectar con este sitio y con el contador de visitas sin cookies de Cloudflare, que nunca lo ve.',
+            'La conversión se hace en local, en esta pestaña. Tu texto no se envía a ningún servidor, tampoco al nuestro; la política de seguridad de contenido solo permite conectar con este sitio y con las analíticas sin cookies de Cloudflare y Google, que nunca lo ven.',
           ],
         },
       ],

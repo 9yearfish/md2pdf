@@ -41,7 +41,7 @@ const pt: LandingDictionary<'pt'> = {
         {
           heading: 'Privado por construção',
           body: [
-            'Respostas do ChatGPT costumam ter coisas de trabalho: código, contratos, anotações de estudo. Aqui elas nunca saem do seu dispositivo: a conversão acontece inteira nesta aba. A política de segurança de conteúdo (CSP) da página só permite conexões com este site e com o contador de visitas sem cookies da Cloudflare, que nunca vê o seu texto.',
+            'Respostas do ChatGPT costumam ter coisas de trabalho: código, contratos, anotações de estudo. Aqui elas nunca saem do seu dispositivo: a conversão acontece inteira nesta aba. A política de segurança de conteúdo (CSP) só permite conexões com este site e com as análises sem cookies da Cloudflare e do Google, que nunca veem o seu texto.',
           ],
         },
       ],
@@ -173,7 +173,7 @@ print(round(sac[0], 2), round(sac[-1], 2))
         {
           heading: 'Nada sai do seu navegador',
           body: [
-            'A conversão roda localmente nesta aba. Seu texto não é enviado a servidor nenhum, nem ao nosso; a política de segurança de conteúdo (CSP) da página só permite conexões com este site e com o contador de visitas sem cookies da Cloudflare, que nunca o vê.',
+            'A conversão roda localmente nesta aba. Seu texto não é enviado a servidor nenhum, nem ao nosso; a política de segurança de conteúdo (CSP) só permite conexões com este site e com as análises sem cookies da Cloudflare e do Google, que nunca o veem.',
           ],
         },
       ],

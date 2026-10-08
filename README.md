@@ -298,23 +298,31 @@ Documents never leave the browser: parsing, typesetting and PDF generation all
 run in the tab, and no code in the app sends document text, images or the PDF
 anywhere.
 
-The site does use **Cloudflare Web Analytics**, which Cloudflare Pages injects
-into every page: a script from `https://static.cloudflareinsights.com` that
-sends an anonymous beacon to `https://cloudflareinsights.com`. It sets no
-cookies and records page visits (URL, referrer, timing, country); it never sees
-document content. The Content-Security-Policy in `public/_headers` allows
-exactly those two origins beyond `'self'` (`script-src` and `connect-src`
-respectively) and nothing else, so the browser still blocks every other
-destination. The site copy says the same: the page connects only to the site
-itself and to Cloudflare's cookie-free visit counter.
+The site uses **Cloudflare Web Analytics**, which Cloudflare Pages injects into
+every page, and uses **Google Tag Manager** in production when
+`VITE_GTM_CONTAINER_ID` is set. Cloudflare sets no cookies and records page
+visits (URL, referrer, timing, country). Before GTM loads, the app sets Consent
+Mode v2's analytics/ad storage to denied, turns Google Signals and ad
+personalization off, and enables ad-data redaction. Google tags in the
+container therefore receive cookieless measurements. The app pushes a
+`pdf_export` event, but never a document heading, file name, document text,
+image or PDF. It also provides privacy-filtered `analytics_page_location` and
+`analytics_page_referrer` Data Layer values: the page location retains only
+attribution parameters (`utm_*` and Google click IDs), while referrer query
+strings and URL fragments are removed. The GTM GA4 tag must use those values
+instead of its raw Page URL and Referrer variables.
+
+The Content-Security-Policy in `public/_headers` allows only the Cloudflare and
+Google Analytics tag/collection origins beyond `'self'`. It deliberately does
+not allow Google Ads or DoubleClick. The browser blocks other destinations.
 
 To remove the analytics, turn off Web Analytics for the Pages project in the
 Cloudflare dashboard (otherwise Cloudflare keeps injecting the script, and the
 CSP would then block it and report violations), and remove
 `https://static.cloudflareinsights.com` from `script-src` and
 `https://cloudflareinsights.com` from `connect-src` in `public/_headers`. The
-CSP is then back to `connect-src 'self' blob: data:`, and the copy's mention of
-the visit counter in `src/i18n/` can go too.
+CSP can then drop the Google origins as well if GA4 is disabled, and the copy's
+mention of analytics in `src/i18n/` can go too.
 
 `frame-src 'self' blob:` exists only for Print's hidden PDF frame (without
 it, `default-src 'self'` blocks the Blob URL). `X-Frame-Options: DENY` and
@@ -505,6 +513,17 @@ around what people in each market search for ("Markdown PDF 変換",
 canonical, alternate and Open Graph link, `robots.txt` and `sitemap.xml`.
 **Change it to the real domain before deploying**; a canonical pointing at the
 wrong origin is worse than none.
+
+`VITE_GTM_CONTAINER_ID` enables Google Tag Manager only in production builds;
+the current container is `GTM-5L4KRBGS`. The published GTM container must have
+a Google tag for the site's GA4 Measurement ID. Its page-view configuration
+should use Data Layer Variables named `analytics_page_location` and
+`analytics_page_referrer`. To record actual use, add a GA4 event tag named
+`pdf_export`, trigger it on the Custom Event `pdf_export`, and pass the Data
+Layer Variable `method`. After publishing the container, verify `page_view`
+and `pdf_export` in GA4 Realtime/DebugView. Mark `pdf_export` as a key event if
+the acquisition report should show which sources produced actual PDF exports,
+not merely visits.
 
 ### How the pages are built
 

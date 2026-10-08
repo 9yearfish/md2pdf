@@ -11,6 +11,7 @@ import { installErrorReporting, reportError } from './ui/errors';
 import { importWithRetry, isChunkLoadError } from './ui/retry-import';
 import { createEditor, type Editor } from './ui/editor';
 import { bindPdfPreview } from './ui/pdf-preview';
+import { trackPdfExport } from './analytics';
 import { hideFrontMatter, layoutModule, loadLayout } from './layout/load';
 import {
   Autosave,
@@ -399,6 +400,7 @@ async function downloadPdf(): Promise<void> {
   const pdf = await buildPdf(downloadButton, downloadLabel, t('download'));
   if (!pdf) return;
   const name = save(pdf);
+  trackPdfExport('download');
   fed(downloadButton);
   // Warnings about the PDF matter more than the confirmation; keep them.
   if (!buildNoted) showWarnings([t('downloaded', { name })], 'ok');
@@ -444,8 +446,12 @@ async function printPdf(): Promise<void> {
   fed(printButton);
   const printing = await import('./ui/print');
   const url = printing.pdfUrl(pdf);
-  if (!printsInTab() && (await printing.printInFrame(url))) return;
+  if (!printsInTab() && (await printing.printInFrame(url))) {
+    trackPdfExport('print');
+    return;
+  }
   if (printing.openInTab(url, tab)) {
+    trackPdfExport('print');
     showWarnings([t('printInTab')], 'info');
   } else {
     showWarnings([t('printBlocked')], 'warn', { label: t('printOpen'), run: () => void window.open(url, '_blank') }, true);

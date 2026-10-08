@@ -120,7 +120,7 @@ const pt: Messages = {
       {
         question: 'Meu documento é enviado para algum servidor?',
         answer: [
-          'Não. A leitura, a diagramação e a geração do PDF acontecem no seu navegador. Seu texto, suas imagens e o PDF nunca saem do seu dispositivo. A política de segurança de conteúdo (CSP) do site só permite conexões com o próprio site e com o contador de visitas anônimo e sem cookies da Cloudflare, que registra as visitas às páginas e nunca recebe o seu documento; o navegador bloqueia qualquer outro destino.',
+          'Não. A leitura, a diagramação e a geração do PDF acontecem no seu navegador. Seu texto, suas imagens e o PDF nunca saem do seu dispositivo. A política de segurança de conteúdo (CSP) só permite conexões com o próprio site e com as análises sem cookies da Cloudflare e do Google, que registram visitas e origens de tráfego, mas nunca recebem o documento; o navegador bloqueia qualquer outro destino.',
         ],
       },
       {

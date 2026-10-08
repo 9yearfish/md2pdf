@@ -47,7 +47,7 @@ const fr: LandingDictionary<'fr'> = {
         {
           heading: 'Confidentiel par conception',
           body: [
-            'Les réponses de ChatGPT contiennent souvent du travail en cours : code, contrats, fiches de révision. Ici, elles ne quittent jamais votre appareil : la conversion se fait entièrement dans cet onglet. La politique de sécurité du contenu de la page n’autorise que ce site et le compteur de visites sans cookies de Cloudflare, qui ne voit jamais votre texte.',
+            'Les réponses de ChatGPT contiennent souvent du travail en cours : code, contrats, fiches de révision. Ici, elles ne quittent jamais votre appareil : la conversion se fait entièrement dans cet onglet. La politique de sécurité du contenu n’autorise que ce site et les outils d’analyse sans cookies de Cloudflare et Google, qui ne voient jamais votre texte.',
           ],
         },
       ],

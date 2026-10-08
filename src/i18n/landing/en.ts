@@ -41,7 +41,7 @@ const en: LandingDictionary<'en'> = {
         {
           heading: 'Private by construction',
           body: [
-            'ChatGPT answers often contain work in progress: code, contracts, study notes. Here they never leave your device: the conversion happens entirely in this tab. The page’s Content Security Policy allows connections only to this site and to Cloudflare’s cookie-free visit counter, which never sees your text.',
+            'ChatGPT answers often contain work in progress: code, contracts, study notes. Here they never leave your device: the conversion happens entirely in this tab. The page’s Content Security Policy allows connections only to this site and to cookie-free analytics from Cloudflare and Google, which never see your text.',
           ],
         },
       ],
@@ -298,7 +298,7 @@ export function take(bucket: Bucket, now: number, rate: number, capacity: number
         {
           heading: 'Nothing leaves your browser',
           body: [
-            'The conversion runs locally in this tab. Your text is never sent to any server, including ours; the page’s Content Security Policy allows connections only to this site and to Cloudflare’s cookie-free visit counter, which never sees it.',
+            'The conversion runs locally in this tab. Your text is never sent to any server, including ours; the page’s Content Security Policy allows connections only to this site and to cookie-free analytics from Cloudflare and Google, which never see it.',
           ],
         },
       ],
@@ -795,7 +795,7 @@ MIT
         {
           heading: 'Nothing leaves your machine',
           body: [
-            'Instruction files tend to mention internal hostnames, directory layouts and deployment steps. This page typesets them in your browser and never sends them anywhere: its Content Security Policy blocks every server except this site and Cloudflare’s anonymous visit counter, which never sees your files.',
+            'Instruction files tend to mention internal hostnames, directory layouts and deployment steps. This page typesets them in your browser and never sends them anywhere: its Content Security Policy blocks every server except this site and cookie-free analytics from Cloudflare and Google, which never see your files.',
           ],
         },
       ],

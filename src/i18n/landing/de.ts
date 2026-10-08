@@ -41,7 +41,7 @@ const de: LandingDictionary<'de'> = {
         {
           heading: 'Privat, weil es gar nicht anders geht',
           body: [
-            'In ChatGPT-Antworten steckt oft Unfertiges: Code, Vertragsentwürfe, Lernzettel. Hier verlassen sie dein Gerät nie: Die Umwandlung passiert komplett in diesem Tab. Die Content Security Policy der Seite erlaubt Verbindungen nur zu dieser Seite und zum cookiefreien Besucherzähler von Cloudflare, der deinen Text nie sieht.',
+            'In ChatGPT-Antworten steckt oft Unfertiges: Code, Vertragsentwürfe, Lernzettel. Hier verlassen sie dein Gerät nie: Die Umwandlung passiert komplett in diesem Tab. Die Content Security Policy erlaubt Verbindungen nur zu dieser Seite und zur cookiefreien Nutzungsanalyse von Cloudflare und Google, die deinen Text nie sieht.',
           ],
         },
       ],

@@ -120,7 +120,7 @@ const en: Messages = {
       {
         question: 'Is my document uploaded to a server?',
         answer: [
-          'No. Parsing, typesetting and PDF generation all happen in your browser. Your text, images and the PDF never leave your device. The site’s Content Security Policy allows connections only to the site itself and to Cloudflare’s anonymous, cookie-free visit counter, which records page visits and never receives your document; your browser blocks everything else.',
+          'No. Parsing, typesetting and PDF generation all happen in your browser. Your text, images and the PDF never leave your device. The site’s Content Security Policy allows connections only to the site itself and to cookie-free analytics from Cloudflare and Google, which record page visits and traffic sources but never receive your document; your browser blocks everything else.',
         ],
       },
       {
