@@ -62,10 +62,6 @@
         <div class="actionbar">
           <div class="actions actions-source">
             <span id="stats" class="stats">—</span>
-            <button id="settings-toggle" class="disclosure" type="button" title="{{page.layoutTitle}}" aria-expanded="false" aria-controls="settings">
-              <svg class="icon" aria-hidden="true"><use href="#i-layout" /></svg>
-              <span class="label">{{page.layout}}</span>
-            </button>
             <div class="actions-files">
               <button id="new-doc" class="ghost" type="button" title="{{page.newDocTitle}}">
                 <svg class="icon" aria-hidden="true"><use href="#i-new" /></svg>
@@ -79,21 +75,31 @@
             </div>
           </div>
           <div class="actions actions-output toolbar-actions">
-            <button id="print" class="secondary" type="button" title="{{page.printTitle}}">
-              <svg class="icon" aria-hidden="true"><use href="#i-print" /></svg>
-              <span id="print-label" class="label">{{ui.print}}</span>
-            </button>
-            <button id="download" class="primary" type="button" title="{{page.downloadTitle}}">
-              <span id="download-label">{{ui.download}}</span>
-              <svg class="icon" aria-hidden="true"><use href="#i-download" /></svg>
-            </button>
-            <button id="fullscreen-toggle" class="ghost icon-only" type="button" aria-pressed="false" title="{{page.fullscreen}}" aria-label="{{page.fullscreen}}">
-              <svg class="icon icon-expand" aria-hidden="true"><use href="#i-expand" /></svg>
-              <svg class="icon icon-collapse" aria-hidden="true"><use href="#i-collapse" /></svg>
-            </button>
-            <button id="pdf-preview-toggle" class="ghost icon-only" type="button" aria-haspopup="dialog" aria-controls="pdf-preview" title="{{page.fullscreenPreview}}" aria-label="{{page.fullscreenPreview}}">
-              <svg class="icon" aria-hidden="true"><use href="#i-preview" /></svg>
-            </button>
+            <div class="actions-utilities">
+              <button id="settings-toggle" class="ghost utility-control" type="button" title="{{page.layoutTitle}}" aria-expanded="false" aria-controls="settings">
+                <svg class="icon" aria-hidden="true"><use href="#i-layout" /></svg>
+                <span class="label">{{page.layout}}</span>
+              </button>
+              <button id="pdf-preview-toggle" class="ghost utility-control" type="button" aria-haspopup="dialog" aria-controls="pdf-preview" title="{{page.fullscreenPreview}}">
+                <svg class="icon" aria-hidden="true"><use href="#i-preview" /></svg>
+                <span class="label">{{page.preview}}</span>
+              </button>
+              <button id="fullscreen-toggle" class="ghost utility-control" type="button" aria-pressed="false" title="{{page.fullscreen}}">
+                <svg class="icon icon-expand" aria-hidden="true"><use href="#i-expand" /></svg>
+                <svg class="icon icon-collapse" aria-hidden="true"><use href="#i-collapse" /></svg>
+                <span class="label">{{page.fullscreen}}</span>
+              </button>
+            </div>
+            <div class="actions-export">
+              <button id="print" class="secondary" type="button" title="{{page.printTitle}}">
+                <svg class="icon" aria-hidden="true"><use href="#i-print" /></svg>
+                <span id="print-label" class="label">{{ui.print}}</span>
+              </button>
+              <button id="download" class="primary" type="button" title="{{page.downloadTitle}}">
+                <span id="download-label">{{ui.download}}</span>
+                <svg class="icon" aria-hidden="true"><use href="#i-download" /></svg>
+              </button>
+            </div>
           </div>
         </div>
 

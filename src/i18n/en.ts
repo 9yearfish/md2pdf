@@ -71,7 +71,7 @@ const en: Messages = {
     proof: 'Proof',
     live: 'Live',
     viewSwitch: 'Show',
-    fullscreen: 'Full-screen editing',
+    fullscreen: 'Full screen',
     fullscreenPreview: 'Full-screen PDF preview',
     previewUnavailable: 'This browser cannot display PDFs here. Open the PDF to view it.',
     heroTitle: 'Markdown to PDF',
@@ -132,7 +132,7 @@ const en: Messages = {
       {
         question: 'Does it support Mermaid diagrams?',
         answer: [
-          'Yes. Diagrams are embedded in the PDF as vector graphics, so they stay sharp when zoomed, the text in them remains selectable and searchable, and custom <code>classDef</code> colours are preserved.',
+          'Yes. Start a long diagram with <code>flowchart TD</code> or <code>flowchart TB</code> to lay it out from top to bottom; use <code>flowchart LR</code> for left to right. Diagrams are embedded in the PDF as vector graphics, so they stay sharp when zoomed, their text remains selectable and searchable, and custom <code>classDef</code> colours are preserved.',
         ],
       },
       {
@@ -166,9 +166,10 @@ const en: Messages = {
         ],
       },
       {
-        question: 'Can I use HTML tags?',
+        question: 'How do I centre a title or right-align a signature?',
         answer: [
-          'Only <code>&lt;br&gt;</code>. The typesetting engine has no equivalent for HTML, so rather than produce something that only looks right, other tags are skipped with a notice.',
+          'Wrap the block with <code>::: {.center}<br># Contract title<br>:::</code>. Replace <code>center</code> with <code>right</code> or <code>left</code> as needed. The shorter <code>::: center</code> form also works.',
+          'For existing Markdown, common HTML forms such as <code>&lt;h1 align="center"&gt;Title&lt;/h1&gt;</code>, <code>&lt;p align="right"&gt;Signature&lt;/p&gt;</code> and legacy <code>&lt;center&gt;...&lt;/center&gt;</code> are supported. Arbitrary HTML is still skipped; <code>&lt;br&gt;</code> remains available for a line break.',
         ],
       },
     ],

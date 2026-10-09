@@ -71,7 +71,7 @@ const es: Messages = {
     proof: 'Prueba',
     live: 'En vivo',
     viewSwitch: 'Mostrar',
-    fullscreen: 'Edición a pantalla completa',
+    fullscreen: 'Pantalla completa',
     fullscreenPreview: 'Vista previa del PDF a pantalla completa',
     previewUnavailable: 'Este navegador no puede mostrar PDF aquí. Abre el PDF para verlo.',
     heroTitle: 'Markdown a PDF',
@@ -132,7 +132,7 @@ const es: Messages = {
       {
         question: '¿Admite diagramas Mermaid?',
         answer: [
-          'Sí. Los diagramas se incrustan en el PDF como gráficos vectoriales: siguen nítidos al ampliar, su texto se puede seleccionar y buscar, y los colores personalizados con <code>classDef</code> se conservan.',
+          'Sí. Para un diagrama largo usa <code>flowchart TD</code> o <code>flowchart TB</code> y se distribuirá de arriba abajo; usa <code>flowchart LR</code> para una disposición horizontal. Se incrusta como gráfico vectorial, por lo que sigue nítido, su texto se puede seleccionar y buscar, y los colores de <code>classDef</code> se conservan.',
         ],
       },
       {
@@ -166,9 +166,10 @@ const es: Messages = {
         ],
       },
       {
-        question: '¿Puedo usar etiquetas HTML?',
+        question: '¿Cómo centro un título o alineo una firma a la derecha?',
         answer: [
-          'Solo <code>&lt;br&gt;</code>. El motor tipográfico no tiene equivalente para el HTML, así que, en lugar de producir algo que solo lo parezca, las demás etiquetas se omiten con un aviso.',
+          'Envuelve el bloque así: <code>::: {.center}<br># Título del contrato<br>:::</code>. Cambia <code>center</code> por <code>right</code> o <code>left</code> según necesites. También funciona la forma corta <code>::: center</code>.',
+          'En Markdown existente también se admiten <code>&lt;h1 align="center"&gt;Título&lt;/h1&gt;</code>, <code>&lt;p align="right"&gt;Firma&lt;/p&gt;</code> y <code>&lt;center&gt;...&lt;/center&gt;</code>. El HTML arbitrario se omite; <code>&lt;br&gt;</code> sigue disponible para saltos de línea.',
         ],
       },
     ],

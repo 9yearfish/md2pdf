@@ -77,7 +77,7 @@ const fr: Messages = {
     proof: 'Épreuve',
     live: 'En direct',
     viewSwitch: 'Afficher',
-    fullscreen: 'Édition plein écran',
+    fullscreen: 'Plein écran',
     fullscreenPreview: 'Aperçu PDF en plein écran',
     previewUnavailable: 'Ce navigateur ne peut pas afficher de PDF ici. Ouvrez le PDF pour le consulter.',
     heroTitle: 'Markdown en PDF',
@@ -138,7 +138,7 @@ const fr: Messages = {
       {
         question: 'Les diagrammes Mermaid sont-ils pris en charge ?',
         answer: [
-          'Oui. Les diagrammes sont intégrés au PDF en graphiques vectoriels : ils restent nets au zoom, leur texte reste sélectionnable et cherchable, et les couleurs personnalisées avec <code>classDef</code> sont conservées.',
+          'Oui. Pour un diagramme long, utilisez <code>flowchart TD</code> ou <code>flowchart TB</code> afin de l’organiser de haut en bas ; utilisez <code>flowchart LR</code> pour une disposition horizontale. Il reste vectoriel et net dans le PDF, son texte reste sélectionnable, et les couleurs de <code>classDef</code> sont conservées.',
         ],
       },
       {
@@ -172,9 +172,10 @@ const fr: Messages = {
         ],
       },
       {
-        question: 'Puis-je utiliser des balises HTML ?',
+        question: 'Comment centrer un titre ou aligner une signature à droite ?',
         answer: [
-          'Seulement <code>&lt;br&gt;</code>. Le moteur de composition n’a pas d’équivalent au HTML : plutôt que de produire un résultat qui n’en a que l’apparence, les autres balises sont ignorées et signalées.',
+          'Entourez le bloc ainsi : <code>::: {.center}<br># Titre du contrat<br>:::</code>. Remplacez <code>center</code> par <code>right</code> ou <code>left</code> selon le besoin. La forme courte <code>::: center</code> fonctionne aussi.',
+          'Dans un Markdown existant, <code>&lt;h1 align="center"&gt;Titre&lt;/h1&gt;</code>, <code>&lt;p align="right"&gt;Signature&lt;/p&gt;</code> et <code>&lt;center&gt;...&lt;/center&gt;</code> sont également reconnus. Le HTML arbitraire est ignoré ; <code>&lt;br&gt;</code> reste disponible pour un saut de ligne.',
         ],
       },
     ],

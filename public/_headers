@@ -68,10 +68,10 @@ https://:version.:project.pages.dev/*
   Referrer-Policy: no-referrer
   Cross-Origin-Opener-Policy: same-origin
   Permissions-Policy: geolocation=(), camera=(), microphone=(), interest-cohort=()
-  # Analytics: Cloudflare's cookie-free counter plus a GTM container. Consent
-  # defaults deny storage and advertising before GTM loads; the container must
-  # retain those settings. No app event contains document-derived values.
+  # Analytics: Cloudflare's cookie-free counter plus direct GA4. Consent defaults
+  # deny storage and advertising before gtag.js loads. No app event contains
+  # document-derived values.
   # frame-src allows only our own Blob URLs: Print loads the PDF into a hidden
   # frame. X-Frame-Options and frame-ancestors stop other sites framing us;
   # they do not apply to that frame (a Blob URL has no response headers).
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://static.cloudflareinsights.com https://*.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.google-analytics.com https://*.googletagmanager.com; font-src 'self'; connect-src 'self' blob: data: https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; worker-src 'self' blob:; frame-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; form-action 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.google-analytics.com https://*.googletagmanager.com; font-src 'self'; connect-src 'self' blob: data: https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; worker-src 'self' blob:; frame-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'none'; form-action 'none'

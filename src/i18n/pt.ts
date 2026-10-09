@@ -71,7 +71,7 @@ const pt: Messages = {
     proof: 'Prova',
     live: 'Ao vivo',
     viewSwitch: 'Mostrar',
-    fullscreen: 'Edição em tela cheia',
+    fullscreen: 'Tela cheia',
     fullscreenPreview: 'Prévia do PDF em tela cheia',
     previewUnavailable: 'Este navegador não pode exibir PDFs aqui. Abra o PDF para visualizar.',
     heroTitle: 'Markdown para PDF',
@@ -132,7 +132,7 @@ const pt: Messages = {
       {
         question: 'Tem suporte a diagramas Mermaid?',
         answer: [
-          'Tem. Os diagramas entram no PDF como gráficos vetoriais, então continuam nítidos ao ampliar, o texto deles continua selecionável e pesquisável, e as cores personalizadas com <code>classDef</code> são mantidas.',
+          'Tem. Em diagramas longos, use <code>flowchart TD</code> ou <code>flowchart TB</code> para organizar de cima para baixo; use <code>flowchart LR</code> para a horizontal. Eles entram no PDF como vetores, permanecem nítidos, o texto continua selecionável e pesquisável, e as cores de <code>classDef</code> são mantidas.',
         ],
       },
       {
@@ -166,9 +166,10 @@ const pt: Messages = {
         ],
       },
       {
-        question: 'Posso usar tags HTML?',
+        question: 'Como centralizo um título ou alinho uma assinatura à direita?',
         answer: [
-          'Só <code>&lt;br&gt;</code>. O motor tipográfico não tem equivalente para HTML, então, em vez de gerar algo que só parece certo, as outras tags são ignoradas com um aviso.',
+          'Envolva o bloco assim: <code>::: {.center}<br># Título do contrato<br>:::</code>. Troque <code>center</code> por <code>right</code> ou <code>left</code> conforme necessário. A forma curta <code>::: center</code> também funciona.',
+          'Em Markdown existente, <code>&lt;h1 align="center"&gt;Título&lt;/h1&gt;</code>, <code>&lt;p align="right"&gt;Assinatura&lt;/p&gt;</code> e <code>&lt;center&gt;...&lt;/center&gt;</code> também são aceitos. HTML arbitrário é ignorado; <code>&lt;br&gt;</code> continua disponível para quebra de linha.',
         ],
       },
     ],

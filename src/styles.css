@@ -339,8 +339,6 @@ button.secondary:hover:not(:disabled) { border-color: var(--ink); background-siz
 button.ghost { --fill: var(--rule); height: 36px; color: var(--ink-2); padding: 0 10px; }
 button.ghost:hover:not(:disabled) { color: var(--ink); background-size: 100% 100%; }
 
-button.icon-only { width: 36px; padding: 0; }
-
 button:disabled { cursor: default; }
 
 /* Form fields: a hairline box, square, mono. */
@@ -458,33 +456,35 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
 /* ---------- the tool ---------- */
 
 /*
- * One row between two hairlines, on the panes' own grid (the same columns and
- * gap as .split): counts, Layout and the file actions over the source; Print
- * and Download over the proof, ending flush with the sheet's right edge, with
- * full screen last.
+ * One row between two hairlines: source actions stay left, while layout,
+ * preview, full screen and export form one consistent group on the right.
  */
 .actionbar {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  column-gap: 56px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
   align-items: center;
   padding: 9px 0;
   border-block: 1px solid var(--rule);
 }
 
-.actions, .actions-files {
+.actions, .actions-files, .actions-utilities, .actions-export {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
 
-.actions-source { gap: 24px; }
+.actions-source { flex: 1 1 auto; gap: 16px; }
 .actions-files { margin-left: auto; }
-/* Print, then the one primary action, then full screen set apart. */
-.actions-output { justify-content: flex-end; gap: 10px; }
-#fullscreen-toggle { margin-left: 6px; }
+.actions-output { justify-content: flex-end; gap: 14px; }
+.actions-utilities { gap: 4px; }
+.actions-export { gap: 8px; }
+.utility-control:is([aria-expanded="true"], [aria-pressed="true"]) {
+  color: var(--ink);
+  background-color: var(--well);
+}
 
 .stats {
   color: var(--ink-2);
@@ -496,33 +496,6 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-/* A disclosure: a quiet label with a + / − that opens the panel below the row. */
-button.disclosure {
-  flex: none;
-  gap: 10px;
-  padding: 0;
-  border: 0;
-  color: var(--ink-2);
-  font: 400 var(--size-label)/1 var(--control);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
-}
-
-button.disclosure .icon { width: 14px; height: 14px; color: var(--muted); }
-
-button.disclosure::after {
-  content: "+";
-  margin-left: 2px;
-  color: var(--muted);
-  font: 400 15px/1 var(--mono);
-  letter-spacing: 0;
-}
-
-button.disclosure[aria-expanded="true"]::after { content: "−"; }
-button.disclosure:hover, button.disclosure[aria-expanded="true"] { color: var(--ink); }
-button.disclosure:hover::after { color: var(--ink); }
-button.disclosure:focus-visible { outline-offset: -2px; }
 
 /* ---------- settings ---------- */
 
@@ -1355,11 +1328,11 @@ button.disclosure:focus-visible { outline-offset: -2px; }
   /* The panes stack; each keeps a comfortable fixed height. */
   .split { grid-template-columns: minmax(0, 1fr); row-gap: 40px; }
   :root { --pane-height: clamp(360px, 60vh, 720px); }
-  /* One column of panes, so the row is one line: counts and layout, then actions. */
+  /* One column of panes, so the two action groups may share the whole row. */
   .actionbar, .fullscreen .actionbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; }
   .actions-files { margin-left: 0; }
-  .actions-source { flex: 1 1 auto; }
   .actions-source .actions-files { margin-left: auto; }
+  .actions-output { flex: 1 1 100%; }
 
   .fullscreen .split { flex-direction: column; }
   .fullscreen .editor-pane { flex: 0 0 44%; }
@@ -1368,14 +1341,14 @@ button.disclosure:focus-visible { outline-offset: -2px; }
 }
 
 @media (max-width: 760px) {
-  :root { --gutter: 16px; --pane-height: 60dvh; --sheet-top: 12px; --bar: 67px; }
+  :root { --gutter: 16px; --pane-height: 60dvh; --sheet-top: 12px; --bar: 116px; }
   /* Room for the bottom bar, so it never covers the end of the page. */
   body { padding-bottom: calc(var(--bar) + env(safe-area-inset-bottom)); }
   .toolbar { gap: 12px; height: 52px; }
   .intro { padding-block: 8px 16px; }
   .intro-lead { font-size: 15px; }
 
-  /* One line: the counts, then New, Open and Layout as icons (each titled). */
+  /* One line: the counts, then New and Open. Utility actions stay together below. */
   .actionbar, .fullscreen .actionbar {
     display: flex;
     align-items: center;
@@ -1385,14 +1358,11 @@ button.disclosure:focus-visible { outline-offset: -2px; }
   .actions-source { display: contents; }
   .stats { flex: 1 1 auto; min-width: 0; }
   .actions-files { order: 1; margin-left: 0; gap: 4px; }
-  #settings-toggle { order: 2; }
-  #settings-toggle { height: 36px; padding: 0 4px 0 8px; }
-  #settings-toggle .label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   #new-doc, #open-file { border-color: transparent; background-color: transparent; }
 
   /*
-   * Print and Download live in a bar along the bottom edge, in reach of the
-   * thumb whichever pane is showing; Download takes the width.
+   * Utility and export controls live in a two-row bar along the bottom edge,
+   * in reach of the thumb whichever pane is showing.
    */
   .actions-output {
     position: fixed;
@@ -1400,19 +1370,23 @@ button.disclosure:focus-visible { outline-offset: -2px; }
     bottom: 0;
     left: 0;
     z-index: 9;
-    display: flex;
-    gap: 8px;
+    display: grid;
+    gap: 6px;
     padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom));
     border-top: 1px solid var(--rule-strong);
     background: var(--ground);
   }
-  .actions-output button { height: 46px; }
+  .actions-output button { height: 42px; }
+  .actions-utilities { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+  .actions-utilities button { justify-content: center; min-width: 0; padding-inline: 6px; }
+  .actions-utilities .label { overflow: hidden; text-overflow: ellipsis; }
+  .actions-export { display: flex; gap: 8px; }
+  .actions-export button { height: 46px; }
   /* The row itself stays put; the bar rises into place instead. */
   .actionbar { animation: none; }
   .actions-output { animation: enter 360ms var(--ease) 120ms backwards; }
   #download { flex: 1; }
   #print { padding: 0 14px; }
-  #fullscreen-toggle { width: 46px; margin-left: 0; }
   .fullscreen .app { height: calc(100dvh - var(--bar) - env(safe-area-inset-bottom)); }
 
   /*

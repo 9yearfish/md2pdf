@@ -70,7 +70,7 @@ const ko: Messages = {
     proof: '교정지',
     live: '실시간',
     viewSwitch: '보기',
-    fullscreen: '전체 화면 편집',
+    fullscreen: '전체 화면',
     fullscreenPreview: 'PDF 전체 화면 미리보기',
     previewUnavailable: '이 브라우저에서는 PDF를 여기에 표시할 수 없습니다. PDF를 열어 확인하세요.',
     heroTitle: 'Markdown을 PDF로',
@@ -131,7 +131,7 @@ const ko: Messages = {
       {
         question: 'Mermaid 다이어그램을 지원하나요?',
         answer: [
-          '네. 다이어그램은 벡터 그래픽으로 PDF에 들어가므로 확대해도 흐려지지 않고, 다이어그램 속 글자도 선택하고 검색할 수 있습니다. <code>classDef</code>로 지정한 색상도 그대로 유지됩니다.',
+          '네. 긴 다이어그램은 <code>flowchart TD</code> 또는 <code>flowchart TB</code>로 위에서 아래로 배치하고, 가로 배치는 <code>flowchart LR</code>를 사용하세요. 다이어그램은 벡터로 PDF에 들어가므로 확대해도 선명하고, 글자를 선택·검색할 수 있으며 <code>classDef</code> 색상도 유지됩니다.',
         ],
       },
       {
@@ -165,9 +165,10 @@ const ko: Messages = {
         ],
       },
       {
-        question: 'HTML 태그를 쓸 수 있나요?',
+        question: '제목을 가운데, 서명을 오른쪽에 맞추려면?',
         answer: [
-          '<code>&lt;br&gt;</code>만 쓸 수 있습니다. 조판 엔진에는 HTML에 대응하는 개념이 없어서, 그럴듯해 보이기만 하는 결과를 내는 대신 다른 태그는 알림과 함께 건너뜁니다.',
+          '<code>::: {.center}<br># 계약서 제목<br>:::</code>처럼 블록을 감싸세요. 오른쪽 정렬은 <code>right</code>, 왼쪽 정렬은 <code>left</code>로 바꾸면 됩니다. 짧은 <code>::: center</code> 형식도 지원합니다.',
+          '기존 Markdown의 <code>&lt;h1 align="center"&gt;제목&lt;/h1&gt;</code>, <code>&lt;p align="right"&gt;서명&lt;/p&gt;</code>, <code>&lt;center&gt;...&lt;/center&gt;</code>도 사용할 수 있습니다. 그 밖의 임의 HTML은 건너뛰며, 줄바꿈에는 <code>&lt;br&gt;</code>를 사용할 수 있습니다.',
         ],
       },
     ],

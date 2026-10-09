@@ -338,18 +338,15 @@ run in the tab, and no code in the app sends document text, images or the PDF
 anywhere.
 
 The site uses **Cloudflare Web Analytics**, which Cloudflare Pages injects into
-every page, and uses **Google Tag Manager** in production when
-`VITE_GTM_CONTAINER_ID` is set. Cloudflare sets no cookies and records page
-visits (URL, referrer, timing, country). Before GTM loads, the app sets Consent
-Mode v2's analytics/ad storage to denied, turns Google Signals and ad
-personalization off, and enables ad-data redaction. Google tags in the
-container therefore receive cookieless measurements. The app pushes a
-`pdf_export` event, but never a document heading, file name, document text,
-image or PDF. It also provides privacy-filtered `analytics_page_location` and
-`analytics_page_referrer` Data Layer values: the page location retains only
-attribution parameters (`utm_*` and Google click IDs), while referrer query
-strings and URL fragments are removed. The GTM GA4 tag must use those values
-instead of its raw Page URL and Referrer variables.
+every page, and loads **Google Analytics 4** directly in production when
+`VITE_GA_MEASUREMENT_ID` is set. Cloudflare sets no cookies and records page
+visits (URL, referrer, timing, country). Before gtag.js loads, the app sets
+Consent Mode v2's analytics/ad storage to denied, turns Google Signals and ad
+personalization off, and enables ad-data redaction. GA4 therefore receives
+cookieless measurements. The app sends a `pdf_export` event, but never a
+document heading, file name, document text, image or PDF. Page locations retain
+only attribution parameters (`utm_*` and Google click IDs); referrer query
+strings and URL fragments are removed before analytics receives them.
 
 The Content-Security-Policy in `public/_headers` allows only the Cloudflare and
 Google Analytics tag/collection origins beyond `'self'`. It deliberately does
@@ -553,16 +550,12 @@ canonical, alternate and Open Graph link, `robots.txt` and `sitemap.xml`.
 **Change it to the real domain before deploying**; a canonical pointing at the
 wrong origin is worse than none.
 
-`VITE_GTM_CONTAINER_ID` enables Google Tag Manager only in production builds;
-the current container is `GTM-5L4KRBGS`. The published GTM container must have
-a Google tag for the site's GA4 Measurement ID. Its page-view configuration
-should use Data Layer Variables named `analytics_page_location` and
-`analytics_page_referrer`. To record actual use, add a GA4 event tag named
-`pdf_export`, trigger it on the Custom Event `pdf_export`, and pass the Data
-Layer Variable `method`. After publishing the container, verify `page_view`
-and `pdf_export` in GA4 Realtime/DebugView. Mark `pdf_export` as a key event if
-the acquisition report should show which sources produced actual PDF exports,
-not merely visits.
+`VITE_GA_MEASUREMENT_ID` enables Google Analytics 4 only in production builds;
+the current web data stream uses `G-6DY2MNVZY0`. The app configures the Google
+tag directly—there is no Tag Manager container to publish. After deploying,
+verify `page_view` and `pdf_export` in GA4 Realtime. Mark `pdf_export` as a key
+event if the acquisition report should show which sources produced actual PDF
+exports, not merely visits.
 
 ### How the pages are built
 
@@ -590,21 +583,19 @@ line, guide links, languages) stays outside and always visible, and the
 landing page's `<h1>` and lead stay in the intro above the tool. The JSON-LD
 is unchanged.
 
-The tool has one action row on the panes' own grid: counts, Layout and the
-file actions (New, Open) over the source; Print and Download over the proof,
-ending flush with the sheet's edge, with full screen last. Download is the
-only solid (primary) button. In full screen the row follows the divider
-(`--source-width`). Where the source half is too narrow for every label
-(French at 1440 px, anything under 1180 px), New and Open drop to icons. On a
-desktop (1024 px and wider, 600 px and taller) the tool fills whatever the
-first screen leaves under the header and the one-line intro, so both panes,
-the row and the whole sheet are in view on arrival. Under 760 px the row is
-one line (counts, then New, Open and Layout as titled icons) and Print and
-Download move to a bar fixed along the bottom edge (safe-area aware; the page
-is padded so it never covers the end), Download taking the width. Opening a
-file or pasting a document on a phone switches to the proof. After New, the
-empty source says what to do, with Open and (where the browser lets a page
-read the clipboard on a click) Paste.
+The tool has one action row: counts and the file actions (New, Open) stay on
+the left, while Layout, Preview and Full screen are one labelled utility group
+on the right, followed by Print and Download. Download is the only solid
+(primary) button. Where space is tight, New and Open drop to titled icons; the
+three utility labels stay visible. On a desktop (1024 px and wider, 600 px and
+taller) the tool fills whatever the first screen leaves under the header and
+the one-line intro, so both panes, the row and the whole sheet are in view on
+arrival. Under 760 px, the utility controls and export controls move to a
+two-row bar fixed along the bottom edge (safe-area aware; the page is padded so
+it never covers the end), with Download taking the width. Opening a file or
+pasting a document on a phone switches to the proof. After New, the empty
+source says what to do, with Open and (where the browser lets a page read the
+clipboard on a click) Paste.
 
 Every page has exactly one `<h1>`: the intro's title (the home page's
 "Markdown to PDF: typeset in your browser.", or a landing page's own). The

@@ -70,7 +70,7 @@ const zh: Messages = {
     proof: '校样',
     live: '实时',
     viewSwitch: '显示',
-    fullscreen: '全屏编辑',
+    fullscreen: '全屏',
     fullscreenPreview: '全屏预览 PDF',
     previewUnavailable: '此浏览器不支持内嵌 PDF 预览，请打开 PDF 查看。',
     heroTitle: 'Markdown 转 PDF',
@@ -131,7 +131,7 @@ const zh: Messages = {
       {
         question: '支持 Mermaid 流程图吗？',
         answer: [
-          '支持。流程图以矢量图形嵌入 PDF，放大不会模糊，图中的文字仍然可以选中和搜索，自定义的 <code>classDef</code> 配色也会完整保留。',
+          '支持。特别长的流程图建议用 <code>flowchart TD</code> 或 <code>flowchart TB</code>，节点会从上到下纵向排列；需要横向时用 <code>flowchart LR</code>。流程图以矢量图形嵌入 PDF，放大不会模糊，图中文字仍可选中和搜索，<code>classDef</code> 配色也会完整保留。',
         ],
       },
       {
@@ -163,9 +163,10 @@ const zh: Messages = {
         ],
       },
       {
-        question: '可以用 HTML 标签吗？',
+        question: '标题或落款怎样居中、右对齐？',
         answer: [
-          '除 <code>&lt;br&gt;</code> 外不支持。排版引擎没有与 HTML 对应的语义，与其渲染出一个似是而非的结果，不如明确跳过并给出提示。',
+          '把内容包在对齐块里：<code>::: {.center}<br># 合同标题<br>:::</code>。右对齐把 <code>center</code> 改成 <code>right</code>，左对齐用 <code>left</code>；简写 <code>::: center</code> 也支持。',
+          '已有 Markdown 里的常见 HTML 写法也能直接用，例如 <code>&lt;h1 align="center"&gt;标题&lt;/h1&gt;</code>、<code>&lt;p align="right"&gt;签字&lt;/p&gt;</code> 和旧式 <code>&lt;center&gt;...&lt;/center&gt;</code>。其他任意 HTML 仍会跳过；换行可用 <code>&lt;br&gt;</code>。',
         ],
       },
     ],

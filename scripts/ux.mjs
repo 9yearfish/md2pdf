@@ -161,6 +161,9 @@ for (const colorScheme of ['light', 'dark']) {
         bar: box('.actions-output'),
         download: box('#download'),
         print: box('#print'),
+        layout: box('#settings-toggle'),
+        preview: box('#pdf-preview-toggle'),
+        full: box('#fullscreen-toggle'),
         stats: box('#stats'),
         height: innerHeight,
         padding: parseFloat(getComputedStyle(document.body).paddingBottom),
@@ -172,6 +175,7 @@ for (const colorScheme of ['light', 'dark']) {
   let b = await bar();
   check(b.position === 'fixed' && Math.abs(b.bar.bottom - b.height) <= 1, '390: Print and Download sit in a bar on the bottom edge', JSON.stringify(b.bar));
   check(b.download.width > b.print.width * 1.5 && b.download.height >= 44 && b.print.height >= 44, '390: Download is the wide primary, both thumb-sized', `${Math.round(b.download.width)} × ${Math.round(b.download.height)}`);
+  check(Math.abs(b.layout.top - b.preview.top) <= 1 && Math.abs(b.preview.top - b.full.top) <= 1 && b.print.top > b.layout.bottom, '390: labelled utility actions form their own row above export');
   check(b.downloads === 1 && b.stats.bottom < b.bar.top, '390: the top row does not repeat them');
   check(b.padding >= b.bar.height - 1, '390: the page is padded for the bar', `${b.padding} vs ${b.bar.height}`);
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));

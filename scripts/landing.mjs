@@ -432,18 +432,19 @@ for (const width of [1440, 390]) {
   });
   let b = await rows();
   if (width === 1440) {
-    check(Math.abs(b.preview.r - b.sheet.r) <= 1 && b.print.l >= b.sheet.l && b.preview.l >= b.full.r, '1440: output actions sit over the proof, with PDF preview last and flush with the sheet', `${b.preview.r} vs ${b.sheet.r}`);
-    check(b.open.r <= b.editor.r + 1 && b.layout.l > b.stats.r, '1440: counts, Layout, New and Open sit over the source');
-    check(new Set([b.stats, b.layout, b.open, b.print, b.download].map(x => Math.round((x.t + x.b) / 2))).size === 1, '1440: one row');
+    check(Math.abs(b.download.r - b.sheet.r) <= 1 && b.layout.r <= b.preview.l && b.preview.r <= b.full.l && b.full.r <= b.print.l, '1440: Layout, Preview and Full screen sit together on the right, before the export actions', `${b.download.r} vs ${b.sheet.r}`);
+    check(b.open.r <= b.editor.r + 1 && b.open.l > b.stats.r, '1440: counts, New and Open stay over the source');
+    check(new Set([b.stats, b.layout, b.preview, b.full, b.print, b.download].map(x => Math.round((x.t + x.b) / 2))).size === 1, '1440: one row');
     await page.click('#fullscreen-toggle');
     await page.waitForTimeout(300);
     b = await rows();
-    check(Math.abs(b.preview.r - b.sheet.r) <= 1 && b.print.l >= b.sheet.l && b.open.r <= b.editor.r + 1, 'full screen: the row still follows the panes');
+    check(Math.abs(b.download.r - b.sheet.r) <= 1 && b.layout.r <= b.preview.l && b.open.r <= b.editor.r + 1, 'full screen: the row still follows the panes');
     await page.click('#fullscreen-toggle');
   } else {
-    // One line for the counts and Layout; Print and Download in the bottom bar, below them.
-    check(Math.abs((b.stats.t + b.stats.b) / 2 - (b.layout.t + b.layout.b) / 2) < 4 && b.download.t > b.stats.b, '390: counts and Layout first, then the buttons');
+    // File actions stay above; all three labelled utilities share the first row of the bottom bar.
+    check(b.layout.t > b.stats.b && Math.abs(b.layout.t - b.preview.t) < 2 && Math.abs(b.preview.t - b.full.t) < 2, '390: Layout, Preview and Full screen share the bottom utility row');
     check(b.download.r - b.download.l > 150, '390: Download takes the rest of the line', `${Math.round(b.download.r - b.download.l)} px`);
+    check(await page.locator('#settings-toggle .label').isVisible() && await page.locator('#pdf-preview-toggle .label').isVisible() && await page.locator('#fullscreen-toggle .label').isVisible(), '390: utility controls keep their text labels');
   }
   await page.click('#settings-toggle');
   const settings = await box('#settings');

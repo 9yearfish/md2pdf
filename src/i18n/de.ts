@@ -71,7 +71,7 @@ const de: Messages = {
     proof: 'Andruck',
     live: 'Live',
     viewSwitch: 'Ansicht',
-    fullscreen: 'Vollbild-Bearbeitung',
+    fullscreen: 'Vollbild',
     fullscreenPreview: 'PDF-Vorschau im Vollbild',
     previewUnavailable: 'Dieser Browser kann PDFs hier nicht anzeigen. Öffnen Sie die PDF-Datei.',
     heroTitle: 'Markdown zu PDF',
@@ -132,7 +132,7 @@ const de: Messages = {
       {
         question: 'Werden Mermaid-Diagramme unterstützt?',
         answer: [
-          'Ja. Diagramme landen als Vektorgrafik im PDF, bleiben beim Zoomen scharf, ihr Text bleibt markierbar und durchsuchbar, und eigene <code>classDef</code>-Farben bleiben erhalten.',
+          'Ja. Beginne ein langes Diagramm mit <code>flowchart TD</code> oder <code>flowchart TB</code> für eine Anordnung von oben nach unten; <code>flowchart LR</code> ordnet es horizontal an. Im PDF bleibt es eine scharfe Vektorgrafik, der Text bleibt markierbar und die <code>classDef</code>-Farben bleiben erhalten.',
         ],
       },
       {
@@ -166,9 +166,10 @@ const de: Messages = {
         ],
       },
       {
-        question: 'Kann ich HTML-Tags verwenden?',
+        question: 'Wie zentriere ich einen Titel oder richte eine Unterschrift rechts aus?',
         answer: [
-          'Nur <code>&lt;br&gt;</code>. Die Satz-Engine hat keine Entsprechung für HTML. Statt etwas zu erzeugen, das nur so aussieht, als stimme es, werden andere Tags mit einem Hinweis übersprungen.',
+          'Umschließe den Block so: <code>::: {.center}<br># Vertragstitel<br>:::</code>. Ersetze <code>center</code> bei Bedarf durch <code>right</code> oder <code>left</code>. Auch die Kurzform <code>::: center</code> funktioniert.',
+          'In vorhandenem Markdown werden außerdem <code>&lt;h1 align="center"&gt;Titel&lt;/h1&gt;</code>, <code>&lt;p align="right"&gt;Unterschrift&lt;/p&gt;</code> und <code>&lt;center&gt;...&lt;/center&gt;</code> unterstützt. Beliebiges HTML wird weiterhin übersprungen; für Zeilenumbrüche ist <code>&lt;br&gt;</code> verfügbar.',
         ],
       },
     ],

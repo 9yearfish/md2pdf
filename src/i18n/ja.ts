@@ -70,7 +70,7 @@ const ja: Messages = {
     proof: '校正刷り',
     live: 'ライブ',
     viewSwitch: '表示',
-    fullscreen: '全画面で編集',
+    fullscreen: '全画面',
     fullscreenPreview: 'PDF を全画面でプレビュー',
     previewUnavailable: 'このブラウザーでは PDF を埋め込み表示できません。PDF を開いて確認してください。',
     heroTitle: 'Markdown を PDF に',
@@ -131,7 +131,7 @@ const ja: Messages = {
       {
         question: 'Mermaid の図に対応していますか？',
         answer: [
-          '対応しています。図はベクター図形として PDF に埋め込まれるので、拡大してもぼやけず、図中の文字も選択・検索できます。<code>classDef</code> で指定した配色もそのまま残ります。',
+          '対応しています。長い図は <code>flowchart TD</code> または <code>flowchart TB</code> で上から下へ、横向きなら <code>flowchart LR</code> で配置できます。図はベクターとして PDF に埋め込まれ、拡大してもぼやけず、文字も選択・検索でき、<code>classDef</code> の配色も保たれます。',
         ],
       },
       {
@@ -165,9 +165,10 @@ const ja: Messages = {
         ],
       },
       {
-        question: 'HTML タグは使えますか？',
+        question: '見出しを中央揃え、署名を右揃えにするには？',
         answer: [
-          '<code>&lt;br&gt;</code> のみ使えます。組版エンジンには HTML に相当するものがないため、それらしく見えるだけの結果を出すよりも、その他のタグは通知を出したうえでスキップします。',
+          '<code>::: {.center}<br># 契約書のタイトル<br>:::</code> のように囲みます。右揃えは <code>right</code>、左揃えは <code>left</code> に置き換えてください。短い <code>::: center</code> 形式にも対応しています。',
+          '既存の Markdown では <code>&lt;h1 align="center"&gt;タイトル&lt;/h1&gt;</code>、<code>&lt;p align="right"&gt;署名&lt;/p&gt;</code>、<code>&lt;center&gt;...&lt;/center&gt;</code> も使えます。その他の任意の HTML はスキップされ、改行には <code>&lt;br&gt;</code> が使えます。',
         ],
       },
     ],
