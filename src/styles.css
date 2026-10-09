@@ -297,6 +297,19 @@ button {
 
 button:active:not(:disabled) { transform: translateY(1px); }
 
+/* GSAP button feedback: a short mechanical press and a print-carriage sweep. */
+button.button-motion { position: relative; overflow: hidden; }
+button.button-motion-active {
+  transition-property: background-size, background-color, border-color, color;
+}
+.button-motion-sweep {
+  position: absolute;
+  inset: -10% auto -10% 0;
+  width: clamp(12px, 18%, 24px);
+  background: currentColor;
+  pointer-events: none;
+}
+
 button .icon { width: 15px; height: 15px; }
 
 button.primary {
@@ -1450,6 +1463,7 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   ::details-content { transition: none !important; }
+  .button-motion-sweep { display: none !important; }
 }
 
 /* ---------- descriptive content ---------- */

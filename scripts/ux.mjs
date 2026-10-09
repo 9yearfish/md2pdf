@@ -9,7 +9,8 @@
  *      top row does not repeat them; opening a file shows its proof;
  *  (c) the empty state after New says what to do, in the page's language,
  *      and goes as soon as there is text;
- *  (d) prefers-reduced-motion: reduce turns every animation off;
+ *  (d) every static or inserted button gets the same GSAP press/sweep, while
+ *      prefers-reduced-motion: reduce turns every animation off;
  *  (e) share images: every page has an og:image (1200 x 630 PNG under 80 KB,
  *      served), its size and alt, and a large Twitter card; one <h1>;
  *  (f) robots.txt names the AI crawlers, llms.txt links every page, and
@@ -227,6 +228,35 @@ for (const [path, text] of [['/', 'Paste Markdown, drop a .md file, or open one'
 /* ---------- (d) reduced motion ---------- */
 
 {
+  const { context, page } = await open({ reducedMotion: 'no-preference' });
+  await page.click('#settings-toggle');
+  const staticButton = await page.evaluate(() => ({
+    gsap: Boolean(window.gsap),
+    motion: document.getElementById('settings-toggle').classList.contains('button-motion'),
+    sweep: Boolean(document.querySelector('#settings-toggle > .button-motion-sweep')),
+  }));
+  check(staticButton.gsap && staticButton.motion && staticButton.sweep, 'button click: GSAP runs the shared press and carriage sweep', JSON.stringify(staticButton));
+
+  await page.evaluate(() => {
+    const button = document.createElement('button');
+    button.id = 'inserted-motion-test';
+    button.type = 'button';
+    button.textContent = 'Inserted';
+    document.body.append(button);
+  });
+  await page.click('#inserted-motion-test');
+  check(await page.locator('#inserted-motion-test > .button-motion-sweep').count() === 1, 'button click: controls inserted later inherit the animation');
+  await page.waitForTimeout(400);
+  const settled = await page.evaluate(() => ({
+    sweeps: document.querySelectorAll('.button-motion-sweep').length,
+    active: document.querySelectorAll('.button-motion-active').length,
+    transform: document.getElementById('inserted-motion-test').style.transform,
+  }));
+  check(settled.sweeps === 0 && settled.active === 0 && settled.transform === '', 'button click: animation cleans up without leaving transforms', JSON.stringify(settled));
+  await context.close();
+}
+
+{
   const { context, page } = await open({ reducedMotion: 'reduce' });
   const still = await page.evaluate(() => ({
     running: document.getAnimations().map(a => a.animationName ?? a.constructor.name),
@@ -238,7 +268,12 @@ for (const [path, text] of [['/', 'Paste Markdown, drop a .md file, or open one'
   check(!still.running.length && still.title === 'none' && still.pane === 'none' && still.live === 'none' && /^0s/.test(still.button), 'reduced motion: nothing animates', JSON.stringify(still));
   await page.click('#new-doc');
   await page.waitForTimeout(100);
-  check(!(await page.evaluate(() => document.getAnimations().length)), 'reduced motion: not even a notice slides in');
+  const reducedClick = await page.evaluate(() => ({
+    animations: document.getAnimations().length,
+    sweeps: document.querySelectorAll('.button-motion-sweep').length,
+    transform: document.getElementById('new-doc').style.transform,
+  }));
+  check(!reducedClick.animations && !reducedClick.sweeps && reducedClick.transform === '', 'reduced motion: not even a button press or notice slides in', JSON.stringify(reducedClick));
   await context.close();
 
   const moving = await open({ reducedMotion: 'no-preference' });

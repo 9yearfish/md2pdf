@@ -379,6 +379,11 @@ images, as does clearing the site's data in the browser. See `src/ui/draft.ts`.
 The service worker caches only the application's own immutable assets; it never
 caches any part of a document.
 
+Button micro-interactions use the vendored GSAP core at
+`public/vendor/gsap-3.15.0.min.js`. It is served from the app's own origin (no
+runtime CDN request), applies through delegated events to static and dynamic
+buttons, and is skipped when `prefers-reduced-motion: reduce` is active.
+
 ### Error reports
 
 Failures in the field are sent to `/api/log`, a Pages Function

@@ -19,6 +19,7 @@ function isImmutable(url) {
     url.origin === self.location.origin &&
     (url.pathname.startsWith('/assets/') ||
       url.pathname.startsWith('/fonts/') ||
+      url.pathname.startsWith('/vendor/') ||
       url.pathname.endsWith('.wasm')) &&
     // The engine parts are joined and stored by the loader itself; caching
     // them here as well would keep a second 27 MB copy.

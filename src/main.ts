@@ -11,6 +11,7 @@ import { installErrorReporting, reportError } from './ui/errors';
 import { importWithRetry, isChunkLoadError } from './ui/retry-import';
 import { createEditor, type Editor } from './ui/editor';
 import { bindPdfPreview } from './ui/pdf-preview';
+import { bindButtonMotion } from './ui/button-motion';
 import { trackToolEvent } from './analytics';
 import { hideFrontMatter, layoutModule, loadLayout } from './layout/load';
 import {
@@ -1298,6 +1299,7 @@ function boot(): void {
 }
 
 installErrorReporting();
+bindButtonMotion();
 // The build in the footer, so a report from a phone can be matched to a deploy.
 document.querySelector('.colophon')?.insertAdjacentHTML('beforeend', `<span class="build">version ${__BUILD_ID__}</span>`);
 
