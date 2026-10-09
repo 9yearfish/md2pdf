@@ -107,6 +107,11 @@ class Emitter {
         return this.paragraph(node);
       case 'blockquote_open':
         return `#md-quote[\n${indent(this.blocks(node.children))}\n]`;
+      case 'align_open': {
+        const align = t.meta?.align;
+        if (align !== 'left' && align !== 'center' && align !== 'right') return this.blocks(node.children);
+        return `#align(${align})[\n${indent(this.blocks(node.children))}\n]`;
+      }
       case 'bullet_list_open':
       case 'ordered_list_open':
         return this.list(node);

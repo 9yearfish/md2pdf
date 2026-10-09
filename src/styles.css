@@ -927,6 +927,13 @@ button.disclosure:focus-visible { outline-offset: -2px; }
 
 .paper.justify p, .paper.justify li, .paper.justify dd { text-align: justify; }
 
+/* Explicit Markdown alignment blocks (src/convert/alignment.ts). */
+.paper .md-align { width: 100%; }
+.paper .md-align-left, .paper .md-align-left :is(p, li, dd, th, td) { text-align: left; }
+.paper .md-align-center, .paper .md-align-center :is(p, li, dd, th, td) { text-align: center; }
+.paper .md-align-right, .paper .md-align-right :is(p, li, dd, th, td) { text-align: right; }
+.paper .md-align > :last-child { margin-bottom: 0; }
+
 .paper > :first-child { margin-top: 0; }
 .paper > :last-child { margin-bottom: 0; }
 

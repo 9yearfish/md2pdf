@@ -98,6 +98,10 @@ async function render(name, text, options = {}, { locale = '', screenshot = fals
       header: paper.querySelector('.page-header')?.textContent ?? '',
       footer: paper.querySelector('.page-footer')?.textContent ?? '',
       cover: paper.querySelector('.cover')?.textContent ?? '',
+      alignments: [...paper.querySelectorAll('.md-align')].map(block => ({
+        text: block.textContent ?? '',
+        align: getComputedStyle(block).textAlign,
+      })),
       fromDocument: [...document.querySelectorAll('#settings .from-doc')].map(b => b.closest('label').querySelector('input, select').id),
       disabled: [...document.querySelectorAll('#settings :disabled')].map(i => i.id),
     };
@@ -148,6 +152,22 @@ await test('explicit page breaks', async expect => {
   expect(r.preview.breaks === 4, `preview shows ${r.preview.breaks} page-break markers, expected 4`);
   // Default footer: "page / pages" centred.
   expect(pages(r).every((p, i) => p.bottom === `${i + 1} / 5`), `footers: ${pages(r).map(p => p.bottom).join(' | ')}`);
+});
+
+await test('aligned Markdown blocks', async expect => {
+  const md = [
+    '::: center', '# 房屋租赁合同', '合同编号：2026-001', ':::',
+    '', '合同正文保持左对齐。', '',
+    '::: right', '**甲方签字：** ____________', '', '日期：____年__月__日', ':::',
+  ].join('\n');
+  const r = await render('alignment', md);
+  expect(ok(r), `no PDF: ${r.error}`);
+  if (!ok(r)) return;
+  expect(r.report.text.includes('房屋租赁合同') && r.report.text.includes('甲方签字'), 'aligned content is missing from the PDF');
+  expect(r.preview.alignments.length === 2, `preview has ${r.preview.alignments.length} alignment blocks, expected 2`);
+  expect(r.preview.alignments[0]?.align === 'center', `title alignment is ${r.preview.alignments[0]?.align}`);
+  expect(r.preview.alignments[1]?.align === 'right', `signature alignment is ${r.preview.alignments[1]?.align}`);
+  expect(!r.errors.length, `page errors: ${r.errors}`);
 });
 
 await test('headers, footers and the cover', async expect => {

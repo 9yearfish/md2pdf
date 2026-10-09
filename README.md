@@ -56,6 +56,10 @@ has to typeset (about 100 ms for a short document).
   C4, kanban, architecture, packet, radar and treemap (one fixture each in
   `scripts/fixtures/mermaid/`). Architecture icons outside the built-in set
   are drawn as a "?" box; no icon pack is ever fetched.
+- **Diagram direction follows Mermaid source.** Use `flowchart TD` or
+  `flowchart TB` for a long top-to-bottom flow, and `flowchart LR` for a
+  left-to-right flow. The converter does not silently override an explicit
+  direction.
 - **Diagrams fit the page.** Each is scaled to the width of whatever holds it
   (the text block, a list item, a quote) and never enlarged; one taller than a
   page is scaled to fit a page. One that does not fit in what is left of the
@@ -102,6 +106,28 @@ has to typeset (about 100 ms for a short document).
   images, horizontal rules.
 
 ## Pages, front matter and templates
+
+**Block alignment.** Wrap any Markdown blocks in `::: center`, `::: right` or
+`::: left`. This works the same way in the preview and the PDF, and is useful
+for contract titles and signature blocks:
+
+```markdown
+::: center
+# 房屋租赁合同
+合同编号：2026-001
+:::
+
+合同正文从这里开始。
+
+::: right
+甲方签字：____________
+
+日期：____年__月__日
+:::
+```
+
+The contents remain ordinary Markdown, so headings, bold text and paragraphs
+continue to work. Alignment blocks cannot be nested.
 
 **Page breaks.** Any of these, on a line of its own, starts a new page:
 
