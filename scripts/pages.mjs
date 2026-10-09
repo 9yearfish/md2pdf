@@ -156,17 +156,23 @@ await test('explicit page breaks', async expect => {
 
 await test('aligned Markdown blocks', async expect => {
   const md = [
-    '::: center', '# 房屋租赁合同', '合同编号：2026-001', ':::',
+    '::: {.center}', '# 房屋租赁合同', '合同编号：2026-001', ':::',
     '', '合同正文保持左对齐。', '',
     '::: right', '**甲方签字：** ____________', '', '日期：____年__月__日', ':::',
+    '', '<h2 align="center">HTML 标题</h2>',
+    '', '<p class="text-right">HTML 落款</p>',
+    '', '<div style="text-align: center; color: red">', '**只采用安全的对齐属性**', '</div>',
+    '', '<center>', '旧文档', '</center>',
   ].join('\n');
   const r = await render('alignment', md);
   expect(ok(r), `no PDF: ${r.error}`);
   if (!ok(r)) return;
   expect(r.report.text.includes('房屋租赁合同') && r.report.text.includes('甲方签字'), 'aligned content is missing from the PDF');
-  expect(r.preview.alignments.length === 2, `preview has ${r.preview.alignments.length} alignment blocks, expected 2`);
+  expect(r.report.text.includes('HTML 标题') && r.report.text.includes('旧文档'), 'HTML-compatible aligned content is missing from the PDF');
+  expect(r.preview.alignments.length === 6, `preview has ${r.preview.alignments.length} alignment blocks, expected 6`);
   expect(r.preview.alignments[0]?.align === 'center', `title alignment is ${r.preview.alignments[0]?.align}`);
   expect(r.preview.alignments[1]?.align === 'right', `signature alignment is ${r.preview.alignments[1]?.align}`);
+  expect(r.preview.alignments.slice(2).map(a => a.align).join(',') === 'center,right,center,center', `HTML alignments: ${r.preview.alignments.slice(2).map(a => a.align)}`);
   expect(!r.errors.length, `page errors: ${r.errors}`);
 });
 

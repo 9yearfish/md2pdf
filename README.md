@@ -107,27 +107,40 @@ has to typeset (about 100 ms for a short document).
 
 ## Pages, front matter and templates
 
-**Block alignment.** Wrap any Markdown blocks in `::: center`, `::: right` or
-`::: left`. This works the same way in the preview and the PDF, and is useful
-for contract titles and signature blocks:
+**Block alignment.** CommonMark has no syntax for this, so both widespread
+extension families are accepted. The recommended form is a
+[Pandoc/Quarto fenced div](https://pandoc.org/MANUAL.html#extension-fenced_divs):
 
 ```markdown
-::: center
+::: {.center}
 # 房屋租赁合同
 合同编号：2026-001
 :::
 
 合同正文从这里开始。
 
-::: right
+::: {.right}
 甲方签字：____________
 
 日期：____年__月__日
 :::
 ```
 
-The contents remain ordinary Markdown, so headings, bold text and paragraphs
-continue to work. Alignment blocks cannot be nested.
+Pandoc's shorter single-class form (`::: center`, `::: right`, `::: left`) is
+equivalent. Documents copied from GitHub and other HTML-capable Markdown tools
+also keep their alignment:
+
+```markdown
+<h1 align="center">房屋租赁合同</h1>
+<p align="right">甲方签字：____________</p>
+```
+
+`<div align="center">` containers, `class="text-center"`, and
+`style="text-align: center"` are recognised too; the deprecated `<center>` tag
+is accepted for old documents. Only `left`, `center` and `right` are read, all
+other HTML attributes are discarded, and arbitrary raw HTML stays disabled.
+The contents of a multi-line container remain ordinary Markdown. Alignment
+blocks cannot be nested.
 
 **Page breaks.** Any of these, on a line of its own, starts a new page:
 
