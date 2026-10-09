@@ -43,7 +43,7 @@ function release(button: HTMLButtonElement, gsap: Gsap): void {
     scaleX: 1,
     scaleY: 1,
     y: 0,
-    duration: 0.18,
+    duration: 0.22,
     ease: 'expo.out',
     clearProps: 'transform',
     onComplete: () => button.classList.remove('button-motion-active'),
@@ -62,10 +62,65 @@ function sweep(button: HTMLButtonElement, gsap: Gsap): void {
   button.classList.add('button-motion');
   button.append(line);
 
-  gsap.set(line, { x: -28, opacity: 0, scaleX: 0.45, transformOrigin: '50% 50%' });
+  const fullscreen = button.id === 'fullscreen-toggle';
+  gsap.set(line, { x: -32, opacity: 0, scaleX: 0.35, transformOrigin: '50% 50%' });
   gsap.timeline()
-    .to(line, { x: button.clientWidth + 28, opacity: 0.16, scaleX: 1, duration: 0.24, ease: 'power2.inOut' })
-    .to(line, { opacity: 0, duration: 0.07, ease: 'power2.out', onComplete: () => line.remove() }, '-=0.035');
+    .to(line, {
+      x: button.clientWidth + 32,
+      opacity: fullscreen ? 0.34 : 0.24,
+      scaleX: 1.1,
+      duration: fullscreen ? 0.48 : 0.32,
+      ease: 'power2.inOut',
+    })
+    .to(line, { opacity: 0, duration: 0.09, ease: 'power2.out', onComplete: () => line.remove() }, '-=0.045');
+}
+
+/**
+ * Full-screen is a spatial change, not merely a pressed button. After the
+ * layout switches, open the two work surfaces like a precise machine aperture.
+ */
+export function animateFullscreenTransition(on: boolean, root: Document = document): void {
+  const gsap = window.gsap;
+  const html = root.documentElement;
+  if (reducedMotion.matches || !gsap) {
+    html.classList.remove('fullscreen-transitioning');
+    return;
+  }
+
+  const tool = root.querySelector<HTMLElement>('.tool');
+  const actionbar = root.querySelector<HTMLElement>('.actionbar');
+  const editor = root.querySelector<HTMLElement>('.editor-pane');
+  const preview = root.querySelector<HTMLElement>('.preview-pane');
+  const icon = root.querySelector<SVGElement>(`#fullscreen-toggle .icon-${on ? 'collapse' : 'expand'}`);
+  if (!tool || !actionbar || !editor || !preview) return;
+
+  for (const target of [tool, actionbar, editor, preview, icon].filter(Boolean) as Element[]) {
+    gsap.killTweensOf(target);
+  }
+  html.classList.add('fullscreen-transitioning');
+
+  gsap.timeline({
+    onComplete: () => html.classList.remove('fullscreen-transitioning'),
+  })
+    .fromTo(tool,
+      { opacity: 0.72, scaleY: 0.985, transformOrigin: '50% 0%' },
+      { opacity: 1, scaleY: 1, duration: 0.48, ease: 'expo.out', clearProps: 'transform,opacity' })
+    .fromTo(actionbar,
+      { opacity: 0, y: -10 },
+      { opacity: 1, y: 0, duration: 0.38, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.035)
+    .fromTo(editor,
+      { opacity: 0.48, x: on ? -18 : -10 },
+      { opacity: 1, x: 0, duration: 0.46, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.06)
+    .fromTo(preview,
+      { opacity: 0.48, x: on ? 18 : 10 },
+      { opacity: 1, x: 0, duration: 0.46, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.06);
+
+  if (icon) {
+    gsap.timeline()
+      .fromTo(icon,
+        { opacity: 0, scale: 0.72, rotate: on ? -18 : 18, transformOrigin: '50% 50%' },
+        { opacity: 1, scale: 1, rotate: 0, duration: 0.42, ease: 'expo.out', clearProps: 'transform,opacity' });
+  }
 }
 
 /** Bind once at document level so future buttons inherit the same feedback. */
@@ -80,7 +135,7 @@ export function bindButtonMotion(root: Document = document): void {
     pressed.set(event.pointerId, button);
     button.classList.add('button-motion-active');
     gsap.killTweensOf(button);
-    gsap.to(button, { scaleX: 0.985, scaleY: 0.94, y: 1, duration: 0.06, ease: 'power2.out' });
+    gsap.to(button, { scaleX: 0.97, scaleY: 0.9, y: 2, duration: 0.08, ease: 'power2.out' });
   }, true);
 
   const releasePointer = (event: PointerEvent) => {
@@ -102,7 +157,7 @@ export function bindButtonMotion(root: Document = document): void {
       button.classList.add('button-motion-active');
       gsap.killTweensOf(button);
       gsap.timeline()
-        .to(button, { scaleX: 0.985, scaleY: 0.94, y: 1, duration: 0.06, ease: 'power2.out' })
+        .to(button, { scaleX: 0.97, scaleY: 0.9, y: 2, duration: 0.08, ease: 'power2.out' })
         .to(button, {
           scaleX: 1,
           scaleY: 1,

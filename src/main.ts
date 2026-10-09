@@ -11,7 +11,7 @@ import { installErrorReporting, reportError } from './ui/errors';
 import { importWithRetry, isChunkLoadError } from './ui/retry-import';
 import { createEditor, type Editor } from './ui/editor';
 import { bindPdfPreview } from './ui/pdf-preview';
-import { bindButtonMotion } from './ui/button-motion';
+import { animateFullscreenTransition, bindButtonMotion } from './ui/button-motion';
 import { trackToolEvent } from './analytics';
 import { hideFrontMatter, layoutModule, loadLayout } from './layout/load';
 import {
@@ -1231,6 +1231,7 @@ function setFullscreen(on: boolean): void {
   document.querySelector<HTMLElement>('.featured-guides')?.toggleAttribute('hidden', on);
   el('fullscreen-toggle').setAttribute('aria-pressed', String(on));
   if (on) window.scrollTo(0, 0);
+  animateFullscreenTransition(on);
 }
 
 /* ---------- boot ---------- */

@@ -382,7 +382,10 @@ caches any part of a document.
 Button micro-interactions use the vendored GSAP core at
 `public/vendor/gsap-3.15.0.min.js`. It is served from the app's own origin (no
 runtime CDN request), applies through delegated events to static and dynamic
-buttons, and is skipped when `prefers-reduced-motion: reduce` is active.
+buttons, and is skipped when `prefers-reduced-motion: reduce` is active. A
+button uses an 80 ms mechanical press, 220 ms release and 320 ms carriage
+sweep. Full-screen adds a distinct 480 ms workspace transition: the editor and
+proof move in from opposite sides while the action row settles from above.
 
 ### Error reports
 
@@ -786,7 +789,8 @@ done, buttons fill with ink from the left, disclosures open to their height
 slide in and out. The about section rises into view with a scroll-driven
 animation where the browser has them. None of it runs under
 `prefers-reduced-motion: reduce`, and none of it shifts layout. No animation
-library is loaded.
+library is fetched from a third party at runtime; the small vendored GSAP core
+drives button and full-screen motion.
 
 ## Deployment
 

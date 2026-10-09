@@ -305,10 +305,12 @@ button.button-motion-active {
 .button-motion-sweep {
   position: absolute;
   inset: -10% auto -10% 0;
-  width: clamp(12px, 18%, 24px);
+  width: clamp(16px, 24%, 30px);
   background: currentColor;
   pointer-events: none;
 }
+
+#fullscreen-toggle > .button-motion-sweep { width: clamp(22px, 32%, 42px); }
 
 button .icon { width: 15px; height: 15px; }
 

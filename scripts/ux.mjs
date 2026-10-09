@@ -253,6 +253,23 @@ for (const [path, text] of [['/', 'Paste Markdown, drop a .md file, or open one'
     transform: document.getElementById('inserted-motion-test').style.transform,
   }));
   check(settled.sweeps === 0 && settled.active === 0 && settled.transform === '', 'button click: animation cleans up without leaving transforms', JSON.stringify(settled));
+
+  await page.click('#fullscreen-toggle');
+  const fullscreenMotion = await page.evaluate(() => ({
+    fullscreen: document.documentElement.classList.contains('fullscreen'),
+    transitioning: document.documentElement.classList.contains('fullscreen-transitioning'),
+    toolOpacity: document.querySelector('.tool').style.opacity,
+    editorTransform: document.querySelector('.editor-pane').style.transform,
+  }));
+  check(fullscreenMotion.fullscreen && fullscreenMotion.transitioning && fullscreenMotion.toolOpacity !== '' && fullscreenMotion.editorTransform !== '', 'full screen: the workspace gets a longer staged transition', JSON.stringify(fullscreenMotion));
+  await page.waitForTimeout(600);
+  const fullscreenSettled = await page.evaluate(() => ({
+    transitioning: document.documentElement.classList.contains('fullscreen-transitioning'),
+    toolStyle: document.querySelector('.tool').getAttribute('style'),
+    editorStyle: document.querySelector('.editor-pane').getAttribute('style'),
+    previewStyle: document.querySelector('.preview-pane').getAttribute('style'),
+  }));
+  check(!fullscreenSettled.transitioning && !fullscreenSettled.toolStyle && !fullscreenSettled.editorStyle && !fullscreenSettled.previewStyle, 'full screen: the longer transition cleans up its temporary styles', JSON.stringify(fullscreenSettled));
   await context.close();
 }
 
