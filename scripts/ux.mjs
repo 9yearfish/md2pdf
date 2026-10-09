@@ -262,7 +262,7 @@ for (const [path, text] of [['/', 'Paste Markdown, drop a .md file, or open one'
     editorTransform: document.querySelector('.editor-pane').style.transform,
   }));
   check(fullscreenMotion.fullscreen && fullscreenMotion.transitioning && fullscreenMotion.toolOpacity !== '' && fullscreenMotion.editorTransform !== '', 'full screen: the workspace gets a longer staged transition', JSON.stringify(fullscreenMotion));
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(1150);
   const fullscreenSettled = await page.evaluate(() => ({
     transitioning: document.documentElement.classList.contains('fullscreen-transitioning'),
     toolStyle: document.querySelector('.tool').getAttribute('style'),

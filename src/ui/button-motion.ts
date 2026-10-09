@@ -69,7 +69,7 @@ function sweep(button: HTMLButtonElement, gsap: Gsap): void {
       x: button.clientWidth + 32,
       opacity: fullscreen ? 0.34 : 0.24,
       scaleX: 1.1,
-      duration: fullscreen ? 0.48 : 0.32,
+      duration: fullscreen ? 1 : 0.32,
       ease: 'power2.inOut',
     })
     .to(line, { opacity: 0, duration: 0.09, ease: 'power2.out', onComplete: () => line.remove() }, '-=0.045');
@@ -104,22 +104,22 @@ export function animateFullscreenTransition(on: boolean, root: Document = docume
   })
     .fromTo(tool,
       { opacity: 0.72, scaleY: 0.985, transformOrigin: '50% 0%' },
-      { opacity: 1, scaleY: 1, duration: 0.48, ease: 'expo.out', clearProps: 'transform,opacity' })
+      { opacity: 1, scaleY: 1, duration: 1, ease: 'expo.out', clearProps: 'transform,opacity' })
     .fromTo(actionbar,
       { opacity: 0, y: -10 },
-      { opacity: 1, y: 0, duration: 0.38, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.035)
+      { opacity: 1, y: 0, duration: 0.82, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.035)
     .fromTo(editor,
       { opacity: 0.48, x: on ? -18 : -10 },
-      { opacity: 1, x: 0, duration: 0.46, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.06)
+      { opacity: 1, x: 0, duration: 0.94, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.06)
     .fromTo(preview,
       { opacity: 0.48, x: on ? 18 : 10 },
-      { opacity: 1, x: 0, duration: 0.46, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.06);
+      { opacity: 1, x: 0, duration: 0.94, ease: 'expo.out', clearProps: 'transform,opacity' }, 0.06);
 
   if (icon) {
     gsap.timeline()
       .fromTo(icon,
         { opacity: 0, scale: 0.72, rotate: on ? -18 : 18, transformOrigin: '50% 50%' },
-        { opacity: 1, scale: 1, rotate: 0, duration: 0.42, ease: 'expo.out', clearProps: 'transform,opacity' });
+        { opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: 'expo.out', clearProps: 'transform,opacity' });
   }
 }
 

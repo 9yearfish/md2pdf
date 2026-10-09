@@ -384,7 +384,7 @@ Button micro-interactions use the vendored GSAP core at
 runtime CDN request), applies through delegated events to static and dynamic
 buttons, and is skipped when `prefers-reduced-motion: reduce` is active. A
 button uses an 80 ms mechanical press, 220 ms release and 320 ms carriage
-sweep. Full-screen adds a distinct 480 ms workspace transition: the editor and
+sweep. Full-screen adds a deliberately pronounced 1000 ms workspace transition: the editor and
 proof move in from opposite sides while the action row settles from above.
 
 ### Error reports
