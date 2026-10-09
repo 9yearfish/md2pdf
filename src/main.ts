@@ -755,17 +755,17 @@ async function renderRecentFiles(): Promise<void> {
     title.textContent = recent.title || t('untitled');
     const meta = document.createElement('span');
     meta.className = 'recent-meta';
+    const saved = document.createElement('time');
+    saved.className = 'recent-date';
+    saved.dateTime = new Date(recent.savedAt).toISOString();
+    saved.textContent = recentTime(recent.savedAt);
+    meta.append(saved);
     if (recent.sourceName) {
       const source = document.createElement('span');
       source.className = 'recent-source';
       source.textContent = recent.sourceName;
       meta.append(source);
     }
-    const saved = document.createElement('time');
-    saved.className = 'recent-date';
-    saved.dateTime = new Date(recent.savedAt).toISOString();
-    saved.textContent = recentTime(recent.savedAt);
-    meta.append(saved);
     open.append(title, meta);
 
     const star = document.createElement('button');
@@ -790,23 +790,6 @@ async function renderRecentFiles(): Promise<void> {
     item.append(open, star, remove);
     list.append(item);
   }
-}
-
-function positionRecentFiles(): void {
-  const panel = el<HTMLElement>('recent-files');
-  if (!panel.matches(':popover-open') || phone.matches) {
-    panel.style.removeProperty('top');
-    panel.style.removeProperty('left');
-    return;
-  }
-  const trigger = el<HTMLElement>('recent-toggle').getBoundingClientRect();
-  const width = panel.offsetWidth;
-  const height = panel.offsetHeight;
-  const left = Math.min(innerWidth - width - 12, Math.max(12, trigger.right - width));
-  const below = trigger.bottom + 8;
-  const top = below + height <= innerHeight - 12 ? below : Math.max(12, trigger.top - height - 8);
-  panel.style.left = `${left}px`;
-  panel.style.top = `${top}px`;
 }
 
 async function openRecentFile(id: string): Promise<void> {
@@ -897,7 +880,6 @@ function bindRecentFiles(): void {
     if (open) {
       trackToolEvent('open_recent_files');
       void renderRecentFiles();
-      requestAnimationFrame(positionRecentFiles);
     }
   });
   panel.addEventListener('click', event => {
@@ -910,8 +892,6 @@ function bindRecentFiles(): void {
       case 'delete': void deleteRecentFile(id); break;
     }
   });
-  window.addEventListener('resize', positionRecentFiles);
-  window.addEventListener('scroll', positionRecentFiles, true);
   void renderRecentFiles();
 }
 

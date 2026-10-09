@@ -43,6 +43,10 @@ await waitForRecords(1);
 
 await page.click('#recent-toggle');
 check(await page.locator('#recent-files').evaluate(node => node.matches(':popover-open')), 'Recent opens as a non-modal popover');
+check(await page.locator('#recent-files').evaluate(node => {
+  const box = node.getBoundingClientRect();
+  return Math.abs(box.left + box.width / 2 - innerWidth / 2) <= 1 && Math.abs(box.top + box.height / 2 - innerHeight / 2) <= 1;
+}), 'Recent is centered in the viewport');
 check(await page.locator('#recent-list .recent-item').count() === 1, 'the edited document appears in Recent');
 check((await page.locator('.recent-name').textContent()) === '第一份合同', 'the first H1 becomes the recent-file title');
 check((await page.locator('#recent-count').textContent()) === '1', 'the trigger shows the file count');

@@ -525,7 +525,8 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
 /* A local file tray: square, compact, and non-modal so writing never stops. */
 .recent-files {
   position: fixed;
-  inset: auto;
+  top: 50%;
+  left: 50%;
   width: min(680px, calc(100vw - 48px));
   max-height: min(78dvh, 720px);
   margin: 0;
@@ -535,6 +536,7 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
   background: var(--ground);
   color: var(--ink);
   box-shadow: 7px 7px 0 color-mix(in srgb, var(--ink) 14%, transparent);
+  transform: translate(-50%, -50%);
 }
 
 .recent-files::backdrop { background: transparent; }
@@ -638,8 +640,8 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
 .recent-meta {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  justify-content: flex-start;
+  gap: 12px;
   color: var(--faint);
   font: 400 12px/1.25 var(--control);
   letter-spacing: 0.02em;
@@ -652,9 +654,10 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
   white-space: nowrap;
 }
 
+.recent-source::before { content: '·'; margin-right: 12px; }
+
 .recent-date {
   flex: none;
-  margin-left: auto;
   color: var(--ink-2);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -1562,11 +1565,7 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
   }
 
   .recent-files {
-    top: auto !important;
-    right: 12px;
-    bottom: calc(var(--bar) + 12px + env(safe-area-inset-bottom));
-    left: 12px !important;
-    width: auto;
+    width: calc(100vw - 24px);
     max-height: min(62dvh, 560px);
   }
 
