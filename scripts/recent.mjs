@@ -46,6 +46,7 @@ check(await page.locator('#recent-files').evaluate(node => node.matches(':popove
 check(await page.locator('#recent-list .recent-item').count() === 1, 'the edited document appears in Recent');
 check((await page.locator('.recent-name').textContent()) === '第一份合同', 'the first H1 becomes the recent-file title');
 check((await page.locator('#recent-count').textContent()) === '1', 'the trigger shows the file count');
+check(/^\d{4}.+\d{2}.+\d{2}/.test((await page.locator('.recent-date').textContent()) ?? ''), 'the saved date includes year, month and day');
 
 await page.click('.recent-star');
 check((await page.locator('.recent-star').getAttribute('aria-pressed')) === 'true', 'a file can be starred');

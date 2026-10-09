@@ -526,8 +526,8 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
 .recent-files {
   position: fixed;
   inset: auto;
-  width: min(420px, calc(100vw - 24px));
-  max-height: min(70dvh, 600px);
+  width: min(680px, calc(100vw - 48px));
+  max-height: min(78dvh, 720px);
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -538,21 +538,23 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
 }
 
 .recent-files::backdrop { background: transparent; }
+.recent-files:popover-open { display: flex; flex-direction: column; }
 
 .recent-header {
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 16px;
-  border-bottom: 1px solid var(--rule-strong);
+  gap: 32px;
+  padding: 28px 32px 24px;
   background: var(--raised);
 }
 
+.recent-header > div { min-width: 0; }
+
 .recent-header h2 {
-  margin: 3px 0 0;
-  font: 650 18px/1.15 var(--sans);
-  letter-spacing: -0.015em;
+  margin: 6px 0 0;
+  font: 650 22px/1.15 var(--sans);
+  letter-spacing: -0.02em;
 }
 
 .recent-kicker {
@@ -563,10 +565,10 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
 
 #recent-clear {
   flex: none;
-  height: 32px;
-  padding-inline: 8px;
+  height: 40px;
+  padding-inline: 12px;
   color: var(--ink-2);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: var(--track-label);
   text-transform: uppercase;
 }
@@ -574,9 +576,13 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
 #recent-clear:disabled { opacity: 0.35; }
 
 .recent-list {
-  max-height: min(52dvh, 456px);
+  display: grid;
+  flex: 1 1 auto;
+  gap: 4px;
+  max-height: min(56dvh, 520px);
+  min-height: 0;
   margin: 0;
-  padding: 0;
+  padding: 12px 20px 24px;
   overflow: auto;
   overscroll-behavior: contain;
   list-style: none;
@@ -584,9 +590,9 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
 
 .recent-item {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 44px 44px;
-  min-height: 58px;
-  border-bottom: 1px solid var(--rule);
+  grid-template-columns: minmax(0, 1fr) 48px 48px;
+  gap: 4px;
+  min-height: 76px;
 }
 
 .recent-item[data-current="true"] { background: var(--well); }
@@ -598,7 +604,7 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
   height: auto;
   min-height: 44px;
   border: 0;
-  background-color: transparent;
+  background: none;
 }
 
 .recent-open {
@@ -606,8 +612,8 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
   min-width: 0;
   flex-direction: column;
   align-items: flex-start;
-  gap: 5px;
-  padding: 10px 12px 9px 16px;
+  gap: 9px;
+  padding: 16px 18px;
   overflow: hidden;
   text-align: left;
 }
@@ -625,21 +631,41 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
 
 .recent-name {
   color: var(--ink);
-  font: 560 13px/1.2 var(--sans);
+  font: 560 15px/1.25 var(--sans);
   letter-spacing: 0;
 }
 
 .recent-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
   color: var(--faint);
-  font: 400 10px/1.2 var(--control);
+  font: 400 12px/1.25 var(--control);
   letter-spacing: 0.02em;
+}
+
+.recent-source {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-date {
+  flex: none;
+  margin-left: auto;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .recent-star,
 .recent-delete {
-  width: 44px;
+  align-self: center;
+  width: 48px;
+  height: 48px;
   padding: 0;
-  border-left: 1px solid var(--rule);
   color: var(--faint);
 }
 
@@ -650,18 +676,17 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
 
 .recent-empty {
   margin: 0;
-  padding: 36px 20px;
+  padding: 72px 32px 80px;
   color: var(--faint);
-  font: 400 13px/1.5 var(--sans);
+  font: 400 14px/1.6 var(--sans);
   text-align: center;
 }
 
 .recent-privacy {
   margin: 0;
-  padding: 10px 16px;
-  border-top: 1px solid var(--rule-strong);
+  padding: 16px 32px 22px;
   color: var(--faint);
-  font: 400 9px/1.3 var(--control);
+  font: 400 10px/1.4 var(--control);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -1545,7 +1570,15 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
     max-height: min(62dvh, 560px);
   }
 
-  .recent-list { max-height: min(43dvh, 400px); }
+  .recent-header { gap: 16px; padding: 20px 20px 18px; }
+  .recent-header h2 { font-size: 19px; }
+  #recent-clear { padding-inline: 10px; }
+  .recent-list { max-height: min(43dvh, 400px); padding: 8px 8px 16px; }
+  .recent-item { grid-template-columns: minmax(0, 1fr) 44px 44px; gap: 0; }
+  .recent-open { gap: 7px; padding: 13px 12px; }
+  .recent-meta { gap: 12px; }
+  .recent-star, .recent-delete { width: 44px; height: 44px; }
+  .recent-privacy { padding: 14px 20px 18px; }
 
   /*
    * Utility and export controls live in a two-row bar along the bottom edge,

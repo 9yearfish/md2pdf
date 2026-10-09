@@ -713,12 +713,13 @@ function recentTitle(text: string, sourceName: string | null): string {
 }
 
 function recentTime(savedAt: number): string {
-  const date = new Date(savedAt);
-  const today = new Date();
-  const sameDay = date.toDateString() === today.toDateString();
-  return sameDay
-    ? date.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' })
-    : date.toLocaleDateString(lang, { year: date.getFullYear() === today.getFullYear() ? undefined : 'numeric', month: 'short', day: 'numeric' });
+  return new Date(savedAt).toLocaleString(lang, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 async function renderRecentFiles(): Promise<void> {
@@ -754,7 +755,17 @@ async function renderRecentFiles(): Promise<void> {
     title.textContent = recent.title || t('untitled');
     const meta = document.createElement('span');
     meta.className = 'recent-meta';
-    meta.textContent = [recent.sourceName, recentTime(recent.savedAt)].filter(Boolean).join(' · ');
+    if (recent.sourceName) {
+      const source = document.createElement('span');
+      source.className = 'recent-source';
+      source.textContent = recent.sourceName;
+      meta.append(source);
+    }
+    const saved = document.createElement('time');
+    saved.className = 'recent-date';
+    saved.dateTime = new Date(recent.savedAt).toISOString();
+    saved.textContent = recentTime(recent.savedAt);
+    meta.append(saved);
     open.append(title, meta);
 
     const star = document.createElement('button');
@@ -877,7 +888,7 @@ function bindRecentFiles(): void {
   el('recent-empty').textContent = t('recentEmpty');
   el('recent-privacy').textContent = t('recentPrivacy');
   const clear = el<HTMLButtonElement>('recent-clear');
-  clear.textContent = t('recentClear');
+  el('recent-clear-label').textContent = t('recentClear');
   clear.title = t('recentClearTitle');
   clear.addEventListener('click', () => void clearRecentFiles());
   panel.addEventListener('toggle', () => {
