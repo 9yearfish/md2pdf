@@ -34,9 +34,11 @@ const zh: Messages = {
     privacyBadge: '本地转换 · 不上传 · 无需注册 · 无水印 · 可离线使用',
     privacyTitle: '解析、排版与生成全部在这个标签页里完成，文档不会离开你的设备',
     newDoc: '新建',
-    newDocTitle: '新建空白文档（同时清除本地草稿）',
+    newDocTitle: '新建空白文档（当前文件仍保留在近期文件中）',
     open: '打开',
     openTitle: '打开 .md 文件',
+    recent: '近期',
+    recentTitle: '查看保存在此浏览器的近期文件',
     layout: '排版',
     layoutTitle: '排版设置',
     downloadTitle: '下载 PDF (⌘/Ctrl + S)',
@@ -86,7 +88,7 @@ const zh: Messages = {
     heading: '在浏览器里把 Markdown 转成 PDF',
     intro: [
       '粘贴或拖入一份 Markdown，右侧边写边预览，点「下载 PDF」就拿到排好版的文件。预览是即时的，不需要等待；PDF 由真正的排版引擎生成，分页、页码和目录都在下载的文件里。',
-      '整个过程没有服务器参与。Markdown 解析、流程图渲染、排版和 PDF 生成全部在这个标签页里完成，不需要注册，没有水印，也没有次数限制。你写的内容会自动保存在你自己浏览器的本地存储里，关掉页面再打开也还在；它从不上传，点「新建」或清除本站的网站数据即可删除。',
+      '整个过程没有服务器参与。Markdown 解析、流程图渲染、排版和 PDF 生成全部在这个标签页里完成，不需要注册，没有水印，也没有次数限制。你写的内容会自动保存在自己的浏览器里，近期文件最多保留 30 份，所有内容都不会上传。',
     ],
     sections: [
       {
@@ -125,7 +127,7 @@ const zh: Messages = {
       {
         question: '关掉页面后，写的内容还在吗？',
         answer: [
-          '在。你编辑过的草稿（文字、排版设置和拖入的图片）会自动保存在你自己浏览器的本地存储里，下次打开时恢复。草稿只存在这台设备的这个浏览器里，从不上传，也不会同步到别处。点「新建」或清除本站的网站数据即可删除。',
+          '在。你编辑过的文件（文字、排版设置和拖入的图片）会自动保存在自己的浏览器里，下次打开时恢复。近期文件最多保留 30 份，星标文件不会自动清理；它们从不上传，也不会同步到别处。可在近期文件中删除，或清除本站的网站数据。',
         ],
       },
       {
@@ -210,7 +212,22 @@ const zh: Messages = {
 
     close: '关闭',
     undo: '撤销',
-    cleared: '已清空，本地草稿已删除',
+    cleared: '已新建空白文档，上一份仍保留在近期文件中',
+    recentHeading: '近期文件',
+    recentEmpty: '编辑过的文件会出现在这里。',
+    recentPrivacy: '仅保存在此浏览器 · 最多 30 份',
+    recentClear: '清空未星标',
+    recentClearTitle: '删除全部未星标的近期文件',
+    recentStar: '星标保留 {name}',
+    recentUnstar: '取消星标 {name}',
+    recentDelete: '删除 {name}',
+    recentOpened: '已打开 {name}',
+    recentCleared: '已清空未星标的近期文件',
+    recentDeleted: '已删除 {name}',
+    recentFull: '30 份近期文件已全部星标。请取消星标或删除一份，才能保留新文件。',
+    recentQuota: '浏览器本地空间已满，此版本未加入近期文件。',
+    recentUnavailable: '此浏览器无法使用近期文件。',
+    untitled: '未命名文档',
     langAuto: '自动 · {detected}',
     aiCleaned: '已整理 AI 输出的格式',
     draftNotSample: '显示的是你保存的草稿，而不是本页的示例',
@@ -223,7 +240,7 @@ const zh: Messages = {
     saved: '已保存到本地浏览器',
     savedTitle: '{time} 保存 · 草稿只存在这个浏览器里，不会上传',
     restored: '已恢复本地草稿',
-    restoredTitle: '草稿只存在这个浏览器里，不会上传；点「新建」可清除',
+    restoredTitle: '当前草稿和近期文件只存在这个浏览器里，不会上传',
     quotaState: '本地空间不足，草稿未保存',
     quotaNotice:
       '浏览器的本地存储空间已满，草稿暂时无法自动保存。页面仍可正常使用，请及时下载 PDF 或另存 Markdown。',

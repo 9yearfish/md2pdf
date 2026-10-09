@@ -512,6 +512,160 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
   text-overflow: ellipsis;
 }
 
+.recent-count {
+  min-width: 17px;
+  padding: 2px 4px;
+  border: 1px solid var(--rule-strong);
+  color: var(--ink);
+  font: 600 9px/1 var(--mono);
+  letter-spacing: 0;
+  text-align: center;
+}
+
+/* A local file tray: square, compact, and non-modal so writing never stops. */
+.recent-files {
+  position: fixed;
+  inset: auto;
+  width: min(420px, calc(100vw - 24px));
+  max-height: min(70dvh, 600px);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--ink);
+  background: var(--ground);
+  color: var(--ink);
+  box-shadow: 7px 7px 0 color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
+.recent-files::backdrop { background: transparent; }
+
+.recent-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border-bottom: 1px solid var(--rule-strong);
+  background: var(--raised);
+}
+
+.recent-header h2 {
+  margin: 3px 0 0;
+  font: 650 18px/1.15 var(--sans);
+  letter-spacing: -0.015em;
+}
+
+.recent-kicker {
+  color: var(--faint);
+  font: 500 9px/1 var(--mono);
+  letter-spacing: 0.12em;
+}
+
+#recent-clear {
+  flex: none;
+  height: 32px;
+  padding-inline: 8px;
+  color: var(--ink-2);
+  font-size: 10px;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+#recent-clear:disabled { opacity: 0.35; }
+
+.recent-list {
+  max-height: min(52dvh, 456px);
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+.recent-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px 44px;
+  min-height: 58px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.recent-item[data-current="true"] { background: var(--well); }
+.recent-item[data-current="true"] .recent-name { font-weight: 650; }
+
+.recent-open,
+.recent-star,
+.recent-delete {
+  height: auto;
+  min-height: 44px;
+  border: 0;
+  background-color: transparent;
+}
+
+.recent-open {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 10px 12px 9px 16px;
+  overflow: hidden;
+  text-align: left;
+}
+
+.recent-open:hover,
+.recent-open:focus-visible { background-color: var(--raised); }
+
+.recent-name,
+.recent-meta {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-name {
+  color: var(--ink);
+  font: 560 13px/1.2 var(--sans);
+  letter-spacing: 0;
+}
+
+.recent-meta {
+  color: var(--faint);
+  font: 400 10px/1.2 var(--control);
+  letter-spacing: 0.02em;
+}
+
+.recent-star,
+.recent-delete {
+  width: 44px;
+  padding: 0;
+  border-left: 1px solid var(--rule);
+  color: var(--faint);
+}
+
+.recent-star:hover,
+.recent-delete:hover { color: var(--ink); background-color: var(--raised); }
+.recent-star[aria-pressed="true"] { color: var(--ink); }
+.recent-star[aria-pressed="true"] .icon { fill: currentColor; }
+
+.recent-empty {
+  margin: 0;
+  padding: 36px 20px;
+  color: var(--faint);
+  font: 400 13px/1.5 var(--sans);
+  text-align: center;
+}
+
+.recent-privacy {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--rule-strong);
+  color: var(--faint);
+  font: 400 9px/1.3 var(--control);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 /* ---------- settings ---------- */
 
 .settings {
@@ -1331,12 +1485,13 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
 /* ---------- narrow screens ---------- */
 
 /* Too narrow for every label (fitSourceActions in main.ts): the icons have titles. */
-.compact :is(#new-doc, #open-file) .label { display: none; }
-.compact :is(#new-doc, #open-file) { width: 36px; padding: 0; }
+.compact :is(#new-doc, #open-file, #recent-toggle) .label { display: none; }
+.compact :is(#new-doc, #open-file, #recent-toggle) { width: 36px; padding: 0; }
 
 @media (max-width: 1180px) {
-  #new-doc .label, #open-file .label { display: none; }
-  #new-doc, #open-file { width: 36px; padding: 0; }
+  #new-doc .label, #open-file .label, #recent-toggle .label { display: none; }
+  #new-doc, #open-file, #recent-toggle { width: 36px; padding: 0; }
+  #recent-toggle .recent-count { display: none; }
 }
 
 @media (max-width: 1023px) {
@@ -1363,7 +1518,7 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
   .intro { padding-block: 8px 16px; }
   .intro-lead { font-size: 15px; }
 
-  /* One line: the counts, then New and Open. Utility actions stay together below. */
+  /* One line: the counts, then New, Open and Recent. Utility actions stay together below. */
   .actionbar, .fullscreen .actionbar {
     display: flex;
     align-items: center;
@@ -1373,7 +1528,24 @@ button.secondary.busy { border-color: var(--ink); background-size: 0% 100%; colo
   .actions-source { display: contents; }
   .stats { flex: 1 1 auto; min-width: 0; }
   .actions-files { order: 1; margin-left: 0; gap: 4px; }
-  #new-doc, #open-file { border-color: transparent; background-color: transparent; }
+  #new-doc, #open-file, #recent-toggle {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-color: transparent;
+    background-color: transparent;
+  }
+
+  .recent-files {
+    top: auto !important;
+    right: 12px;
+    bottom: calc(var(--bar) + 12px + env(safe-area-inset-bottom));
+    left: 12px !important;
+    width: auto;
+    max-height: min(62dvh, 560px);
+  }
+
+  .recent-list { max-height: min(43dvh, 400px); }
 
   /*
    * Utility and export controls live in a two-row bar along the bottom edge,

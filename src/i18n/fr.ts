@@ -41,9 +41,11 @@ const fr: Messages = {
     privacyTitle:
       'L’analyse, la mise en page et la génération du PDF se font dans cet onglet. Votre document ne quitte jamais votre appareil.',
     newDoc: 'Nouveau',
-    newDocTitle: 'Nouveau document vierge (efface aussi le brouillon enregistré)',
+    newDocTitle: 'Nouveau document vierge (le document actuel reste dans Récents)',
     open: 'Ouvrir',
     openTitle: 'Ouvrir un fichier .md',
+    recent: 'Récents',
+    recentTitle: 'Fichiers récents enregistrés dans ce navigateur',
     layout: 'Mise en page',
     layoutTitle: 'Réglages de mise en page',
     downloadTitle: 'Télécharger le PDF (⌘/Ctrl + S)',
@@ -93,7 +95,7 @@ const fr: Messages = {
     heading: 'Convertir Markdown en PDF dans votre navigateur',
     intro: [
       'Collez ou déposez un fichier Markdown, regardez l’aperçu se mettre à jour pendant que vous tapez, puis cliquez sur <strong>Télécharger le PDF</strong> pour obtenir un fichier proprement composé. L’aperçu est instantané ; le PDF est produit par un vrai moteur de composition typographique, avec sauts de page, numéros de page et table des matières en option.',
-      'Aucun serveur n’intervient. L’analyse du Markdown, le rendu des diagrammes, la mise en page et la génération du PDF se déroulent dans cet onglet. C’est un convertisseur Markdown en PDF en ligne et gratuit, sans inscription, sans filigrane et sans limite d’utilisation. Ce que vous écrivez est enregistré automatiquement dans votre propre navigateur : fermer l’onglet ne vous fait rien perdre. Rien n’est jamais envoyé, et <strong>Nouveau</strong> ou l’effacement des données du site suffit à tout supprimer.',
+      'Aucun serveur n’intervient. Markdown, diagrammes, mise en page et PDF sont traités dans cet onglet. Vos documents restent dans le navigateur et jusqu’à 30 fichiers figurent dans Récents. Rien n’est envoyé.',
     ],
     sections: [
       {
@@ -132,7 +134,7 @@ const fr: Messages = {
       {
         question: 'Mon texte est-il toujours là après avoir fermé la page ?',
         answer: [
-          'Oui. Dès que vous modifiez un document, le texte, les réglages de mise en page et les images déposées sont enregistrés automatiquement dans le stockage local de votre navigateur, puis restaurés à la visite suivante. Le brouillon n’existe que dans ce navigateur, sur cet appareil ; il n’est jamais envoyé ni synchronisé. Cliquez sur <strong>Nouveau</strong> ou effacez les données du site pour le supprimer.',
+          'Oui. Le texte, les réglages et les images restent dans le navigateur ; jusqu’à 30 fichiers figurent dans Récents et ceux avec une étoile ne sont jamais supprimés automatiquement. Rien n’est envoyé ni synchronisé. Supprimez-les dans Récents ou effacez les données du site.',
         ],
       },
       {
@@ -219,7 +221,22 @@ const fr: Messages = {
 
     close: 'Fermer',
     undo: 'Annuler',
-    cleared: 'Document vidé ; le brouillon enregistré a été supprimé',
+    cleared: 'Nouveau document commencé ; le précédent reste dans Récents',
+    recentHeading: 'Fichiers récents',
+    recentEmpty: 'Les fichiers modifiés apparaîtront ici.',
+    recentPrivacy: 'Stockés uniquement dans ce navigateur · 30 fichiers maximum',
+    recentClear: 'Effacer sans étoile',
+    recentClearTitle: 'Supprimer tous les fichiers récents sans étoile',
+    recentStar: 'Ajouter une étoile à {name}',
+    recentUnstar: 'Retirer l’étoile de {name}',
+    recentDelete: 'Supprimer {name}',
+    recentOpened: '{name} ouvert',
+    recentCleared: 'Fichiers récents sans étoile effacés',
+    recentDeleted: '{name} supprimé',
+    recentFull: 'Les 30 fichiers récents ont une étoile. Retirez-en une ou supprimez un fichier pour en conserver un autre.',
+    recentQuota: 'Le stockage est plein ; cette version n’a pas été ajoutée aux fichiers récents.',
+    recentUnavailable: 'Les fichiers récents ne sont pas disponibles dans ce navigateur.',
+    untitled: 'Sans titre',
     langAuto: 'Automatique · {detected}',
     aiCleaned: 'La mise en forme de la réponse d’IA collée a été nettoyée',
     draftNotSample: 'Votre brouillon enregistré est affiché, pas l’exemple de cette page',
@@ -232,7 +249,7 @@ const fr: Messages = {
     saved: 'Enregistré dans ce navigateur',
     savedTitle: 'Enregistré à {time} · le brouillon reste dans ce navigateur et n’est jamais envoyé',
     restored: 'Brouillon restauré',
-    restoredTitle: 'Le brouillon reste dans ce navigateur et n’est jamais envoyé ; cliquez sur Nouveau pour l’effacer',
+    restoredTitle: 'Le brouillon et les fichiers récents restent dans ce navigateur et ne sont jamais envoyés',
     quotaState: 'Stockage plein ; brouillon non enregistré',
     quotaNotice:
       'Le stockage local de votre navigateur est plein : le brouillon ne peut pas être enregistré pour l’instant. La page reste utilisable ; téléchargez le PDF ou enregistrez le Markdown pour ne rien perdre.',

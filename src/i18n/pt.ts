@@ -35,9 +35,11 @@ const pt: Messages = {
     privacyTitle:
       'A leitura, a diagramação e a geração do PDF acontecem nesta aba. Seu documento nunca sai do seu dispositivo.',
     newDoc: 'Novo',
-    newDocTitle: 'Novo documento em branco (também apaga o rascunho salvo)',
+    newDocTitle: 'Novo documento em branco (o atual permanece nos Recentes)',
     open: 'Abrir',
     openTitle: 'Abrir um arquivo .md',
+    recent: 'Recentes',
+    recentTitle: 'Arquivos recentes salvos neste navegador',
     layout: 'Layout',
     layoutTitle: 'Layout da página',
     downloadTitle: 'Baixar PDF (⌘/Ctrl + S)',
@@ -87,7 +89,7 @@ const pt: Messages = {
     heading: 'Converter Markdown para PDF no navegador',
     intro: [
       'Cole ou arraste um arquivo Markdown, acompanhe a pré-visualização enquanto digita e clique em <strong>Baixar PDF</strong> para receber um arquivo bem diagramado. A pré-visualização é instantânea; o PDF sai de um motor de composição tipográfica de verdade, com quebras de página, números de página e sumário opcional.',
-      'Nenhum servidor participa do processo. A leitura do Markdown, o desenho dos diagramas, a diagramação e a geração do PDF acontecem todos nesta aba. É um conversor de Markdown para PDF online e grátis: sem cadastro, sem marca d’água e sem limite de uso. O que você escreve é salvo automaticamente no seu próprio navegador, então fechar a aba não faz você perder nada; o texto nunca é enviado, e clicar em <strong>Novo</strong> ou limpar os dados deste site apaga tudo.',
+      'Nenhum servidor participa do processo. Markdown, diagramas, diagramação e PDF são processados nesta aba. O que você escreve fica no navegador e até 30 arquivos permanecem nos Recentes. Nada é enviado.',
     ],
     sections: [
       {
@@ -126,7 +128,7 @@ const pt: Messages = {
       {
         question: 'Meu texto continua lá depois que eu fecho a página?',
         answer: [
-          'Sim. Assim que você edita um documento, o texto, as configurações de layout e as imagens que você arrastou são salvos automaticamente no armazenamento local do navegador e restaurados na próxima visita. O rascunho fica só neste navegador, neste dispositivo; nunca é enviado nem sincronizado. Clique em <strong>Novo</strong> ou limpe os dados deste site para apagá-lo.',
+          'Sim. Texto, configurações e imagens ficam no navegador; até 30 arquivos permanecem nos Recentes e os marcados com estrela não são removidos automaticamente. Nada é enviado ou sincronizado. Exclua nos Recentes ou limpe os dados do site.',
         ],
       },
       {
@@ -213,7 +215,22 @@ const pt: Messages = {
 
     close: 'Fechar',
     undo: 'Desfazer',
-    cleared: 'Documento limpo; o rascunho salvo foi apagado',
+    cleared: 'Novo documento iniciado; o anterior permanece nos Recentes',
+    recentHeading: 'Arquivos recentes',
+    recentEmpty: 'Os arquivos editados aparecerão aqui.',
+    recentPrivacy: 'Salvos só neste navegador · até 30 arquivos',
+    recentClear: 'Limpar sem estrela',
+    recentClearTitle: 'Remover todos os arquivos recentes sem estrela',
+    recentStar: 'Marcar {name} com estrela',
+    recentUnstar: 'Remover estrela de {name}',
+    recentDelete: 'Excluir {name}',
+    recentOpened: 'Aberto: {name}',
+    recentCleared: 'Arquivos recentes sem estrela foram removidos',
+    recentDeleted: 'Excluído: {name}',
+    recentFull: 'Os 30 arquivos recentes estão com estrela. Remova uma estrela ou exclua um para guardar outro.',
+    recentQuota: 'O armazenamento está cheio; esta versão não foi adicionada aos Recentes.',
+    recentUnavailable: 'Arquivos recentes não estão disponíveis neste navegador.',
+    untitled: 'Sem título',
     langAuto: 'Automático · {detected}',
     aiCleaned: 'A formatação da resposta de IA colada foi ajustada',
     draftNotSample: 'Mostrando seu rascunho salvo, não o exemplo desta página',
@@ -226,7 +243,7 @@ const pt: Messages = {
     saved: 'Salvo neste navegador',
     savedTitle: 'Salvo às {time} · o rascunho fica neste navegador e nunca é enviado',
     restored: 'Rascunho restaurado',
-    restoredTitle: 'O rascunho fica neste navegador e nunca é enviado; clique em Novo para apagá-lo',
+    restoredTitle: 'O rascunho e os arquivos recentes ficam neste navegador e nunca são enviados',
     quotaState: 'Armazenamento cheio; rascunho não salvo',
     quotaNotice:
       'O armazenamento local do navegador está cheio, então o rascunho não pode ser salvo por enquanto. A página continua funcionando; baixe o PDF ou salve o Markdown para não perder seu trabalho.',

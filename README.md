@@ -344,9 +344,9 @@ visits (URL, referrer, timing, country). Before gtag.js loads, the app sets
 Consent Mode v2's analytics/ad storage to denied, turns Google Signals and ad
 personalization off, and enables ad-data redaction. GA4 therefore receives
 cookieless measurements. The app sends fixed control events (`file_download`,
-`print_pdf`, `preview_pdf`, `enter_fullscreen`, `exit_fullscreen` and
-`open_layout`), but never a document heading, file name, document text, image
-or PDF. Page locations retain
+`print_pdf`, `preview_pdf`, full-screen/layout actions, and fixed Recent-file
+actions such as open, star, delete and clear), but never a document heading,
+file name, document text, image or PDF. Page locations retain
 only attribution parameters (`utm_*` and Google click IDs); referrer query
 strings and URL fragments are removed before analytics receives them.
 
@@ -368,13 +368,20 @@ it, `default-src 'self'` blocks the Blob URL). `X-Frame-Options: DENY` and
 not affect that frame, since a Blob URL carries no response headers
 (`scripts/print.mjs` checks that no violation is reported).
 
-Drafts are kept, but only in the visitor's own browser: once the document has
-been edited (typed in, loaded from a file, or its layout changed), the text and
-layout options are saved to `localStorage` under `md2pdf:draft:v1` and dropped
-or pasted images to IndexedDB (`md2pdf` / `images`, capped at 50 MB), then
-restored on the next visit. Someone who only looks at the sample leaves nothing
-behind. Nothing is ever uploaded or synced. "New" clears the draft and its
-images, as does clearing the site's data in the browser. See `src/ui/draft.ts`.
+Documents are kept only in the visitor's own browser. The active document's
+text and layout options are saved to `localStorage` under `md2pdf:draft:v1`,
+with its dropped or pasted images in IndexedDB (`md2pdf` / `images`, capped at
+50 MB), so it can paint synchronously on the next visit. Complete snapshots
+also go to `md2pdf-recent`: lightweight metadata in `documents`, image
+payloads in `images`, at most 30 documents, newest first, with starred
+documents protected from automatic eviction. If all 30 are
+starred, a new document remains the active draft but is not added to Recent
+until room is made. Clear removes only unstarred snapshots; individual delete
+and Clear are undoable. Someone who only looks at the sample leaves nothing
+behind. Nothing is ever uploaded or synced. "New" clears the active draft and
+starts another document; the previous snapshot remains in Recent. Clearing the
+site's data removes everything. See `src/ui/draft.ts` and
+`src/ui/recent-documents.ts`.
 
 The service worker caches only the application's own immutable assets; it never
 caches any part of a document.
@@ -384,8 +391,9 @@ Button micro-interactions use the vendored GSAP core at
 runtime CDN request), applies through delegated events to static and dynamic
 buttons, and is skipped when `prefers-reduced-motion: reduce` is active. A
 button uses an 80 ms mechanical press, 220 ms release and 320 ms carriage
-sweep. Full-screen adds a deliberately pronounced 1000 ms workspace transition: the editor and
-proof move in from opposite sides while the action row settles from above.
+sweep. Full-screen adds a deliberately pronounced 1000 ms workspace
+transition: the editor and proof move in from opposite sides while the action
+row settles from above.
 
 ### Error reports
 
@@ -594,10 +602,12 @@ line, guide links, languages) stays outside and always visible, and the
 landing page's `<h1>` and lead stay in the intro above the tool. The JSON-LD
 is unchanged.
 
-The tool has one action row: counts and the file actions (New, Open) stay on
+The tool has one action row: counts and the file actions (New, Open, Recent) stay on
 the left, while Layout, Preview and Full screen are one labelled utility group
 on the right, followed by Print and Download. Download is the only solid
-(primary) button. Where space is tight, New and Open drop to titled icons; the
+(primary) button. Recent opens a native non-modal popover with the 30 local
+snapshots, star, delete and clear-unstarred controls. Where space is tight, the
+three file actions drop to titled icons; the
 three utility labels stay visible. On a desktop (1024 px and wider, 600 px and
 taller) the tool fills whatever the first screen leaves under the header and
 the one-line intro, so both panes, the row and the whole sheet are in view on
@@ -730,7 +740,9 @@ paints without the engine, that the engine warms in the background, verifies
 the downloaded bytes, confirms each font tier downloads exactly the faces
 it should, and (`scripts/i18n.mjs`) checks every locale page's raw HTML, the
 redirect, the stored preference, that the switcher keeps the draft, and that
-no page is left with another language's strings; `scripts/mermaid.mjs`
+no page is left with another language's strings; `scripts/recent.mjs` checks
+the local archive, star ordering, delete/clear undo and the 30-star limit;
+`scripts/mermaid.mjs`
 renders every diagram type in the preview and in one PDF and checks there is
 no raw-source fallback, no `<foreignObject>`, no raster image, nothing past
 the page's edge and that every label is extractable text, then the error box
@@ -839,7 +851,7 @@ These cost real debugging time and are easy to hit again:
 - The product is called **Free MD2PDF** (`BRAND` in `src/i18n/constants.ts`,
   the one place its written form lives; the domain is freemd2pdf.com), but internal identifiers keep `md2pdf`: the
   `md2pdf:draft:v1` and `md2pdf:lang` storage keys, the
-  `md2pdf` IndexedDB database, the Cache Storage and service-worker cache
+  `md2pdf` and `md2pdf-recent` IndexedDB databases, the Cache Storage and service-worker cache
   names, CSS classes, module names and the `md-*` Typst helpers. Renaming any
   of them would silently drop visitors' drafts and caches. The old
   `md2pdf:fullscreen` key is deleted on load and is no longer written.

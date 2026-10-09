@@ -35,9 +35,11 @@ const en: Messages = {
     privacyTitle:
       'Parsing, typesetting and PDF generation all happen in this tab. Your document never leaves your device.',
     newDoc: 'New',
-    newDocTitle: 'New blank document (also clears the saved draft)',
+    newDocTitle: 'New blank document (the current file remains in Recent)',
     open: 'Open',
     openTitle: 'Open a .md file',
+    recent: 'Recent',
+    recentTitle: 'Recent files stored in this browser',
     layout: 'Layout',
     layoutTitle: 'Page layout',
     downloadTitle: 'Download PDF (⌘/Ctrl + S)',
@@ -87,7 +89,7 @@ const en: Messages = {
     heading: 'Convert Markdown to PDF in your browser',
     intro: [
       'Paste or drop in a Markdown file, watch the preview update as you type, and press <strong>Download PDF</strong> to get a properly typeset file. The preview is instant; the PDF comes from a real typesetting engine, with page breaks, page numbers and an optional table of contents.',
-      'No server is involved at any point. Parsing, diagram rendering, typesetting and PDF generation all run in this tab. There is no signup, no watermark and no usage limit. What you write is saved automatically in your own browser, so closing the tab loses nothing; it is never uploaded, and <strong>New</strong> or clearing this site’s data deletes it.',
+      'No server is involved at any point. Parsing, diagram rendering, typesetting and PDF generation all run in this tab. There is no signup, no watermark and no usage limit. What you write is saved automatically in your own browser, so closing the tab loses nothing; up to 30 files stay in Recent, and nothing is ever uploaded.',
     ],
     sections: [
       {
@@ -126,7 +128,7 @@ const en: Messages = {
       {
         question: 'Is my work still there after I close the page?',
         answer: [
-          'Yes. Once you edit a document, the text, the layout settings and any images you dropped in are saved automatically in your browser’s local storage and restored on your next visit. The draft lives only in this browser on this device; it is never uploaded or synced. Press <strong>New</strong> or clear this site’s data to delete it.',
+          'Yes. Once you edit a document, the text, the layout settings and any images you dropped in are saved automatically in your browser and restored on your next visit. Up to 30 files stay in Recent; starred files are protected from automatic cleanup. They are never uploaded or synced. Delete them from Recent or clear this site’s data to remove them.',
         ],
       },
       {
@@ -213,7 +215,22 @@ const en: Messages = {
 
     close: 'Close',
     undo: 'Undo',
-    cleared: 'Cleared; the saved draft was deleted',
+    cleared: 'New document started; the previous file remains in Recent',
+    recentHeading: 'Recent files',
+    recentEmpty: 'Files you edit will appear here.',
+    recentPrivacy: 'Stored only in this browser · up to 30 files',
+    recentClear: 'Clear unstarred',
+    recentClearTitle: 'Remove every recent file that is not starred',
+    recentStar: 'Star {name}',
+    recentUnstar: 'Remove star from {name}',
+    recentDelete: 'Delete {name}',
+    recentOpened: 'Opened {name}',
+    recentCleared: 'Cleared unstarred recent files',
+    recentDeleted: 'Deleted {name}',
+    recentFull: 'All 30 recent files are starred. Unstar or delete one to keep another file.',
+    recentQuota: 'Browser storage is full; this version was not added to Recent files.',
+    recentUnavailable: 'Recent files are unavailable in this browser.',
+    untitled: 'Untitled',
     langAuto: 'Auto · {detected}',
     aiCleaned: 'Tidied the formatting of pasted AI output',
     draftNotSample: 'Showing your saved draft, not this page’s example',
@@ -226,7 +243,7 @@ const en: Messages = {
     saved: 'Saved in this browser',
     savedTitle: 'Saved at {time} · the draft stays in this browser and is never uploaded',
     restored: 'Draft restored',
-    restoredTitle: 'The draft stays in this browser and is never uploaded; press New to clear it',
+    restoredTitle: 'The draft and Recent files stay in this browser and are never uploaded',
     quotaState: 'Browser storage full; draft not saved',
     quotaNotice:
       'Your browser’s local storage is full, so the draft can’t be saved for now. The page still works; download the PDF or save the Markdown to keep your work.',

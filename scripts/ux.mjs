@@ -70,7 +70,7 @@ const collect = page =>
   page.evaluate(props => {
     const selectors = [
       'body', '.toolbar', '.brand', '.privacy li', '.privacy .icon', '.lang summary', '.intro-title', '.intro-title span', '.intro-lead',
-      '.actionbar', '#stats', '#settings-toggle', '#new-doc', '#open-file', '#print', '#download', '#fullscreen-toggle',
+      '.actionbar', '#stats', '#settings-toggle', '#new-doc', '#open-file', '#recent-toggle', '#print', '#download', '#fullscreen-toggle',
       '.pane-header', '.editor-host', '.cm-editor', '.cm-content', '.scroller', '.paper', '.paper a', '.statusbar', '#engine-status', '#engine-status .dot',
       '.about-more > summary', '.about a', '.about footer', '.guides-nav a', '.languages a', '#warnings', '.warnings-action', '.empty-state', '.empty-title', '#empty-paste', '#empty-open',
     ];
@@ -166,6 +166,7 @@ for (const colorScheme of ['light', 'dark']) {
         preview: box('#pdf-preview-toggle'),
         full: box('#fullscreen-toggle'),
         stats: box('#stats'),
+        recent: box('#recent-toggle'),
         height: innerHeight,
         padding: parseFloat(getComputedStyle(document.body).paddingBottom),
         downloads: document.querySelectorAll('#download').length,
@@ -176,6 +177,7 @@ for (const colorScheme of ['light', 'dark']) {
   let b = await bar();
   check(b.position === 'fixed' && Math.abs(b.bar.bottom - b.height) <= 1, '390: Print and Download sit in a bar on the bottom edge', JSON.stringify(b.bar));
   check(b.download.width > b.print.width * 1.5 && b.download.height >= 44 && b.print.height >= 44, '390: Download is the wide primary, both thumb-sized', `${Math.round(b.download.width)} × ${Math.round(b.download.height)}`);
+  check(b.recent.width >= 44 && b.recent.height >= 44, '390: Recent is thumb-sized in the file row', `${Math.round(b.recent.width)} × ${Math.round(b.recent.height)}`);
   check(Math.abs(b.layout.top - b.preview.top) <= 1 && Math.abs(b.preview.top - b.full.top) <= 1 && b.print.top > b.layout.bottom, '390: labelled utility actions form their own row above export');
   check(b.downloads === 1 && b.stats.bottom < b.bar.top, '390: the top row does not repeat them');
   check(b.padding >= b.bar.height - 1, '390: the page is padded for the bar', `${b.padding} vs ${b.bar.height}`);

@@ -73,7 +73,7 @@ const de: LandingDictionary<'de'> = {
         {
           question: 'Ist das kostenlos? Wird mein Chat irgendwo hochgeladen?',
           answer: [
-            'Kostenlos, ohne Anmeldung, ohne Wasserzeichen, ohne Limit. Und nein: Der Text wird in deinem Browser umgewandelt und an keinen Server geschickt, auch nicht an unseren. Er liegt nur als Entwurf in diesem Browser, und <strong>Neu</strong> löscht ihn.',
+            'Kostenlos, ohne Anmeldung, ohne Wasserzeichen, ohne Limit. Und nein: Der Text wird in deinem Browser umgewandelt und an keinen Server geschickt, auch nicht an unseren. Der Entwurf und bis zu 30 zuletzt verwendete Dateien bleiben nur in diesem Browser; unter <strong>Zuletzt</strong> kannst du sie löschen oder leeren.',
           ],
         },
         {

@@ -98,7 +98,13 @@ export type ToolEvent =
   | 'preview_pdf'
   | 'enter_fullscreen'
   | 'exit_fullscreen'
-  | 'open_layout';
+  | 'open_layout'
+  | 'open_recent_files'
+  | 'open_recent_file'
+  | 'star_recent_file'
+  | 'unstar_recent_file'
+  | 'delete_recent_file'
+  | 'clear_recent_files';
 
 /** Record a fixed UI action without sending its label or any document data. */
 export function trackToolEvent(event: ToolEvent): void {

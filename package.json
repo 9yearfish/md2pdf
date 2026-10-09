@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "node scripts/serve-dist.mjs",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node scripts/e2e.mjs && node scripts/autosave.mjs && node scripts/font-tiers.mjs && node scripts/i18n.mjs && node scripts/math.mjs && node scripts/mermaid.mjs && node scripts/pages.mjs --no-samples && node scripts/landing.mjs && node scripts/ai-paste.mjs && node scripts/print.mjs && node scripts/preview.mjs && node scripts/ux.mjs && node scripts/errors.mjs",
+    "test": "node scripts/e2e.mjs && node scripts/autosave.mjs && node scripts/recent.mjs && node scripts/font-tiers.mjs && node scripts/i18n.mjs && node scripts/math.mjs && node scripts/mermaid.mjs && node scripts/pages.mjs --no-samples && node scripts/landing.mjs && node scripts/ai-paste.mjs && node scripts/print.mjs && node scripts/preview.mjs && node scripts/ux.mjs && node scripts/errors.mjs",
     "fonts": "python3 scripts/prepare_fonts.py",
     "test:scripts": "node scripts/scripts-render.mjs",
     "test:pages": "node scripts/pages.mjs",

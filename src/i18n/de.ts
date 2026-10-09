@@ -35,9 +35,11 @@ const de: Messages = {
     privacyTitle:
       'Einlesen, Satz und PDF-Erzeugung passieren komplett in diesem Tab. Dein Dokument verlässt nie dein Gerät.',
     newDoc: 'Neu',
-    newDocTitle: 'Neues leeres Dokument (löscht auch den gespeicherten Entwurf)',
+    newDocTitle: 'Neues leeres Dokument (das aktuelle bleibt unter „Zuletzt“)',
     open: 'Öffnen',
     openTitle: '.md-Datei öffnen',
+    recent: 'Zuletzt',
+    recentTitle: 'Zuletzt verwendete Dateien in diesem Browser',
     layout: 'Layout',
     layoutTitle: 'Seitenlayout',
     downloadTitle: 'PDF herunterladen (⌘/Strg + S)',
@@ -87,7 +89,7 @@ const de: Messages = {
     heading: 'Markdown in PDF umwandeln – direkt im Browser',
     intro: [
       'Füge Markdown ein oder zieh eine Datei hinein, sieh der Vorschau beim Tippen zu und klick auf <strong>PDF laden</strong> – schon hast du ein sauber gesetztes PDF. Die Vorschau erscheint sofort; das PDF erzeugt eine echte Satz-Engine, mit Seitenumbrüchen, Seitenzahlen und auf Wunsch einem Inhaltsverzeichnis.',
-      'Ein Server ist an keiner Stelle beteiligt. Einlesen, Diagramme, Satz und PDF-Erzeugung laufen vollständig in diesem Tab. Keine Anmeldung, kein Wasserzeichen, keine Begrenzung. Was du schreibst, wird automatisch in deinem eigenen Browser gespeichert, sodass beim Schließen des Tabs nichts verloren geht. Es wird nie hochgeladen; <strong>Neu</strong> oder das Löschen der Websitedaten entfernt es wieder.',
+      'Ein Server ist an keiner Stelle beteiligt. Markdown, Diagramme, Satz und PDF-Erzeugung laufen in diesem Tab. Deine Dokumente bleiben im Browser, bis zu 30 Dateien stehen unter „Zuletzt“. Nichts wird hochgeladen.',
     ],
     sections: [
       {
@@ -126,7 +128,7 @@ const de: Messages = {
       {
         question: 'Ist meine Arbeit noch da, wenn ich die Seite schließe?',
         answer: [
-          'Ja. Sobald du ein Dokument bearbeitest, werden Text, Layout-Einstellungen und hineingezogene Bilder automatisch im lokalen Speicher deines Browsers gesichert und beim nächsten Besuch wiederhergestellt. Der Entwurf liegt nur in diesem Browser auf diesem Gerät; er wird nie hochgeladen oder synchronisiert. Mit <strong>Neu</strong> oder durch Löschen der Websitedaten entfernst du ihn.',
+          'Ja. Text, Einstellungen und Bilder bleiben im Browser; bis zu 30 Dateien stehen unter „Zuletzt“, Dateien mit Stern werden nie automatisch entfernt. Nichts wird hochgeladen oder synchronisiert. Lösche sie unter „Zuletzt“ oder über die Websitedaten.',
         ],
       },
       {
@@ -213,7 +215,22 @@ const de: Messages = {
 
     close: 'Schließen',
     undo: 'Rückgängig',
-    cleared: 'Geleert, gespeicherter Entwurf gelöscht',
+    cleared: 'Neues Dokument begonnen; das vorige bleibt unter „Zuletzt“',
+    recentHeading: 'Zuletzt verwendete Dateien',
+    recentEmpty: 'Bearbeitete Dateien erscheinen hier.',
+    recentPrivacy: 'Nur in diesem Browser gespeichert · höchstens 30 Dateien',
+    recentClear: 'Ohne Stern löschen',
+    recentClearTitle: 'Alle zuletzt verwendeten Dateien ohne Stern löschen',
+    recentStar: '{name} mit Stern markieren',
+    recentUnstar: 'Stern von {name} entfernen',
+    recentDelete: '{name} löschen',
+    recentOpened: '{name} geöffnet',
+    recentCleared: 'Dateien ohne Stern gelöscht',
+    recentDeleted: '{name} gelöscht',
+    recentFull: 'Alle 30 Dateien sind mit einem Stern markiert. Entferne einen Stern oder eine Datei, um eine weitere zu behalten.',
+    recentQuota: 'Der Browserspeicher ist voll; diese Version wurde nicht zu „Zuletzt“ hinzugefügt.',
+    recentUnavailable: 'Zuletzt verwendete Dateien sind in diesem Browser nicht verfügbar.',
+    untitled: 'Unbenannt',
     langAuto: 'Automatisch · {detected}',
     aiCleaned: 'Formatierung der eingefügten KI-Antwort bereinigt',
     draftNotSample: 'Angezeigt wird dein gespeicherter Entwurf, nicht das Beispiel dieser Seite',
@@ -226,7 +243,7 @@ const de: Messages = {
     saved: 'Im Browser gespeichert',
     savedTitle: 'Gespeichert um {time} · der Entwurf bleibt in diesem Browser und wird nie hochgeladen',
     restored: 'Entwurf wiederhergestellt',
-    restoredTitle: 'Der Entwurf bleibt in diesem Browser und wird nie hochgeladen; „Neu“ löscht ihn',
+    restoredTitle: 'Entwurf und zuletzt verwendete Dateien bleiben in diesem Browser und werden nie hochgeladen',
     quotaState: 'Speicher voll, Entwurf nicht gesichert',
     quotaNotice:
       'Der lokale Speicher deines Browsers ist voll, der Entwurf kann gerade nicht gesichert werden. Die Seite funktioniert weiter – lade das PDF herunter oder speichere das Markdown, um nichts zu verlieren.',

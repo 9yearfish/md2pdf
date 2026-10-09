@@ -85,7 +85,7 @@ const fr: LandingDictionary<'fr'> = {
         {
           question: 'Est-ce gratuit ? Ma conversation est-elle envoyée sur un serveur ?',
           answer: [
-            'C’est gratuit, sans inscription, sans filigrane et sans limite. Et rien n’est envoyé : le texte est converti dans votre navigateur, jamais sur un serveur, y compris le nôtre. Il n’est conservé que comme brouillon dans ce navigateur, et <strong>Nouveau</strong> l’efface.',
+            'C’est gratuit, sans inscription, sans filigrane et sans limite. Et rien n’est envoyé : le texte est converti dans votre navigateur, jamais sur un serveur, y compris le nôtre. Le brouillon et jusqu’à 30 fichiers récents restent uniquement dans ce navigateur ; vous pouvez les supprimer ou les vider depuis <strong>Récents</strong>.',
           ],
         },
       ],

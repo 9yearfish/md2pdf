@@ -53,6 +53,8 @@ export interface PageMessages {
   newDocTitle: string;
   open: string;
   openTitle: string;
+  recent: string;
+  recentTitle: string;
   layout: string;
   layoutTitle: string;
   downloadTitle: string;
@@ -156,6 +158,21 @@ export interface UiMessages {
   close: string;
   undo: string;
   cleared: string;
+  recentHeading: string;
+  recentEmpty: string;
+  recentPrivacy: string;
+  recentClear: string;
+  recentClearTitle: string;
+  recentStar: string;
+  recentUnstar: string;
+  recentDelete: string;
+  recentOpened: string;
+  recentCleared: string;
+  recentDeleted: string;
+  recentFull: string;
+  recentQuota: string;
+  recentUnavailable: string;
+  untitled: string;
   /** {detected} */
   langAuto: string;
   /** Pasted text looked like an AI chat answer and was tidied; offered with undo. */

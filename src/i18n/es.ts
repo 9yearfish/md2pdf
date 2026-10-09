@@ -35,9 +35,11 @@ const es: Messages = {
     privacyTitle:
       'El análisis, la maquetación y la generación del PDF ocurren en esta pestaña. Tu documento nunca sale de tu dispositivo.',
     newDoc: 'Nuevo',
-    newDocTitle: 'Nuevo documento en blanco (también borra el borrador guardado)',
+    newDocTitle: 'Nuevo documento en blanco (el actual permanece en Recientes)',
     open: 'Abrir',
     openTitle: 'Abrir un archivo .md',
+    recent: 'Recientes',
+    recentTitle: 'Archivos recientes guardados en este navegador',
     layout: 'Diseño',
     layoutTitle: 'Diseño de página',
     downloadTitle: 'Descargar PDF (⌘/Ctrl + S)',
@@ -87,7 +89,7 @@ const es: Messages = {
     heading: 'Convertir Markdown a PDF en tu navegador',
     intro: [
       'Pega o arrastra un archivo Markdown, mira cómo la vista previa se actualiza mientras escribes y pulsa <strong>Descargar PDF</strong> para obtener un archivo bien maquetado. La vista previa es instantánea; el PDF lo genera un motor de composición tipográfica de verdad, con saltos de página, números de página e índice opcional.',
-      'No interviene ningún servidor. El análisis del Markdown, el dibujo de los diagramas, la maquetación y la generación del PDF se hacen en esta pestaña. Sin registro, sin marca de agua y sin límite de uso: un conversor de Markdown a PDF online y gratis en el que tu documento no sale del navegador. Lo que escribes se guarda automáticamente en tu propio navegador, así que cerrar la pestaña no te hace perder nada; nunca se sube, y con <strong>Nuevo</strong> o borrando los datos de este sitio desaparece.',
+      'No interviene ningún servidor. El análisis del Markdown, los diagramas, la maquetación y el PDF se hacen en esta pestaña. Lo que escribes se guarda en tu navegador y hasta 30 archivos quedan en Recientes. Nunca se suben.',
     ],
     sections: [
       {
@@ -126,7 +128,7 @@ const es: Messages = {
       {
         question: '¿Sigue ahí mi trabajo si cierro la página?',
         answer: [
-          'Sí. En cuanto editas un documento, el texto, los ajustes de diseño y las imágenes que hayas arrastrado se guardan automáticamente en el almacenamiento local de tu navegador y se recuperan en tu próxima visita. El borrador solo existe en este navegador de este dispositivo; nunca se sube ni se sincroniza. Pulsa <strong>Nuevo</strong> o borra los datos de este sitio para eliminarlo.',
+          'Sí. El texto, los ajustes y las imágenes se guardan en tu navegador; hasta 30 archivos quedan en Recientes y los marcados con estrella no se borran automáticamente. Nunca se suben ni se sincronizan. Elimínalos en Recientes o borra los datos del sitio.',
         ],
       },
       {
@@ -213,7 +215,22 @@ const es: Messages = {
 
     close: 'Cerrar',
     undo: 'Deshacer',
-    cleared: 'Documento vacío; se borró el borrador guardado',
+    cleared: 'Nuevo documento iniciado; el anterior permanece en Recientes',
+    recentHeading: 'Archivos recientes',
+    recentEmpty: 'Los archivos que edites aparecerán aquí.',
+    recentPrivacy: 'Solo en este navegador · hasta 30 archivos',
+    recentClear: 'Borrar sin estrella',
+    recentClearTitle: 'Eliminar todos los archivos recientes sin estrella',
+    recentStar: 'Marcar {name} con estrella',
+    recentUnstar: 'Quitar la estrella de {name}',
+    recentDelete: 'Eliminar {name}',
+    recentOpened: 'Abierto: {name}',
+    recentCleared: 'Se borraron los archivos recientes sin estrella',
+    recentDeleted: 'Eliminado: {name}',
+    recentFull: 'Los 30 archivos recientes tienen estrella. Quita una estrella o elimina uno para guardar otro.',
+    recentQuota: 'El almacenamiento está lleno; esta versión no se añadió a Recientes.',
+    recentUnavailable: 'Los archivos recientes no están disponibles en este navegador.',
+    untitled: 'Sin título',
     langAuto: 'Automático · {detected}',
     aiCleaned: 'Se ha limpiado el formato de la respuesta de IA pegada',
     draftNotSample: 'Se muestra tu borrador guardado, no el ejemplo de esta página',
@@ -226,7 +243,7 @@ const es: Messages = {
     saved: 'Guardado en este navegador',
     savedTitle: 'Guardado a las {time} · el borrador se queda en este navegador y nunca se sube',
     restored: 'Borrador recuperado',
-    restoredTitle: 'El borrador se queda en este navegador y nunca se sube; pulsa Nuevo para borrarlo',
+    restoredTitle: 'El borrador y los archivos recientes se quedan en este navegador y nunca se suben',
     quotaState: 'Almacenamiento lleno; borrador sin guardar',
     quotaNotice:
       'El almacenamiento local de tu navegador está lleno, así que por ahora el borrador no se puede guardar. La página sigue funcionando; descarga el PDF o guarda el Markdown para no perder tu trabajo.',

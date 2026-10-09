@@ -67,7 +67,7 @@ const en: LandingDictionary<'en'> = {
         {
           question: 'Is my conversation uploaded anywhere?',
           answer: [
-            'No. The text is converted in your browser and never sent to a server, including ours. It is saved only as a draft in this browser, which <strong>New</strong> deletes.',
+            'No. The text is converted in your browser and never sent to a server, including ours. Drafts and up to 30 recent files are stored only in this browser; you can delete or clear them from <strong>Recent</strong>.',
           ],
         },
         {
@@ -827,7 +827,7 @@ MIT
         {
           question: 'Is the file uploaded?',
           answer: [
-            'No. It is converted in this browser tab. If you edit it here, the text is kept as a draft in this browser only, until you press <strong>New</strong>.',
+            'No. It is converted in this browser tab. If you edit it here, the draft and up to 30 recent files are kept only in this browser; you can delete or clear them from <strong>Recent</strong>.',
           ],
         },
       ],

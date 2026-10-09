@@ -79,7 +79,7 @@ const pt: LandingDictionary<'pt'> = {
         {
           question: 'É grátis? Minha conversa é enviada para algum servidor?',
           answer: [
-            'É grátis, sem cadastro, sem marca d’água e sem limite. E nada é enviado: o texto é convertido no seu navegador e não vai para servidor nenhum, nem para o nosso. Ele fica só como rascunho neste navegador, e o botão <strong>Novo</strong> apaga tudo.',
+            'É grátis, sem cadastro, sem marca d’água e sem limite. E nada é enviado: o texto é convertido no seu navegador e não vai para servidor nenhum, nem para o nosso. O rascunho e até 30 arquivos recentes ficam apenas neste navegador; você pode excluí-los ou limpá-los em <strong>Recentes</strong>.',
           ],
         },
       ],

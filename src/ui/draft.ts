@@ -24,9 +24,17 @@ export const IMAGE_BUDGET = 50 * 1024 * 1024;
 const SAVE_DELAY = 400;
 
 export interface Draft {
+  /** Stable across edits, so this document has one entry in Recent files. */
+  id: string;
+  /** Original local file name, when this document came from Open/drop. */
+  sourceName: string | null;
   text: string;
   options: DocumentOptions;
   savedAt: number;
+}
+
+export interface DraftSnapshot extends Omit<Draft, 'savedAt'> {
+  images: Map<string, LocalImage>;
 }
 
 export type SaveResult = 'saved' | 'quota' | 'unavailable';
@@ -46,6 +54,8 @@ export function loadDraft(): Draft | null {
     const parsed = JSON.parse(raw) as Partial<Draft> | null;
     if (typeof parsed?.text !== 'string') return null;
     return {
+      id: validId(parsed.id) ? parsed.id : newDocumentId(),
+      sourceName: typeof parsed.sourceName === 'string' ? parsed.sourceName.slice(0, 255) : null,
       text: parsed.text,
       options: sanitizeOptions(parsed.options),
       savedAt: Number(parsed.savedAt) || 0,
@@ -67,14 +77,23 @@ export function onDraftChangedElsewhere(listener: (draft: Draft | null) => void)
   });
 }
 
-function writeDraft(text: string, options: DocumentOptions): SaveResult {
+function writeDraft(draft: Draft): SaveResult {
   try {
-    const draft: Draft = { text, options, savedAt: Date.now() };
     localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     return 'saved';
   } catch (error) {
     return isQuotaError(error) ? 'quota' : 'unavailable';
   }
+}
+
+function validId(value: unknown): value is string {
+  return typeof value === 'string' && /^[a-zA-Z0-9_-]{8,80}$/.test(value);
+}
+
+/** A browser-native UUID where available, with a collision-resistant fallback. */
+export function newDocumentId(): string {
+  if (typeof crypto?.randomUUID === 'function') return crypto.randomUUID();
+  return `doc_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`;
 }
 
 function removeDraft(): void {
@@ -250,7 +269,7 @@ export class ImageStore {
  * Only images the text still mentions are worth keeping. A plain substring test
  * errs on the side of keeping one too many, which is the cheaper mistake.
  */
-function selectImages(
+export function selectImages(
   images: Map<string, LocalImage>,
   text: string,
 ): { keep: Map<string, LocalImage>; overBudget: boolean } {
@@ -272,8 +291,8 @@ function selectImages(
 /* ---------- autosave ---------- */
 
 export interface AutosaveHost {
-  snapshot(): { text: string; options: DocumentOptions; images: Map<string, LocalImage> };
-  onSaved(result: SaveResult): void;
+  snapshot(): DraftSnapshot;
+  onSaved(result: SaveResult, draft: Draft): void;
   onImagesSaved(result: ImageSyncResult): void;
 }
 
@@ -325,8 +344,9 @@ export class Autosave {
   saveNow(): void {
     clearTimeout(this.timer);
     this.timer = undefined;
-    const { text, options, images } = this.host.snapshot();
-    this.host.onSaved(writeDraft(text, options));
+    const { id, sourceName, text, options, images } = this.host.snapshot();
+    const draft: Draft = { id, sourceName, text, options, savedAt: Date.now() };
+    this.host.onSaved(writeDraft(draft), draft);
     void this.store.sync(images, text).then(result => this.host.onImagesSaved(result));
   }
 

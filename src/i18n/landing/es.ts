@@ -67,7 +67,7 @@ const es: LandingDictionary<'es'> = {
         {
           question: '¿Se sube mi conversación a algún servidor?',
           answer: [
-            'No. El texto se convierte en tu navegador y no se envía a ningún servidor, tampoco al nuestro. Solo se guarda como borrador en este navegador, y <strong>Nuevo</strong> lo borra.',
+            'No. El texto se convierte en tu navegador y no se envía a ningún servidor, tampoco al nuestro. El borrador y hasta 30 archivos recientes se guardan solo en este navegador; puedes eliminarlos o vaciarlos desde <strong>Recientes</strong>.',
           ],
         },
         {

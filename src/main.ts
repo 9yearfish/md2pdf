@@ -18,11 +18,14 @@ import {
   Autosave,
   ImageStore,
   loadDraft,
+  newDocumentId,
   onDraftChangedElsewhere,
+  selectImages,
   type Draft,
   type ImageSyncResult,
   type SaveResult,
 } from './ui/draft';
+import { RecentDocuments, type RecentSummary } from './ui/recent-documents';
 
 /**
  * The PDF side (the Typst emitter and the engine's JavaScript) is not needed
@@ -91,10 +94,14 @@ const preview = new HtmlPreview(el('paper'), images);
 
 /** Read synchronously so a returning visitor's draft is what first paints. */
 const draft = loadDraft();
+let currentDocumentId = draft?.id ?? newDocumentId();
+let currentSourceName = draft?.sourceName ?? null;
+let keepCurrentInRecents = true;
+const recentDocuments = new RecentDocuments();
 const imageStore = new ImageStore(draft !== null);
 const autosave = new Autosave(
   {
-    snapshot: () => ({ text: doc.getValue(), options, images }),
+    snapshot: () => ({ id: currentDocumentId, sourceName: currentSourceName, text: doc.getValue(), options, images }),
     onSaved: showSaveResult,
     onImagesSaved: showImageSaveResult,
   },
@@ -650,7 +657,7 @@ function setSaveState(state: 'saved' | 'restored' | 'error' | 'off' | null, text
   saveState.title = title;
 }
 
-function showSaveResult(result: SaveResult): void {
+function showSaveResult(result: SaveResult, savedDraft: Draft): void {
   const time = new Date().toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
   switch (result) {
     case 'saved':
@@ -665,6 +672,21 @@ function showSaveResult(result: SaveResult): void {
       setSaveState('off', t('storageOff'));
       break;
   }
+  if (result === 'saved' && keepCurrentInRecents && savedDraft.text.trim()) archiveRecent(savedDraft);
+}
+
+function archiveRecent(savedDraft: Draft): void {
+  const selected = selectImages(images, savedDraft.text).keep;
+  void recentDocuments.save({
+    ...savedDraft,
+    title: recentTitle(savedDraft.text, savedDraft.sourceName),
+    images: [...selected.values()],
+  }).then(outcome => {
+    if (outcome.result === 'full') reportOnce('recent-full', t('recentFull'));
+    else if (outcome.result === 'quota') reportOnce('recent-quota', t('recentQuota'));
+    else if (outcome.result === 'unavailable') reportOnce('recent-unavailable', t('recentUnavailable'));
+    void renderRecentFiles();
+  });
 }
 
 function showImageSaveResult({ result, overBudget }: ImageSyncResult): void {
@@ -675,12 +697,229 @@ function showImageSaveResult({ result, overBudget }: ImageSyncResult): void {
   }
 }
 
+/* ---------- recent files ---------- */
+
+let recentCache: RecentSummary[] = [];
+let recentRender = 0;
+
+function recentTitle(text: string, sourceName: string | null): string {
+  const heading = /^\s*#\s+(.+)$/m.exec(text)?.[1]?.trim();
+  if (heading) return heading.replace(/[*_`~\[\]]/g, '').slice(0, 120);
+  if (sourceName) return sourceName.replace(/\.(?:md|markdown|txt)$/i, '').slice(0, 120);
+  const first = text.split('\n').map(line => line.trim()).find(Boolean);
+  return first
+    ? first.replace(/^(?:[-#>*+]\s+|\d+[.)]\s+)/, '').replace(/[*_`~\[\]]/g, '').slice(0, 120) || t('untitled')
+    : t('untitled');
+}
+
+function recentTime(savedAt: number): string {
+  const date = new Date(savedAt);
+  const today = new Date();
+  const sameDay = date.toDateString() === today.toDateString();
+  return sameDay
+    ? date.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' })
+    : date.toLocaleDateString(lang, { year: date.getFullYear() === today.getFullYear() ? undefined : 'numeric', month: 'short', day: 'numeric' });
+}
+
+async function renderRecentFiles(): Promise<void> {
+  const version = ++recentRender;
+  const documents = await recentDocuments.list();
+  if (version !== recentRender) return;
+  recentCache = documents;
+
+  const list = el<HTMLOListElement>('recent-list');
+  const empty = el<HTMLElement>('recent-empty');
+  const clear = el<HTMLButtonElement>('recent-clear');
+  const count = el<HTMLElement>('recent-count');
+  list.replaceChildren();
+  empty.hidden = documents.length > 0;
+  clear.disabled = !documents.some(document => !document.starred);
+  count.hidden = documents.length === 0;
+  count.textContent = String(documents.length);
+
+  for (const recent of documents) {
+    const item = document.createElement('li');
+    item.className = 'recent-item';
+    item.dataset.starred = String(recent.starred);
+    if (recent.id === currentDocumentId) item.dataset.current = 'true';
+
+    const open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'recent-open';
+    open.dataset.recentAction = 'open';
+    open.dataset.recentId = recent.id;
+    if (recent.id === currentDocumentId) open.setAttribute('aria-current', 'true');
+    const title = document.createElement('span');
+    title.className = 'recent-name';
+    title.textContent = recent.title || t('untitled');
+    const meta = document.createElement('span');
+    meta.className = 'recent-meta';
+    meta.textContent = [recent.sourceName, recentTime(recent.savedAt)].filter(Boolean).join(' · ');
+    open.append(title, meta);
+
+    const star = document.createElement('button');
+    star.type = 'button';
+    star.className = 'recent-star';
+    star.dataset.recentAction = 'star';
+    star.dataset.recentId = recent.id;
+    star.setAttribute('aria-pressed', String(recent.starred));
+    star.setAttribute('aria-label', t(recent.starred ? 'recentUnstar' : 'recentStar', { name: recent.title }));
+    star.title = star.getAttribute('aria-label') ?? '';
+    star.append(icon('star'));
+
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'recent-delete';
+    remove.dataset.recentAction = 'delete';
+    remove.dataset.recentId = recent.id;
+    remove.setAttribute('aria-label', t('recentDelete', { name: recent.title }));
+    remove.title = remove.getAttribute('aria-label') ?? '';
+    remove.append(icon('trash'));
+
+    item.append(open, star, remove);
+    list.append(item);
+  }
+}
+
+function positionRecentFiles(): void {
+  const panel = el<HTMLElement>('recent-files');
+  if (!panel.matches(':popover-open') || phone.matches) {
+    panel.style.removeProperty('top');
+    panel.style.removeProperty('left');
+    return;
+  }
+  const trigger = el<HTMLElement>('recent-toggle').getBoundingClientRect();
+  const width = panel.offsetWidth;
+  const height = panel.offsetHeight;
+  const left = Math.min(innerWidth - width - 12, Math.max(12, trigger.right - width));
+  const below = trigger.bottom + 8;
+  const top = below + height <= innerHeight - 12 ? below : Math.max(12, trigger.top - height - 8);
+  panel.style.left = `${left}px`;
+  panel.style.top = `${top}px`;
+}
+
+async function openRecentFile(id: string): Promise<void> {
+  autosave.flush();
+  const recent = await recentDocuments.get(id);
+  if (!recent) return void renderRecentFiles();
+  autosave.cancel();
+  currentDocumentId = recent.id;
+  currentSourceName = recent.sourceName;
+  keepCurrentInRecents = true;
+  options = recent.options;
+  showOptionsInInputs();
+  applyOptions();
+  images.clear();
+  for (const image of recent.images) images.set(image.name, image);
+  replaceText(recent.text);
+  renderPreview();
+  autosave.saveNow();
+  el<HTMLElement>('recent-files').hidePopover();
+  trackToolEvent('open_recent_file');
+  showWarnings([t('recentOpened', { name: recent.title })], 'ok');
+  doc.focus();
+  showResultOnPhone();
+}
+
+async function toggleRecentStar(id: string): Promise<void> {
+  const recent = recentCache.find(document => document.id === id);
+  if (!recent) return;
+  trackToolEvent(recent.starred ? 'unstar_recent_file' : 'star_recent_file');
+  await recentDocuments.setStarred(id, !recent.starred);
+  await renderRecentFiles();
+}
+
+async function deleteRecentFile(id: string): Promise<void> {
+  if (id === currentDocumentId) {
+    keepCurrentInRecents = false;
+    autosave.saveNow();
+  }
+  const removed = await recentDocuments.delete(id);
+  if (!removed) return;
+  trackToolEvent('delete_recent_file');
+  await renderRecentFiles();
+  showWarnings([t('recentDeleted', { name: removed.title })], 'ok', {
+    label: t('undo'),
+    run: () => {
+      void recentDocuments.restore([removed]).then(restored => {
+        if (restored && removed.id === currentDocumentId) keepCurrentInRecents = true;
+        void renderRecentFiles();
+      });
+    },
+  });
+}
+
+async function clearRecentFiles(): Promise<void> {
+  const active = recentCache.find(document => document.id === currentDocumentId);
+  if (active && !active.starred) {
+    keepCurrentInRecents = false;
+    autosave.saveNow();
+  }
+  const removed = await recentDocuments.clearUnstarred();
+  if (!removed.length) return;
+  trackToolEvent('clear_recent_files');
+  await renderRecentFiles();
+  showWarnings([t('recentCleared')], 'ok', {
+    label: t('undo'),
+    run: () => {
+      void recentDocuments.restore(removed).then(restored => {
+        if (restored && removed.some(document => document.id === currentDocumentId)) keepCurrentInRecents = true;
+        void renderRecentFiles();
+      });
+    },
+  });
+}
+
+function bindRecentFiles(): void {
+  const panel = el<HTMLElement>('recent-files');
+  const toggle = el<HTMLButtonElement>('recent-toggle');
+  el('recent-heading').textContent = t('recentHeading');
+  el('recent-empty').textContent = t('recentEmpty');
+  el('recent-privacy').textContent = t('recentPrivacy');
+  const clear = el<HTMLButtonElement>('recent-clear');
+  clear.textContent = t('recentClear');
+  clear.title = t('recentClearTitle');
+  clear.addEventListener('click', () => void clearRecentFiles());
+  panel.addEventListener('toggle', () => {
+    const open = panel.matches(':popover-open');
+    toggle.setAttribute('aria-expanded', String(open));
+    if (open) {
+      trackToolEvent('open_recent_files');
+      void renderRecentFiles();
+      requestAnimationFrame(positionRecentFiles);
+    }
+  });
+  panel.addEventListener('click', event => {
+    const button = (event.target as Element).closest<HTMLButtonElement>('[data-recent-action]');
+    const id = button?.dataset.recentId;
+    if (!button || !id) return;
+    switch (button.dataset.recentAction) {
+      case 'open': void openRecentFile(id); break;
+      case 'star': void toggleRecentStar(id); break;
+      case 'delete': void deleteRecentFile(id); break;
+    }
+  });
+  window.addEventListener('resize', positionRecentFiles);
+  window.addEventListener('scroll', positionRecentFiles, true);
+  void renderRecentFiles();
+}
+
 /**
- * Start a blank document. Clearing is immediate and undoable rather than
- * confirmed: a dialog asks every time, an undo only costs the rare mistake.
+ * Start a blank document. The active draft is cleared, but its last snapshot
+ * stays in Recent. The switch is immediate and undoable rather than confirmed.
  */
 function newDocument(): void {
-  const previous = { text: doc.getValue(), images: new Map(images) };
+  autosave.flush();
+  const previous = {
+    id: currentDocumentId,
+    sourceName: currentSourceName,
+    keep: keepCurrentInRecents,
+    text: doc.getValue(),
+    images: new Map(images),
+  };
+  currentDocumentId = newDocumentId();
+  currentSourceName = null;
+  keepCurrentInRecents = true;
   void autosave.discard();
   images.clear();
   replaceText('');
@@ -691,6 +930,9 @@ function newDocument(): void {
   showWarnings([t('cleared')], 'ok', {
     label: t('undo'),
     run: () => {
+      currentDocumentId = previous.id;
+      currentSourceName = previous.sourceName;
+      keepCurrentInRecents = previous.keep;
       for (const [name, image] of previous.images) images.set(name, image);
       replaceText(previous.text);
       renderPreview();
@@ -751,6 +993,7 @@ function restoreImages(): void {
       added = true;
     }
     if (added) renderPreview();
+    if (draft?.text.trim()) archiveRecent(draft);
   });
 }
 
@@ -784,6 +1027,9 @@ function followOtherTabs(): void {
 
 function adoptDraft(remote: Draft): void {
   autosave.cancel();
+  currentDocumentId = remote.id;
+  currentSourceName = remote.sourceName;
+  keepCurrentInRecents = true;
   options = remote.options;
   showOptionsInInputs();
   applyOptions();
@@ -792,6 +1038,7 @@ function adoptDraft(remote: Draft): void {
   setSaveState('saved', t('syncedFromTab'), t('syncedFromTabTitle'));
   // The other tab may have added images; they are in the shared IndexedDB.
   void imageStore.reload().then(stored => {
+    images.clear();
     for (const image of stored) images.set(image.name, image);
     if (stored.length) renderPreview();
   });
@@ -803,6 +1050,7 @@ function bindControls(): void {
   downloadButton.addEventListener('click', () => void downloadPdf());
   printButton.addEventListener('click', () => void printPdf());
   el('new-doc').addEventListener('click', newDocument);
+  bindRecentFiles();
 
   settingsToggle.addEventListener('click', () => {
     settingsPanel.hidden = !settingsPanel.hidden;
@@ -1103,6 +1351,14 @@ async function acceptFiles(files: File[]): Promise<void> {
   const notes: string[] = [];
   let accepted = false;
   let refused = false;
+  const hasText = files.some(file => /\.(md|markdown|txt)$/i.test(file.name) || file.type.startsWith('text/'));
+  if (hasText) {
+    autosave.flush();
+    currentDocumentId = newDocumentId();
+    currentSourceName = null;
+    keepCurrentInRecents = true;
+    images.clear();
+  }
   for (const file of files) {
     if (isSupportedImage(file.type)) {
       accepted = true;
@@ -1112,6 +1368,7 @@ async function acceptFiles(files: File[]): Promise<void> {
       notes.push(t('imageEmbedded', { name: file.name }));
     } else if (/\.(md|markdown|txt)$/i.test(file.name) || file.type.startsWith('text/')) {
       accepted = true;
+      currentSourceName = file.name.slice(0, 255);
       doc.setValue(await file.text());
       notes.push(t('fileLoaded', { name: file.name }));
     } else {
