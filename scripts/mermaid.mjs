@@ -54,6 +54,7 @@ const EXPECT = {
   sankey: { raw: 'sankey-beta', labels: ['Salaries', 'Budget', 'Research', 'Outreach'] },
   sequence: { raw: 'autonumber', labels: ['Upload draft', 'Draft accepted', 'Validates the', 'document schema', 'Leave comments', 'Review complete'] },
   state: { raw: 'stateDiagram-v2', labels: ['Drafting', 'Reviewing', 'Published', 'Archived', 'Two approvals', 'request changes'] },
+  'state-cjk': { raw: 'state "待打印" as s1', labels: ['待打印', '正常使用', '打印失败', '正在更换', '已经失效', '生成标签编号', '打印写入成功'] },
   timeline: { raw: '2021 :', labels: ['History of the project', 'Prototype built', 'First customers', 'Seed funding'] },
   treemap: { raw: 'treemap-beta', labels: ['Company budget', 'Engineering', 'Salaries', 'Campaigns', 'Events'] },
   xychart: { raw: 'xychart-beta', labels: ['Monthly revenue', 'January', 'May', 'Revenue in thousands'] },
@@ -152,11 +153,19 @@ function inspect(result, name) {
       const box = svg.viewBox.baseVal;
       const b = svg.getBBox();
       const clipped = b.x < box.x - 1 || b.y < box.y - 1 || b.x + b.width > box.x + box.width + 1 || b.y + b.height > box.y + box.height + 1;
+      const stateLabels = [...svg.querySelectorAll('g.statediagram-state > g.label')];
       return {
         foreignObject: svg.querySelectorAll('foreignObject').length,
         filters: svg.querySelectorAll('filter, [filter]').length,
         clipped,
         actions: figure.querySelectorAll('.diagram-actions button').length,
+        stateLabelCount: stateLabels.length,
+        stateLabelsCentered: stateLabels.every(label => {
+          const transform = label.getAttribute('transform') ?? '';
+          return /^translate\(\s*0\s*[, ]/.test(transform) && [...label.querySelectorAll('text')].every(text =>
+            text.getAttribute('text-anchor') === 'middle' && [...text.querySelectorAll('tspan.text-outer-tspan')].every(row =>
+              row.getAttribute('x') === '0' && row.getAttribute('text-anchor') === 'middle'));
+        }),
       };
     }),
   );
@@ -169,6 +178,9 @@ function inspect(result, name) {
       if (f.filters) notes.push(`${f.filters} filters`);
       if (f.clipped) notes.push('drawing outside its viewBox');
       if (f.actions !== 3) notes.push('no export actions');
+      if (name === 'state-cjk' && (f.stateLabelCount !== 5 || !f.stateLabelsCentered)) {
+        notes.push(`${f.stateLabelCount ?? 0} state labels; alignment is not centred`);
+      }
     }
     rows[name] = { preview: notes.length === 0, notes };
   });

@@ -8,7 +8,7 @@
  *
  * Never add document-derived values to events in this file. A heading, file
  * name, error message or document language may reveal what somebody is
- * converting. The only custom event is the fact that a PDF was exported.
+ * converting. Events record only which fixed product control was used.
  */
 
 type DataLayerEntry = IArguments | unknown[] | Record<string, unknown>;
@@ -92,8 +92,16 @@ if (enabled) {
   document.head.append(script);
 }
 
-/** Record a completed export without sending its file name or document data. */
-export function trackPdfExport(method: 'download' | 'print'): void {
+export type ToolEvent =
+  | 'file_download'
+  | 'print_pdf'
+  | 'preview_pdf'
+  | 'enter_fullscreen'
+  | 'exit_fullscreen'
+  | 'open_layout';
+
+/** Record a fixed UI action without sending its label or any document data. */
+export function trackToolEvent(event: ToolEvent): void {
   if (!enabled) return;
-  gtag('event', 'pdf_export', { method });
+  gtag('event', event);
 }

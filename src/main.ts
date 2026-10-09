@@ -11,7 +11,7 @@ import { installErrorReporting, reportError } from './ui/errors';
 import { importWithRetry, isChunkLoadError } from './ui/retry-import';
 import { createEditor, type Editor } from './ui/editor';
 import { bindPdfPreview } from './ui/pdf-preview';
-import { trackPdfExport } from './analytics';
+import { trackToolEvent } from './analytics';
 import { hideFrontMatter, layoutModule, loadLayout } from './layout/load';
 import {
   Autosave,
@@ -400,7 +400,7 @@ async function downloadPdf(): Promise<void> {
   const pdf = await buildPdf(downloadButton, downloadLabel, t('download'));
   if (!pdf) return;
   const name = save(pdf);
-  trackPdfExport('download');
+  trackToolEvent('file_download');
   fed(downloadButton);
   // Warnings about the PDF matter more than the confirmation; keep them.
   if (!buildNoted) showWarnings([t('downloaded', { name })], 'ok');
@@ -447,11 +447,11 @@ async function printPdf(): Promise<void> {
   const printing = await import('./ui/print');
   const url = printing.pdfUrl(pdf);
   if (!printsInTab() && (await printing.printInFrame(url))) {
-    trackPdfExport('print');
+    trackToolEvent('print_pdf');
     return;
   }
   if (printing.openInTab(url, tab)) {
-    trackPdfExport('print');
+    trackToolEvent('print_pdf');
     showWarnings([t('printInTab')], 'info');
   } else {
     showWarnings([t('printBlocked')], 'warn', { label: t('printOpen'), run: () => void window.open(url, '_blank') }, true);
@@ -806,6 +806,7 @@ function bindControls(): void {
   settingsToggle.addEventListener('click', () => {
     settingsPanel.hidden = !settingsPanel.hidden;
     settingsToggle.setAttribute('aria-expanded', String(!settingsPanel.hidden));
+    if (!settingsPanel.hidden) trackToolEvent('open_layout');
   });
 
   el('open-file').addEventListener('click', () => fileInput.click());
@@ -818,6 +819,7 @@ function bindControls(): void {
     doc.focus();
     showResultOnPhone();
   });
+  pdfPreviewButton.addEventListener('click', () => trackToolEvent('preview_pdf'));
   bindPdfPreview(label => buildPdf(pdfPreviewButton, label, t('downloadGenerating')));
   bindPasteButton();
   fileInput.addEventListener('change', () => {
@@ -835,7 +837,11 @@ function bindControls(): void {
   bindDivider();
   bindViewSwitch();
   new ResizeObserver(() => fitSourceActions()).observe(stats.parentElement!);
-  el('fullscreen-toggle').addEventListener('click', () => setFullscreen(!isFullscreen()));
+  el('fullscreen-toggle').addEventListener('click', () => {
+    const on = !isFullscreen();
+    trackToolEvent(on ? 'enter_fullscreen' : 'exit_fullscreen');
+    setFullscreen(on);
+  });
 }
 
 type Control = HTMLInputElement | HTMLSelectElement;

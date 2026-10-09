@@ -1,0 +1,14 @@
+stateDiagram-v2
+    state "待打印" as s1
+    state "正常使用" as s2
+    state "打印失败" as s3
+    state "正在更换" as s4
+    state "已经失效" as s5
+    [*] --> s1: 生成标签编号
+    s1 --> s2: 打印写入成功
+    s1 --> s3: 打印失败
+    s3 --> s1: 重新尝试
+    s2 --> s4: 发起更换
+    s4 --> s2: 新标签打印失败
+    s4 --> s5: 新标签打印成功
+    s5 --> [*]

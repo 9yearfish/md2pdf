@@ -343,8 +343,10 @@ every page, and loads **Google Analytics 4** directly in production when
 visits (URL, referrer, timing, country). Before gtag.js loads, the app sets
 Consent Mode v2's analytics/ad storage to denied, turns Google Signals and ad
 personalization off, and enables ad-data redaction. GA4 therefore receives
-cookieless measurements. The app sends a `pdf_export` event, but never a
-document heading, file name, document text, image or PDF. Page locations retain
+cookieless measurements. The app sends fixed control events (`file_download`,
+`print_pdf`, `preview_pdf`, `enter_fullscreen`, `exit_fullscreen` and
+`open_layout`), but never a document heading, file name, document text, image
+or PDF. Page locations retain
 only attribution parameters (`utm_*` and Google click IDs); referrer query
 strings and URL fragments are removed before analytics receives them.
 
@@ -553,9 +555,10 @@ wrong origin is worse than none.
 `VITE_GA_MEASUREMENT_ID` enables Google Analytics 4 only in production builds;
 the current web data stream uses `G-6DY2MNVZY0`. The app configures the Google
 tag directly—there is no Tag Manager container to publish. After deploying,
-verify `page_view` and `pdf_export` in GA4 Realtime. Mark `pdf_export` as a key
-event if the acquisition report should show which sources produced actual PDF
-exports, not merely visits.
+verify `page_view` and the control events in GA4 Realtime. Mark
+`file_download` as a key event if the acquisition report should show which
+sources produced actual PDF downloads, not merely visits. `print_pdf` can be a
+second key event if printing matters equally.
 
 ### How the pages are built
 

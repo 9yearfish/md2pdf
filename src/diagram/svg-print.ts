@@ -17,8 +17,9 @@
  *   which the browser clips and the PDF clips too, and some leave wide empty
  *   margins. The viewBox is fitted to the measured bounds of the drawing.
  * - Mindmap circles centre their label with a transform that assumes
- *   `text-anchor: middle`, which nothing sets for them; journey tasks' SVG
- *   labels are white on a pale fill.
+ *   `text-anchor: middle`, which nothing sets for them; state nodes need the
+ *   same explicit anchor so every wrapped line is centred consistently in the
+ *   browser and PDF; journey tasks' SVG labels are white on a pale fill.
  */
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -114,6 +115,34 @@ export function centreMindmapLabels(doc: Document): void {
 }
 
 /**
+ * Mermaid positions a state label by shifting its whole group left by half
+ * the widest line. That makes shorter wrapped lines left-aligned, and SVG
+ * renderers do not all resolve the implicit alignment identically. Put the
+ * label origin back on the node centre and centre every line explicitly.
+ */
+export function centreStateLabels(doc: Document): void {
+  for (const state of [...doc.querySelectorAll('g.statediagram-state')]) {
+    // Notes and composite-state headings have their own layout. A basic state
+    // is the one whose box and label are direct children of this group.
+    const box = [...state.children].find(child => child.localName === 'rect' && child.classList.contains('basic'));
+    const label = [...state.children].find(child => child.localName === 'g' && child.classList.contains('label'));
+    if (!box || !label) continue;
+
+    const transform = label.getAttribute('transform') ?? '';
+    const translated = /^translate\(\s*[-+]?\d*\.?\d+(?:e[-+]?\d+)?\s*[, ]\s*([-+]?\d*\.?\d+(?:e[-+]?\d+)?)\s*\)$/i.exec(transform);
+    if (translated) label.setAttribute('transform', `translate(0, ${translated[1]})`);
+
+    for (const text of [...label.getElementsByTagName('text')]) {
+      text.setAttribute('text-anchor', 'middle');
+      for (const row of [...text.children].filter(child => child.localName === 'tspan' && child.hasAttribute('x'))) {
+        row.setAttribute('x', '0');
+        row.setAttribute('text-anchor', 'middle');
+      }
+    }
+  }
+}
+
+/**
  * Fit the viewBox to what is actually drawn, measured by the browser: grown
  * where the drawing spills over (so nothing is cut off at the diagram's edge)
  * and trimmed where Mermaid leaves a wide empty margin (C4, journey, sequence
@@ -169,6 +198,7 @@ export function prepareForPrint(doc: Document): { width: number; height: number 
   replaceForeignObjects(doc);
   darkenJourneyText(doc);
   centreMindmapLabels(doc);
+  centreStateLabels(doc);
   return fitViewBox(doc);
 }
 
