@@ -128,7 +128,7 @@ const fr: Messages = {
       {
         question: 'Mon document est-il envoyé sur un serveur ?',
         answer: [
-          'Non. L’analyse, la mise en page et la génération du PDF se font dans votre navigateur. Votre texte, vos images et le PDF ne quittent jamais votre appareil. La politique de sécurité du contenu (CSP) n’autorise les connexions qu’au site lui-même et aux outils d’analyse sans cookies de Cloudflare et Google, qui enregistrent les visites et leur provenance sans jamais recevoir votre document ; le navigateur bloque toute autre destination.',
+          'Non. L’analyse, la mise en page et la génération du PDF se font dans votre navigateur. Votre texte, vos images et le PDF ne quittent jamais votre appareil. La politique de sécurité du contenu (CSP) n’autorise les connexions qu’au site lui-même et aux outils d’analyse de Cloudflare et Google, qui enregistrent les visites et leur provenance sans jamais recevoir votre document ; le navigateur bloque toute autre destination.',
         ],
       },
       {

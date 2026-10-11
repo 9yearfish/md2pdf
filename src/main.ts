@@ -12,7 +12,6 @@ import { importWithRetry, isChunkLoadError } from './ui/retry-import';
 import { createEditor, type Editor } from './ui/editor';
 import { bindPdfPreview } from './ui/pdf-preview';
 import { animateFullscreenTransition, bindButtonMotion } from './ui/button-motion';
-import { trackToolEvent } from './analytics';
 import { hideFrontMatter, layoutModule, loadLayout } from './layout/load';
 import {
   Autosave,
@@ -408,7 +407,6 @@ async function downloadPdf(): Promise<void> {
   const pdf = await buildPdf(downloadButton, downloadLabel, t('download'));
   if (!pdf) return;
   const name = save(pdf);
-  trackToolEvent('file_download');
   fed(downloadButton);
   // Warnings about the PDF matter more than the confirmation; keep them.
   if (!buildNoted) showWarnings([t('downloaded', { name })], 'ok');
@@ -455,11 +453,9 @@ async function printPdf(): Promise<void> {
   const printing = await import('./ui/print');
   const url = printing.pdfUrl(pdf);
   if (!printsInTab() && (await printing.printInFrame(url))) {
-    trackToolEvent('print_pdf');
     return;
   }
   if (printing.openInTab(url, tab)) {
-    trackToolEvent('print_pdf');
     showWarnings([t('printInTab')], 'info');
   } else {
     showWarnings([t('printBlocked')], 'warn', { label: t('printOpen'), run: () => void window.open(url, '_blank') }, true);
@@ -809,7 +805,6 @@ async function openRecentFile(id: string): Promise<void> {
   renderPreview();
   autosave.saveNow();
   el<HTMLElement>('recent-files').hidePopover();
-  trackToolEvent('open_recent_file');
   showWarnings([t('recentOpened', { name: recent.title })], 'ok');
   doc.focus();
   showResultOnPhone();
@@ -818,7 +813,6 @@ async function openRecentFile(id: string): Promise<void> {
 async function toggleRecentStar(id: string): Promise<void> {
   const recent = recentCache.find(document => document.id === id);
   if (!recent) return;
-  trackToolEvent(recent.starred ? 'unstar_recent_file' : 'star_recent_file');
   await recentDocuments.setStarred(id, !recent.starred);
   await renderRecentFiles();
 }
@@ -830,7 +824,6 @@ async function deleteRecentFile(id: string): Promise<void> {
   }
   const removed = await recentDocuments.delete(id);
   if (!removed) return;
-  trackToolEvent('delete_recent_file');
   await renderRecentFiles();
   showWarnings([t('recentDeleted', { name: removed.title })], 'ok', {
     label: t('undo'),
@@ -851,7 +844,6 @@ async function clearRecentFiles(): Promise<void> {
   }
   const removed = await recentDocuments.clearUnstarred();
   if (!removed.length) return;
-  trackToolEvent('clear_recent_files');
   await renderRecentFiles();
   showWarnings([t('recentCleared')], 'ok', {
     label: t('undo'),
@@ -878,7 +870,6 @@ function bindRecentFiles(): void {
     const open = panel.matches(':popover-open');
     toggle.setAttribute('aria-expanded', String(open));
     if (open) {
-      trackToolEvent('open_recent_files');
       void renderRecentFiles();
     }
   });
@@ -1046,7 +1037,6 @@ function bindControls(): void {
   settingsToggle.addEventListener('click', () => {
     settingsPanel.hidden = !settingsPanel.hidden;
     settingsToggle.setAttribute('aria-expanded', String(!settingsPanel.hidden));
-    if (!settingsPanel.hidden) trackToolEvent('open_layout');
   });
 
   el('open-file').addEventListener('click', () => fileInput.click());
@@ -1059,7 +1049,6 @@ function bindControls(): void {
     doc.focus();
     showResultOnPhone();
   });
-  pdfPreviewButton.addEventListener('click', () => trackToolEvent('preview_pdf'));
   bindPdfPreview(label => buildPdf(pdfPreviewButton, label, t('downloadGenerating')));
   bindPasteButton();
   fileInput.addEventListener('change', () => {
@@ -1079,7 +1068,6 @@ function bindControls(): void {
   new ResizeObserver(() => fitSourceActions()).observe(stats.parentElement!);
   el('fullscreen-toggle').addEventListener('click', () => {
     const on = !isFullscreen();
-    trackToolEvent(on ? 'enter_fullscreen' : 'exit_fullscreen');
     setFullscreen(on);
   });
 }

@@ -122,7 +122,7 @@ const es: Messages = {
       {
         question: '¿Se sube mi documento a algún servidor?',
         answer: [
-          'No. El análisis, la maquetación y la generación del PDF ocurren en tu navegador. Tu texto, tus imágenes y el PDF no salen de tu dispositivo. La política de seguridad de contenido (CSP) solo permite conexiones con el propio sitio y con las analíticas sin cookies de Cloudflare y Google, que registran visitas y fuentes de tráfico, pero nunca reciben tu documento; el navegador bloquea cualquier otro destino.',
+          'No. El análisis, la maquetación y la generación del PDF ocurren en tu navegador. Tu texto, tus imágenes y el PDF no salen de tu dispositivo. La política de seguridad de contenido (CSP) solo permite conexiones con el propio sitio y con las analíticas de Cloudflare y Google, que registran visitas y fuentes de tráfico, pero nunca reciben tu documento; el navegador bloquea cualquier otro destino.',
         ],
       },
       {

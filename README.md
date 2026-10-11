@@ -338,20 +338,17 @@ run in the tab, and no code in the app sends document text, images or the PDF
 anywhere.
 
 The site uses **Cloudflare Web Analytics**, which Cloudflare Pages injects into
-every page, and loads **Google Analytics 4** directly in production when
-`VITE_GA_MEASUREMENT_ID` is set. Cloudflare sets no cookies and records page
-visits (URL, referrer, timing, country). Before gtag.js loads, the app sets
-Consent Mode v2's analytics/ad storage to denied, turns Google Signals and ad
-personalization off, and enables ad-data redaction. GA4 therefore receives
-cookieless measurements. The app sends fixed control events (`file_download`,
-`print_pdf`, `preview_pdf`, full-screen/layout actions, and fixed Recent-file
-actions such as open, star, delete and clear), but never a document heading,
-file name, document text, image or PDF. Page locations retain
-only attribution parameters (`utm_*` and Google click IDs); referrer query
-strings and URL fragments are removed before analytics receives them.
+every page, and the standard **Google Analytics 4** tag (`G-6DY2MNVZY0`). The
+Google-provided snippet appears immediately after `<head>` in `index.html`
+(the shared template for all locale and landing pages) and `public/404.html`.
+It loads directly on every page, without an environment-variable gate or app
+initialization. There are no custom consent overrides, URL filters or control
+events. Cloudflare sets no cookies; the standard Google tag can use analytics
+cookies. The app does not send document content to either analytics service.
 
 The Content-Security-Policy in `public/_headers` allows only the Cloudflare and
-Google Analytics tag/collection origins beyond `'self'`. It deliberately does
+Google Analytics tag/collection origins beyond `'self'`. Its script hash permits
+the exact inline Google snippet; update the hash if the snippet changes. It does
 not allow Google Ads or DoubleClick. The browser blocks other destinations.
 
 To remove the analytics, turn off Web Analytics for the Pages project in the
@@ -359,8 +356,9 @@ Cloudflare dashboard (otherwise Cloudflare keeps injecting the script, and the
 CSP would then block it and report violations), and remove
 `https://static.cloudflareinsights.com` from `script-src` and
 `https://cloudflareinsights.com` from `connect-src` in `public/_headers`. The
-CSP can then drop the Google origins as well if GA4 is disabled, and the copy's
-mention of analytics in `src/i18n/` can go too.
+Google tag can be removed from both HTML files, then its script hash and Google
+origins removed from the CSP. The copy's mention of analytics in `src/i18n/` can
+go too.
 
 `frame-src 'self' blob:` exists only for Print's hidden PDF frame (without
 it, `default-src 'self'` blocks the Blob URL). `X-Frame-Options: DENY` and
@@ -568,13 +566,9 @@ canonical, alternate and Open Graph link, `robots.txt` and `sitemap.xml`.
 **Change it to the real domain before deploying**; a canonical pointing at the
 wrong origin is worse than none.
 
-`VITE_GA_MEASUREMENT_ID` enables Google Analytics 4 only in production builds;
-the current web data stream uses `G-6DY2MNVZY0`. The app configures the Google
-tag directly—there is no Tag Manager container to publish. After deploying,
-verify `page_view` and the control events in GA4 Realtime. Mark
-`file_download` as a key event if the acquisition report should show which
-sources produced actual PDF downloads, not merely visits. `print_pdf` can be a
-second key event if printing matters equally.
+Google Analytics uses the standard tag in the HTML, with measurement ID
+`G-6DY2MNVZY0`; no analytics environment variable or Tag Manager container is
+required. After deploying, verify page visits in GA4 Realtime.
 
 ### How the pages are built
 
