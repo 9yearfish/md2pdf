@@ -532,7 +532,7 @@ Edita cualquier bloque a la izquierda y la vista previa te sigue; pulsa **Descar
         {
           heading: 'Lo que no se conserva',
           body: [
-            'El HTML no se interpreta: una cabecera centrada con <code>&lt;p align="center"&gt;</code>, una etiqueta <code>&lt;img&gt;</code> o un bloque desplegable <code>&lt;details&gt;</code> aparecen como texto, así que conviene reescribir esas partes en Markdown. Los avisos <code>&gt; [!NOTE]</code> de GitHub quedan como citas normales, los códigos como <code>:rocket:</code> se quedan como texto y los emoji no tienen fuente aquí, así que salen como cuadros vacíos (la página te dice qué caracteres son).',
+            'El HTML no se interpreta: una cabecera centrada con <code>&lt;p align="center"&gt;</code>, una etiqueta <code>&lt;img&gt;</code> o un bloque desplegable <code>&lt;details&gt;</code> aparecen como texto, así que conviene reescribir esas partes en Markdown. Los avisos <code>&gt; [!NOTE]</code> de GitHub quedan como citas normales y los códigos como <code>:rocket:</code> se quedan como texto; los caracteres emoji reales se incrustan con una fuente emoji en color.',
           ],
         },
       ],

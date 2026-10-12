@@ -254,11 +254,18 @@ fetched only when the text goes beyond Latin-1):
 | Hebrew | Noto Sans Hebrew | 0.11 MB | 0.05 MB | Hebrew |
 | Devanagari | Noto Sans Devanagari | 0.42 MB | 0.15 MB | Devanagari |
 | Thai | Noto Sans Thai | 0.12 MB | 0.06 MB | Thai |
+| Emoji | Twemoji Mozilla (COLR/CPAL) | 1.47 MB | 0.61 MB | emoji-presentation graphemes only |
 | Serif (Academic, Letter) | Noto Serif ×4 styles | 1.21 MB | 0.48 MB | a serif template |
 | Serif Simplified Chinese | Noto Serif SC regular, GB2312 | 2.53 MB | 1.51 MB | serif template + Chinese |
 | Serif Traditional Chinese | Noto Serif TC regular, Big5 level 1 | 2.11 MB | 1.31 MB | serif template + Traditional |
 | Serif Japanese | Noto Serif JP regular, JIS X 0208 | 2.85 MB | 1.62 MB | serif template + Japanese |
 | Serif Korean | Noto Serif KR regular, KS X 1001 Hangul | 1.91 MB | 0.64 MB | serif template + Hangul |
+
+Emoji use the Twemoji 14 repertoire. Complete grapheme sequences are checked
+against the font's GSUB ligatures, so newer unsupported combinations are
+reported instead of silently being split into their component symbols. The
+live preview, fullscreen editor, fullscreen PDF proof and downloaded PDF all
+use the same bundled colour font and grapheme detection.
 
 **Serif CJK.** A serif template sets CJK text in Noto Serif CJK, but only the
 regular weight is bundled, subset to the same character sets as the sans
@@ -467,7 +474,7 @@ on-the-fly brotli it is about 9.8 MB on the wire.
   `\cite`...) inside a formula is rejected. The two converters are separate,
   so an edge case can render in one and not the other.
 - Scripts without a bundled face (Bengali, Tamil and the other Indic scripts
-  besides Devanagari, Georgian, Armenian, Ethiopic, Khmer, Myanmar, emoji...)
+  besides Devanagari, Georgian, Armenian, Ethiopic, Khmer, Myanmar...)
   are typeset with a placeholder box, and the user is told exactly which
   characters are affected. Adding one is a row in `SCRIPTS` in
   `prepare_fonts.py` and one in `SCRIPT_FAMILIES` in `src/typst/fonts.ts`

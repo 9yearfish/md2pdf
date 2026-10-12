@@ -925,7 +925,7 @@ $$
         {
           heading: '哪些内容不会保留',
           body: [
-            '不渲染原始 HTML：居中的 <code>&lt;p align="center"&gt;</code> 标题、<code>&lt;img&gt;</code> 标签、可折叠的 <code>&lt;details&gt;</code> 会原样显示成文字，这些部分请改写成普通 Markdown。GitHub 的 <code>&gt; [!NOTE]</code> 提示块会变成普通引用，<code>:rocket:</code> 这类短代码保持原文，emoji 没有可用字体，会显示为空方框（页面会告诉你是哪些字符）。',
+            '不渲染原始 HTML：居中的 <code>&lt;p align="center"&gt;</code> 标题、<code>&lt;img&gt;</code> 标签、可折叠的 <code>&lt;details&gt;</code> 会原样显示成文字，这些部分请改写成普通 Markdown。GitHub 的 <code>&gt; [!NOTE]</code> 提示块会变成普通引用，<code>:rocket:</code> 这类短代码保持原文；真正的 emoji 字符会使用彩色 emoji 字体嵌入 PDF。',
           ],
         },
       ],

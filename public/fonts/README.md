@@ -1,9 +1,12 @@
 # Bundled fonts
 
 Regenerate with `npm run fonts` (`scripts/prepare_fonts.py`). Every source is
-an official release, pinned by URL and SHA-256 in that script, and every font
-is licensed under the [SIL Open Font License 1.1](https://openfontlicense.org)
-except DejaVu Sans Mono (Bitstream Vera licence, public-domain additions).
+an official release, pinned by URL and SHA-256 in that script. The Noto fonts
+use the [SIL Open Font License 1.1](https://openfontlicense.org); DejaVu Sans
+Mono uses the Bitstream Vera licence with public-domain additions. Twemoji
+Mozilla's build code is Apache-2.0 and its Twemoji artwork is CC BY 4.0,
+copyright Twitter and other contributors; the redistributed notices are in
+[`TwemojiMozilla-LICENSE.md`](TwemojiMozilla-LICENSE.md).
 
 | Files | Source | What was done to it |
 | --- | --- | --- |
@@ -23,7 +26,9 @@ except DejaVu Sans Mono (Bitstream Vera licence, public-domain additions).
 | `NotoSerif-*.core.woff2`, `NotoSerif-*.ext.woff2` | the above | WOFF2 for the preview, split like Noto Sans |
 | `NotoSerif{SC,TC,JP,KR}-Regular.subset.otf` | [notofonts/noto-cjk Serif2.003](https://github.com/notofonts/noto-cjk/releases/tag/Serif2.003), `14_NotoSerifSC.zip`, `15_NotoSerifTC.zip`, `12_NotoSerifJP.zip`, `13_NotoSerifKR.zip` | Regular weight only, subset to exactly the sans subsets' character sets (7,836 / 6,242 / 7,314 / 3,939 codepoints, none missing), desubroutinised, hints dropped. Serif templates only; bold CJK and rarer characters use the sans faces |
 | `NotoSansMath-Regular.ttf` | [notofonts/math](https://github.com/notofonts/math), unhinted TTF, pinned to a commit of notofonts.github.io | Unmodified: Typst needs the MATH table and its glyph variants. Loaded only for documents with formulas, by the PDF and the preview (`src/preview/math.css`) alike |
+| `TwemojiMozilla.ttf` | [mozilla/twemoji-colr v0.7.0](https://github.com/mozilla/twemoji-colr/releases/tag/v0.7.0), Twemoji 14 repertoire | Unmodified COLR/CPAL colour font. Loaded only when the document contains emoji; the preview and PDF share the same file |
 | `coverage-scripts.bin`, `coverage-cjk.bin` | generated from the cmaps above, plus the simplified-only and traditional-only character sets (GB2312 level 1 and Big5 level 1) | Run-length codepoint maps; see `decodeCoverage` in `src/typst/fonts.ts` |
+| `emoji-sequences.txt` | generated from `TwemojiMozilla.ttf` | Complete multi-codepoint ligatures from the font's GSUB table, used to reject unsupported newer sequences instead of silently rendering their components |
 
 The subsets serve the common case at a fraction of the download; the full
 faces are fetched only when a document contains characters its subset lacks,

@@ -1,3 +1,5 @@
+import { emojiRuns } from './emoji';
+
 /**
  * Every piece of user text reaches Typst as a quoted string literal rather than
  * as markup. Typst's markup mode has a large set of special characters (`#`,
@@ -38,7 +40,7 @@ const LETTER = /[\p{L}\p{N}]/u;
  * between two letters stays an apostrophe; `md-apos` (see preamble.ts) keeps
  * it out of the full-width CJK face in Chinese and Japanese documents.
  */
-export function tprose(value: string): string {
+function plainProse(value: string): string {
   if (!/["']/.test(value)) return tmarkup(value);
   const chars = [...value];
   let out = '';
@@ -58,4 +60,29 @@ export function tprose(value: string): string {
   });
   flush();
   return out;
+}
+
+/**
+ * Prose with every complete emoji sequence forced through the bundled colour
+ * face. Relying on ordinary fallback is not sufficient: a text face can claim
+ * the base of sequences such as ❤️ before the emoji face gets a chance.
+ */
+export function tprose(value: string): string {
+  return emojiRuns(value)
+    .map(run => run.emoji ? `#text(font: "Twemoji Mozilla", ${tstr(run.value)})` : plainProse(run.value))
+    .join('');
+}
+
+/**
+ * Code containing emoji cannot use one raw-text font stack: a mono face can
+ * claim the base of ❤️ before Twemoji sees the variation selector. Only that
+ * uncommon path becomes rich code; ordinary code keeps Typst highlighting.
+ */
+export function temojiCode(value: string, block: boolean): string | null {
+  const runs = emojiRuns(value.replace(/\t/g, '    '));
+  if (!runs.some(run => run.emoji)) return null;
+  const body = runs
+    .map(run => run.emoji ? `#text(font: "Twemoji Mozilla", ${tstr(run.value)})` : tmarkup(run.value))
+    .join('');
+  return `#${block ? 'md-code' : 'md-inline-code'}([${body}])`;
 }

@@ -46,23 +46,23 @@ export function bandCells(spec: string): [string, string, string] | null {
   return [p[0], p[1], p.slice(2).join(' | ')];
 }
 
-/** One cell as a Typst string expression: literals and token expressions joined by `+`. */
-function cellExpr(cell: string): string {
+/** One header/footer cell as safe content, including dynamic token values. */
+function cellContent(cell: string): string {
   const pieces: string[] = [];
   let last = 0;
   for (const m of cell.matchAll(TOKEN)) {
-    if (m.index! > last) pieces.push(tstr(cell.slice(last, m.index)));
-    pieces.push(TOKEN_EXPR[m[1].toLowerCase()]);
+    if (m.index! > last) pieces.push(tprose(cell.slice(last, m.index)));
+    pieces.push(`#${TOKEN_EXPR[m[1].toLowerCase()]}`);
     last = m.index! + m[0].length;
   }
-  if (last < cell.length) pieces.push(tstr(cell.slice(last)));
-  return pieces.length ? pieces.join(' + ') : '""';
+  if (last < cell.length) pieces.push(tprose(cell.slice(last)));
+  return `[${pieces.join('')}]`;
 }
 
 function bandExpr(spec: string, wrap: string): string {
   const cells = bandCells(spec);
   if (!cells) return 'none';
-  return `context ${wrap}(md-band(${cells.map(cellExpr).join(', ')}))`;
+  return `context ${wrap}(md-band(${cells.map(cellContent).join(', ')}))`;
 }
 
 /** Markup for plain user text: smart quotes and all, but only ever literal text. */
@@ -336,9 +336,9 @@ export function layoutTypst(
   const out: string[] = [
     buildPreamble({ ...o, tableOfContents: false }, fonts, extra),
     `// ---- Layout: ${doc.template.id} template${doc.cover ? ', cover' : ''}${o.h1NewPage ? ', level-1 headings start a page' : ''}`,
-    `#let md-title = ${tstr(meta.title)}`,
-    `#let md-author = ${tstr(author)}`,
-    `#let md-date = ${tstr(formatDate(meta.date, lang.html, true))}`,
+    `#let md-title = [${tprose(meta.title)}]`,
+    `#let md-author = [${tprose(author)}]`,
+    `#let md-date = [${tprose(formatDate(meta.date, lang.html, true))}]`,
     `#let md-bold-font = ${bodyFonts(fonts, true)}`,
   ];
   if (fonts.families.some(f => f.regularOnly)) {
@@ -384,7 +384,7 @@ export function layoutTypst(
   }
   if (o.tableOfContents) {
     const tocTitle = o.tocTitle?.trim() || lang.tocTitle;
-    out.push(`#outline(title: [#${tstr(tocTitle)}], depth: ${Math.min(6, top + 2)})\n#pagebreak()`);
+    out.push(`#outline(title: [${tprose(tocTitle)}], depth: ${Math.min(6, top + 2)})\n#pagebreak()`);
   }
 
   let tail = '';

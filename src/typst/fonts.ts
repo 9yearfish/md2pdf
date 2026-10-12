@@ -25,8 +25,9 @@ import {
   type LangSetting,
   type LanguageInfo,
 } from '../convert/lang';
+import { emojiGraphemes } from '../convert/emoji';
 
-export type FamilyId = 'latin' | 'arabic' | 'hebrew' | 'devanagari' | 'thai' | HanVariant;
+export type FamilyId = 'latin' | 'emoji' | 'arabic' | 'hebrew' | 'devanagari' | 'thai' | HanVariant;
 
 interface FamilyDef {
   id: FamilyId;
@@ -48,6 +49,16 @@ const LATIN_FILES = [
   'DejaVuSansMono.ttf',
 ];
 const LATIN_BYTES = 530_000;
+
+/** Colour face loaded only for documents that actually contain emoji. */
+const EMOJI_FAMILY: FamilyUse = {
+  id: 'emoji',
+  family: 'Twemoji Mozilla',
+  variant: 'full',
+  files: ['TwemojiMozilla.ttf'],
+  cjk: false,
+};
+const EMOJI_BYTES = 610_000;
 
 /**
  * Serif templates (src/layout/templates.ts) add Noto Serif, and for CJK text
@@ -114,17 +125,23 @@ export function cjkOrder(primary: HanVariant): FamilyDef[] {
 
 /**
  * Font files are served as immutable, and some keep their names across
- * rebuilds (NotoSans-Regular.ttf gained Vietnamese in revision 2), so the
- * revision is part of every URL. Bump it whenever `npm run fonts` changes a
- * file in place, together with the `?v=` in src/fonts.css.
+ * rebuilds (NotoSans-Regular.ttf gained Vietnamese in revision 2), so a
+ * revision is part of every URL. Keep unchanged assets on the shared revision
+ * and override only files whose bytes changed, avoiding needless redownloads.
  */
 export const FONT_REVISION = '2';
+const FONT_REVISIONS: Readonly<Record<string, string>> = {
+  'coverage-scripts.bin': '3',
+  'emoji-sequences.txt': '3',
+  'TwemojiMozilla.ttf': '3',
+};
 
 /**
  * Root-relative on purpose: localized pages live under /zh/, /ja/ and so on,
  * and a document-relative URL would resolve to /ja/fonts/.
  */
-export const fontUrl = (name: string) => new URL(`/fonts/${name}?v=${FONT_REVISION}`, location.origin).href;
+export const fontUrl = (name: string) =>
+  new URL(`/fonts/${name}?v=${FONT_REVISIONS[name] ?? FONT_REVISION}`, location.origin).href;
 
 type Coverage = Map<string, Uint32Array>;
 
@@ -165,6 +182,7 @@ function decodeCoverage(buffer: ArrayBuffer): Coverage {
 }
 
 const coverageFiles = new Map<string, Promise<Coverage>>();
+let emojiSequences: Promise<Set<string>> | undefined;
 
 function loadCoverage(name: 'coverage-scripts.bin' | 'coverage-cjk.bin'): Promise<Coverage> {
   let pending = coverageFiles.get(name);
@@ -179,6 +197,19 @@ function loadCoverage(name: 'coverage-scripts.bin' | 'coverage-cjk.bin'): Promis
     coverageFiles.set(name, pending);
   }
   return pending;
+}
+
+function loadEmojiSequences(): Promise<Set<string>> {
+  if (!emojiSequences) {
+    emojiSequences = fetch(fontUrl('emoji-sequences.txt'))
+      .then(res => {
+        if (!res.ok) throw new Error(`failed to load emoji sequence data (${res.status})`);
+        return res.text();
+      })
+      .then(text => new Set(text.split('\n').filter(Boolean)));
+    emojiSequences.catch(() => (emojiSequences = undefined));
+  }
+  return emojiSequences;
 }
 
 /** Load the Simplified/Traditional character sets that language detection uses. */
@@ -267,25 +298,52 @@ export async function resolveFonts(
   fontOptions: FontOptions = {},
 ): Promise<FontSet> {
   const wanted = interesting(text);
+  const emojiWanted = emojiGraphemes(text);
   const needsCjk = CJK_TEXT.test(text);
   if (needsCjk) await loadHanVariantData();
   const lang = detectLanguage(text, setting);
   const serif = !!fontOptions.serif;
   const latinFiles = serif ? [...LATIN_FILES, ...SERIF_FILES] : LATIN_FILES;
   const latinBytes = serif ? LATIN_BYTES + SERIF_BYTES : LATIN_BYTES;
+  let scripts: Coverage | undefined;
+  const missing: string[] = [];
+  const baseFamilies: FamilyUse[] = [];
+
+  if (emojiWanted.length) {
+    const [scriptCoverage, sequences] = await Promise.all([
+      loadCoverage('coverage-scripts.bin'),
+      loadEmojiSequences(),
+    ]);
+    scripts = scriptCoverage;
+    const coverage = scripts.get('emoji');
+    baseFamilies.push(EMOJI_FAMILY);
+    for (const grapheme of emojiWanted) {
+      const cps = [...grapheme].map(ch => ch.codePointAt(0)!);
+      for (const cp of cps) {
+        // Emoji are emitted explicitly in the colour face, so another script
+        // face must not claim their component code points.
+        wanted.delete(cp);
+      }
+      const withoutVariationSelectors = cps.filter(cp => cp !== 0xfe0e && cp !== 0xfe0f);
+      const supported = withoutVariationSelectors.length > 1
+        ? sequences.has(grapheme)
+        : withoutVariationSelectors.every(cp => invisible(cp) || (coverage && inRanges(coverage, cp)));
+      if (!supported) missing.push(grapheme);
+    }
+  }
 
   const latin: FontSet = {
-    tier: serif ? 'latin+serif' : 'latin',
-    urls: latinFiles.map(fontUrl),
-    families: [],
+    tier: [serif ? 'latin+serif' : 'latin', ...baseFamilies.map(f => f.id)].join('+'),
+    urls: [...latinFiles, ...baseFamilies.flatMap(f => f.files)].map(fontUrl),
+    families: baseFamilies,
     lang,
-    bytes: latinBytes,
-    missing: [],
+    bytes: latinBytes + (baseFamilies.length ? EMOJI_BYTES : 0),
+    missing,
     serif,
   };
   if (wanted.size === 0) return latin;
 
-  const scripts = await loadCoverage('coverage-scripts.bin');
+  scripts ??= await loadCoverage('coverage-scripts.bin');
   const latinCoverage = scripts.get('latin')!;
   const rest = [...wanted].filter(cp => !inRanges(latinCoverage, cp));
   if (rest.length === 0) return latin;
@@ -298,7 +356,6 @@ export async function resolveFonts(
 
   const order = searchOrder(lang);
   const used = new Map<FamilyId, 'subset' | 'full'>();
-  const missing: string[] = [];
   for (const cp of rest) {
     let found = false;
     for (const family of order) {
@@ -323,8 +380,8 @@ export async function resolveFonts(
   // …… comes from the CJK face there (see `covers` in preamble.ts).
   if (lang.cjkPunctuation && !used.has(lang.han)) used.set(lang.han, 'subset');
 
-  let bytes = latinBytes;
-  const families: FamilyUse[] = order
+  let bytes = latin.bytes;
+  const resolvedFamilies: FamilyUse[] = order
     .filter(f => used.has(f.id))
     .flatMap(f => {
       const variant = f.subset ? used.get(f.id)! : 'full';
@@ -343,9 +400,10 @@ export async function resolveFonts(
       ];
     });
 
+  const families = [...baseFamilies, ...resolvedFamilies];
   return {
-    tier: [latin.tier, ...families.map(f => `${f.id}-${f.regularOnly ? 'serif' : f.variant}`)].join('+'),
-    urls: [...latinFiles, ...families.flatMap(f => f.files)].map(fontUrl),
+    tier: [latin.tier, ...resolvedFamilies.map(f => `${f.id}-${f.regularOnly ? 'serif' : f.variant}`)].join('+'),
+    urls: [...latin.urls, ...resolvedFamilies.flatMap(f => f.files).map(fontUrl)],
     families,
     lang,
     bytes,

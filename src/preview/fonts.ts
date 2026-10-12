@@ -3,11 +3,11 @@
  *
  * Latin and the small script faces are plain @font-face rules in
  * `src/fonts.css` (WOFF2, split by unicode-range, so the browser only fetches a
- * face once text in its script is on screen). The CJK faces cannot be done
- * that way: whether a document needs the subset or the full face depends on
- * every character in it, and they are megabytes, so they are registered here,
- * from the same resolved font set the PDF uses, pointing at the very files
- * Typst loads. A preview and a download therefore share one fetch.
+ * face once text in its script is on screen). The CJK and emoji faces are
+ * registered here from the same resolved font set the PDF uses. For CJK,
+ * whether the subset or full face is needed depends on every character; for
+ * emoji, the colour face should not load unless the document uses it. A
+ * preview and a download therefore share one fetch.
  *
  * They are only registered once the page has loaded and the connection is one
  * the engine would warm up on anyway (see `shouldPrefetch`), or when a PDF is
@@ -38,8 +38,8 @@ export function onCjkFacesAllowed(listener: () => void): void {
 }
 
 /**
- * Register the CJK faces `set` uses. Returns whether all of them are
- * registered, i.e. whether text measured now will match the PDF.
+ * Register the CJK and emoji faces `set` uses. Returns whether all required
+ * CJK faces are registered, i.e. whether text measured now will match the PDF.
  */
 export function registerFaces(set: FontSet, force = false): boolean {
   if (typeof FontFace === 'undefined' || !document.fonts) return false;
@@ -47,18 +47,19 @@ export function registerFaces(set: FontSet, force = false): boolean {
   if (force) allowCjkFaces();
   let complete = true;
   for (const use of set.families) {
-    if (!use.cjk) continue;
+    const emoji = use.id === 'emoji';
+    if (!use.cjk && !emoji) continue;
     const existing = registered.get(use.family);
     const files = use.files.join(',');
     // A full face already there covers whatever the subset would.
     if (existing && (existing.files === files || existing.files.includes('.full.'))) continue;
-    if (!cjkAllowed && !force) {
+    if (use.cjk && !cjkAllowed && !force) {
       complete = false;
       continue;
     }
     const faces = use.files.map(
       (file, i) =>
-        new FontFace(use.family, `url("${fontUrl(file)}") format("opentype")`, {
+        new FontFace(use.family, `url("${fontUrl(file)}") format("${file.endsWith('.ttf') ? 'truetype' : 'opentype'}")`, {
           weight: use.weights?.[i] ?? (i === 0 ? '400' : '700'),
           style: 'normal',
           display: 'swap',
@@ -111,6 +112,7 @@ export function previewFontStack(lang: LanguageInfo): string {
     'Noto Sans Hebrew',
     'Noto Sans Devanagari',
     'Noto Sans Thai',
+    'Twemoji Mozilla',
     ...cjk.flatMap(f => SYSTEM_CJK[f.id as HanVariant]),
   ]
     .map(name => `"${name}"`)

@@ -1,5 +1,5 @@
 import { BRAND } from '../i18n/constants';
-import { tstr } from './typst-str';
+import { tprose, tstr } from './typst-str';
 import type { LangSetting } from './lang';
 import type { FontSet } from '../typst/fonts';
 
@@ -151,6 +151,21 @@ ${quotes}#let md-apos = ${cjkPunctuation ? `text(font: ${fonts.serif ? '"Noto Se
   radius: 2pt,
   it,
 )
+#let md-code(body) = block(
+  width: 100%,
+  fill: rgb("#f6f6f6"),
+  stroke: 0.5pt + rgb("#dcdcdc"),
+  radius: 4pt,
+  inset: (x: 10pt, y: 8pt),
+  text(font: md-mono-font, size: 0.88em${rtl ? ', dir: ltr' : ''}, body),
+)
+#let md-inline-code(body) = box(
+  fill: rgb("#f2f2f2"),
+  outset: (y: 3pt),
+  inset: (x: 3pt),
+  radius: 2pt,
+  text(font: md-mono-font, size: 0.88em${rtl ? ', dir: ltr' : ''}, body),
+)
 
 #let md-quote(body) = block(
   width: 100%,
@@ -170,7 +185,7 @@ ${quotes}#let md-apos = ${cjkPunctuation ? `text(font: ${fonts.serif ? '"Noto Se
 #set table(stroke: 0.5pt + rgb("#d4d4d4"), inset: 7pt)
 #show table.cell.where(y: 0): strong
 ${extra}
-${options.tableOfContents ? `#outline(title: [#${tstr(tocTitle)}], depth: 3)\n#pagebreak()\n` : ''}`;
+${options.tableOfContents ? `#outline(title: [${tprose(tocTitle)}], depth: 3)\n#pagebreak()\n` : ''}`;
 }
 
 /** Where the vendored mitex spec is mapped in the compiler's shadow filesystem. */

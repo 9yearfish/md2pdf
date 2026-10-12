@@ -2,6 +2,7 @@
  * Repairs for Mermaid's SVG before resvg (inside Typst) draws it. Loaded with
  * Mermaid, not with the page; see `mermaid.ts`.
  */
+import { emojiRuns } from '../convert/emoji';
 
 /** A label Typst sets over the diagram. Units are SVG pixels from the top left. */
 export interface TextOverlay {
@@ -17,6 +18,26 @@ export interface TextOverlay {
 }
 
 const INDIC = /[\u0900-\u0dff]/;
+
+/** Force complete emoji graphemes through Twemoji in preview and PDF SVGs. */
+export function forceEmojiFont(doc: Document): void {
+  const leaves = [...doc.querySelectorAll('text, tspan')].filter(element => element.children.length === 0);
+  const namespace = doc.documentElement.namespaceURI ?? 'http://www.w3.org/2000/svg';
+  for (const element of leaves) {
+    const runs = emojiRuns(element.textContent ?? '');
+    if (!runs.some(run => run.emoji)) continue;
+    element.textContent = '';
+    for (const run of runs) {
+      if (!run.emoji) element.appendChild(doc.createTextNode(run.value));
+      else {
+        const span = doc.createElementNS(namespace, 'tspan');
+        span.setAttribute('font-family', 'Twemoji Mozilla');
+        span.textContent = run.value;
+        element.appendChild(span);
+      }
+    }
+  }
+}
 
 /**
  * resvg cannot shape Indic scripts: vowel signs that are drawn before their

@@ -659,7 +659,7 @@ Edit any block on the left and the preview follows; press **Download PDF** for t
         {
           heading: 'What does not carry over',
           body: [
-            'Raw HTML is not rendered: a centred <code>&lt;p align="center"&gt;</code> header, an <code>&lt;img&gt;</code> tag or a collapsible <code>&lt;details&gt;</code> block appears as text, so rewrite those parts in plain Markdown. GitHub’s <code>&gt; [!NOTE]</code> alerts become ordinary quotes, <code>:rocket:</code> shortcodes stay as text, and emoji have no font here, so they print as empty boxes (the page tells you which characters are affected).',
+            'Raw HTML is not rendered: a centred <code>&lt;p align="center"&gt;</code> header, an <code>&lt;img&gt;</code> tag or a collapsible <code>&lt;details&gt;</code> block appears as text, so rewrite those parts in plain Markdown. GitHub’s <code>&gt; [!NOTE]</code> alerts become ordinary quotes and <code>:rocket:</code> shortcodes stay as text; actual emoji characters are embedded with a colour emoji font.',
           ],
         },
       ],

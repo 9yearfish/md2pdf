@@ -9,8 +9,8 @@ them reproducible from the official Noto releases:
     python3 scripts/prepare_fonts.py            # downloads into .font-cache/
     python3 scripts/prepare_fonts.py serif      # one step: latin, scripts, cjk, serif, coverage
 
-After regenerating, bump FONT_REVISION in src/typst/fonts.ts if any file
-changed in place: fonts are served as immutable.
+After regenerating, bump the matching entry in FONT_REVISIONS in
+src/typst/fonts.ts if any file changed in place: fonts are served as immutable.
 
 Every source archive is pinned by URL and SHA-256. Downloads are cached in
 `.font-cache/` (or `$MD2PDF_FONT_CACHE`), so a rerun is offline.
@@ -38,11 +38,14 @@ What it produces, per script:
 - Maths: Noto Sans Math, unhinted and unmodified: Typst needs its MATH table
   and the glyph variants it points at, so it is not subset. Loaded only for
   documents with formulas, by the PDF and the preview alike.
+- Emoji: Twemoji Mozilla, a COLR/CPAL colour font. Loaded only for documents
+  containing emoji-presentation grapheme clusters.
 - WOFF2 copies of the Latin and script faces, for the browser preview.
 - coverage-*.bin: the codepoint coverage of every face as run lengths, so the
   app can pick the smallest sufficient faces before downloading any of them,
   plus the simplified-only and traditional-only character sets used to tell
-  Simplified from Traditional Chinese.
+  Simplified from Traditional Chinese. emoji-sequences.txt records the
+  multi-codepoint ligatures the bundled Twemoji build can actually shape.
 """
 from __future__ import annotations
 
@@ -96,6 +99,8 @@ SOURCES = {
     "math": ("https://raw.githubusercontent.com/notofonts/notofonts.github.io/"
              "55773c3eb233b5a0eaa07de6226da189b136b4f0/fonts/NotoSansMath/unhinted/ttf/NotoSansMath-Regular.ttf",
              "b127e84699212b6b2ef50aff58e0ebebeec04ffe6db1b9eb9e209c8c3d97b4aa"),
+    "emoji": ("https://github.com/mozilla/twemoji-colr/releases/download/v0.7.0/Twemoji.Mozilla.ttf",
+              "6d90152ee0d29e82fe2a87793af5aa4b7ad13e6538360889e141e81ed299ee8e"),
 }
 
 # Latin (incl. Vietnamese and IPA), Greek (incl. polytonic), Cyrillic (incl.
@@ -272,6 +277,11 @@ def build_math() -> None:
     shutil.copyfile(fetch("math"), OUT / "NotoSansMath-Regular.ttf")
 
 
+def build_emoji() -> None:
+    print("  TwemojiMozilla.ttf")
+    shutil.copyfile(fetch("emoji"), OUT / "TwemojiMozilla.ttf")
+
+
 def build_scripts() -> None:
     from fontTools.merge import Merger, Options
 
@@ -411,12 +421,36 @@ def cmap(path: Path) -> set[int]:
     return set(TTFont(path, lazy=True).getBestCmap())
 
 
+def write_emoji_sequences(path: Path) -> None:
+    """Write every Unicode sequence represented by a GSUB ligature."""
+    from fontTools.ttLib import TTFont
+    font = TTFont(path, lazy=True)
+    codepoint_for: dict[str, int] = {}
+    for cp, glyph in font.getBestCmap().items():
+        codepoint_for.setdefault(glyph, cp)
+    sequences: set[str] = set()
+    for lookup in font["GSUB"].table.LookupList.Lookup:
+        if lookup.LookupType != 4:  # Ligature substitution
+            continue
+        for subtable in lookup.SubTable:
+            for first, ligatures in subtable.ligatures.items():
+                for ligature in ligatures:
+                    cps = [codepoint_for.get(glyph) for glyph in [first, *ligature.Component]]
+                    if all(cp is not None for cp in cps):
+                        sequences.add("".join(chr(cp) for cp in cps if cp is not None))
+    target = OUT / "emoji-sequences.txt"
+    target.write_text("\n".join(sorted(sequences)), encoding="utf-8")
+    print(f"  {target.name}: {len(sequences)} sequences; {target.stat().st_size} bytes")
+
+
 def build_coverage() -> None:
     write_coverage("coverage-scripts.bin", {
         "latin": cmap(OUT / "NotoSans-Regular.ttf"),
+        "emoji": cmap(OUT / "TwemojiMozilla.ttf"),
         **{key: cmap(OUT / f"{stem}-Regular.ttf") - cmap(OUT / "NotoSans-Regular.ttf")
            for key, stem in SCRIPTS.items()},
     })
+    write_emoji_sequences(OUT / "TwemojiMozilla.ttf")
     entries: dict[str, set[int]] = {}
     for key, stem in CJK.items():
         entries[f"{key}-subset"] = cmap(OUT / f"{stem}-Regular.subset.otf")
@@ -440,7 +474,7 @@ def report() -> None:
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    only = set(sys.argv[1:]) or {"latin", "scripts", "cjk", "serif", "math", "coverage"}
+    only = set(sys.argv[1:]) or {"latin", "scripts", "cjk", "serif", "math", "emoji", "coverage"}
     if "latin" in only:
         print("Latin faces:"); build_latin()
     if "scripts" in only:
@@ -449,6 +483,8 @@ if __name__ == "__main__":
         print("CJK faces:"); build_cjk()
     if "math" in only:
         print("Maths face:"); build_math()
+    if "emoji" in only:
+        print("Emoji face:"); build_emoji()
     if "serif" in only:
         print("Serif faces:"); build_serif()
     if "latin" in only or "scripts" in only or "woff2" in only:

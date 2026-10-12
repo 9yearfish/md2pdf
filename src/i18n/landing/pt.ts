@@ -558,7 +558,7 @@ stateDiagram-v2
         {
           heading: 'O que não é mantido',
           body: [
-            'HTML não é interpretado: um cabeçalho centralizado com <code>&lt;p align="center"&gt;</code>, uma tag <code>&lt;img&gt;</code> ou um bloco recolhível <code>&lt;details&gt;</code> aparecem como texto, então reescreva essas partes em Markdown. Os alertas <code>&gt; [!NOTE]</code> do GitHub viram citações comuns, códigos como <code>:rocket:</code> ficam como texto e os emojis não têm fonte aqui, então saem como caixas vazias (a página avisa quais caracteres são).',
+            'HTML não é interpretado: um cabeçalho centralizado com <code>&lt;p align="center"&gt;</code>, uma tag <code>&lt;img&gt;</code> ou um bloco recolhível <code>&lt;details&gt;</code> aparecem como texto, então reescreva essas partes em Markdown. Os alertas <code>&gt; [!NOTE]</code> do GitHub viram citações comuns e códigos como <code>:rocket:</code> ficam como texto; caracteres emoji reais são incorporados com uma fonte emoji colorida.',
           ],
         },
       ],

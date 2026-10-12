@@ -7,7 +7,7 @@ import { CHROMIUM, setDocument, downloadPdf } from './app-helpers.mjs';
 
 const URL = process.env.APP_URL ?? 'http://localhost:5200/';
 const CJK_FACES = ['NotoSansSC', 'NotoSansTC', 'NotoSansJP', 'NotoSansKR'];
-const SCRIPT_FACES = ['NotoSansArabic', 'NotoSansHebrew', 'NotoSansThai', 'NotoSansDevanagari'];
+const SCRIPT_FACES = ['NotoSansArabic', 'NotoSansHebrew', 'NotoSansThai', 'NotoSansDevanagari', 'TwemojiMozilla'];
 const except = (list, ...keep) => list.filter(f => !keep.includes(f));
 
 /**
@@ -28,6 +28,18 @@ const CASES = [
   { name: 'russian', md: '# Заголовок\n\nЭто русский текст без иероглифов.', expect: ['NotoSans-Regular.ttf'], reject: [...CJK_FACES, ...SCRIPT_FACES] },
   { name: 'vietnamese', md: '# Tiêu đề\n\nTiếng Việt có nhiều dấu: ắ ặ ề ổ ợ ự.', expect: ['NotoSans-Regular.ttf'], reject: [...CJK_FACES, ...SCRIPT_FACES] },
   { name: 'german', md: '# Überschrift\n\nDie Straßenverkehrsordnung gilt für alle Verkehrsteilnehmer.', expect: ['NotoSans-Regular.ttf'], reject: [...CJK_FACES, ...SCRIPT_FACES] },
+  {
+    name: 'emoji graphemes',
+    md: '# Emoji\n\n🔴 🟠 🟢 ❤️ 👍🏽 👨‍👩‍👧‍👦 🇨🇳 1️⃣',
+    expect: ['TwemojiMozilla.ttf'],
+    reject: [...CJK_FACES, ...except(SCRIPT_FACES, 'TwemojiMozilla')],
+  },
+  {
+    name: 'text presentation selector',
+    md: '# Text symbol\n\n⌚︎ stays in text presentation.',
+    expect: ['NotoSans-Regular.ttf'],
+    reject: [...CJK_FACES, ...SCRIPT_FACES],
+  },
   { name: 'arabic', md: '# عنوان\n\nهذا نص عربي.', expect: ['NotoSansArabic-Regular.ttf'], reject: [...CJK_FACES, ...except(SCRIPT_FACES, 'NotoSansArabic')] },
   {
     name: 'mixed',

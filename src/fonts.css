@@ -21,6 +21,13 @@
   font-display: swap;
   unicode-range: U+0000-024F, U+02B0-02FF, U+0300-036F, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2212, U+25A0-25FF, U+FB00-FB06, U+FFFD;
 }
+
+/* Emoji prose is wrapped explicitly so text faces cannot claim ©️, ❤️, etc. */
+.paper .emoji {
+  font-family: "Twemoji Mozilla", "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+}
 @font-face {
   font-family: "Noto Sans";
   src: url("/fonts/NotoSans-Regular.ext.woff2?v=2") format("woff2");

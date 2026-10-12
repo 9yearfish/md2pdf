@@ -1,5 +1,5 @@
 import type { Token } from 'markdown-it';
-import { tstr, tmarkup, tprose } from './typst-str';
+import { temojiCode, tstr, tprose } from './typst-str';
 import { toTree, type Node } from './tree';
 import { isMathFence } from './math-syntax';
 
@@ -37,7 +37,7 @@ const pt = (n: number) => `${Number(n.toFixed(2))}pt`;
  */
 function overlay(o: Overlay): string {
   const slack = o.size * 2;
-  const body = o.lines.map(line => tmarkup(line)).join('#linebreak()');
+  const body = o.lines.map(line => tprose(line)).join('#linebreak()');
   const weight = o.bold ? ', weight: "bold"' : '';
   return (
     `place(top + left, dx: ${pt(o.x - slack)}, dy: ${pt(o.y)}, ` +
@@ -272,8 +272,11 @@ class Emitter {
       if (asset) return `#md-diagram(${asset.width}pt, ${asset.height}pt, ${this.imageCall(asset)})`;
       this.input.warn('A mermaid diagram could not be rendered and was kept as source.');
     }
+    const content = token.content.replace(/\n$/, '');
+    const emojiCode = temojiCode(content, true);
+    if (emojiCode) return emojiCode;
     const lang = info && info !== 'mermaid' ? `, lang: ${tstr(info)}` : '';
-    return `#raw(${tstr(token.content.replace(/\n$/, ''))}, block: true${lang})`;
+    return `#raw(${tstr(content)}, block: true${lang})`;
   }
 
 
@@ -315,9 +318,9 @@ class Emitter {
     const asset = this.input.assets.get(assetKey('image', src));
     if (!asset) {
       this.input.warn(`Image could not be embedded: ${src}`);
-      return `#text(fill: rgb("#a00"))[${tmarkup(`[image unavailable: ${src}]`)}]`;
+      return `#text(fill: rgb("#a00"))[${tprose(`[image unavailable: ${src}]`)}]`;
     }
-    if (block) return this.figureImage(asset, alt ? tmarkup(alt) : null);
+    if (block) return this.figureImage(asset, alt ? tprose(alt) : null);
     return `#box(${this.imageCall(asset)})`;
   }
 
@@ -357,7 +360,7 @@ class Emitter {
           out += this.math(t.content, Boolean(t.meta?.display));
           break;
         case 'code_inline':
-          out += `#raw(${tstr(t.content)})`;
+          out += temojiCode(t.content, false) ?? `#raw(${tstr(t.content)})`;
           break;
         case 'image':
           out += this.image(t, false);

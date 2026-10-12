@@ -135,6 +135,7 @@ function normalize(svg: string, provisional: boolean, fixes: SvgFixes): Rendered
   // `style="max-width:..."` would otherwise fight the width Typst assigns.
   root.removeAttribute('style');
   fixes.repairComplexLabels(doc);
+  fixes.forceEmojiFont(doc);
 
   const svgText = new XMLSerializer().serializeToString(doc);
   const { pdfSvg, overlays } = fixes.liftIndicLabels(svgText);

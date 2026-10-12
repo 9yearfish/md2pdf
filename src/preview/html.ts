@@ -12,6 +12,7 @@ import { createParser } from '../convert/markdown';
 import { isMathFence } from '../convert/math-syntax';
 import { renderDiagram, type DiagramFailure } from '../diagram/mermaid';
 import { findImage, type LocalImage } from '../convert/images';
+import { emojiRuns } from '../convert/emoji';
 import type { DocumentOptions } from '../convert/preamble';
 import { t } from '../i18n/runtime';
 import { detectLanguage, type LangCode, type LanguageInfo } from '../convert/lang';
@@ -63,6 +64,30 @@ export interface PreviewLayout {
 
 function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
+}
+
+/** Force preview prose through the same colour face the PDF emitter uses. */
+function wrapEmoji(root: HTMLElement): void {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes: Text[] = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode as Text);
+  for (const node of nodes) {
+    const parent = node.parentElement;
+    if (!parent || parent.closest('.math, svg, .emoji')) continue;
+    const runs = emojiRuns(node.data);
+    if (!runs.some(run => run.emoji)) continue;
+    const fragment = document.createDocumentFragment();
+    for (const run of runs) {
+      if (!run.emoji) fragment.append(document.createTextNode(run.value));
+      else {
+        const span = document.createElement('span');
+        span.className = 'emoji';
+        span.textContent = run.value;
+        fragment.append(span);
+      }
+    }
+    node.replaceWith(fragment);
+  }
 }
 
 export class HtmlPreview {
@@ -162,6 +187,7 @@ export class HtmlPreview {
       parts.before + toc + (toc && parts.afterToc) + this.md.renderer.render(tokens, this.md.options, env) + parts.after;
     this.root.dataset.lines = String(source.split('\n').length);
     layout?.decorate(this.root);
+    wrapEmoji(this.root);
     // Formulas do not depend on the document's fonts, so they need not wait.
     this.renderMath(generation);
     void this.resolveFonts(source + (layout ? `\n${layout.extraText}` : ''), options, generation);
