@@ -112,6 +112,14 @@ class Emitter {
         if (align !== 'left' && align !== 'center' && align !== 'right') return this.blocks(node.children);
         return `#align(${align})[\n${indent(this.blocks(node.children))}\n]`;
       }
+      case 'columns_open': {
+        const cells = node.children.map(child =>
+          `[#align(left)[#set par(justify: false, first-line-indent: 0pt)\n${indent(this.blocks(child.token.type === 'column_open' ? child.children : [child]))}\n]]`,
+        );
+        return `#block(width: 100%, breakable: false)[\n#grid(columns: (1fr, 1fr), gutter: 8mm,\n${indent(cells.join(',\n'))}\n)\n]`;
+      }
+      case 'column_open':
+        return this.blocks(node.children);
       case 'bullet_list_open':
       case 'ordered_list_open':
         return this.list(node);

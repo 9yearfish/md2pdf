@@ -4,6 +4,7 @@ import footnote from 'markdown-it-footnote';
 import deflist from 'markdown-it-deflist';
 import { pageBreaks } from './breaks';
 import { alignmentBlocks } from './alignment';
+import { columnBlocks } from './columns';
 
 export function createParser(): MarkdownIt {
   const md = new MarkdownItCtor({
@@ -16,6 +17,7 @@ export function createParser(): MarkdownIt {
   md.use(deflist);
   md.use(mathPlugin);
   md.use(alignmentBlocks);
+  md.use(columnBlocks);
   md.use(pageBreaks); // \pagebreak, <!-- pagebreak --> and friends
   return md;
 }

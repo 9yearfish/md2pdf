@@ -20,6 +20,7 @@ import { diagramFontFamily, resolveFonts, type FontOptions, type FontSet } from 
 import { shouldPrefetch } from '../typst/wasm-loader';
 import { allowCjkFaces, onCjkFacesAllowed, previewFontStack, registerFaces } from './fonts';
 import '../fonts.css';
+import './columns.css';
 
 const TASK = /^\[([ xX])\]\s+/;
 

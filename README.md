@@ -142,6 +142,34 @@ other HTML attributes are discarded, and arbitrary raw HTML stays disabled.
 The contents of a multi-line container remain ordinary Markdown. Alignment
 blocks cannot be nested.
 
+**Side-by-side blocks.** Use explicit two-column fenced divs for party
+information and signatures. Both columns align their text left; the HTML
+preview and PDF keep the left/right arrangement, including on narrow screens.
+The PDF keeps each row together on one page. Each row should be short enough
+to fit on one page; nested rows and page breaks inside columns are unsupported.
+
+```markdown
+:::: columns
+::: column
+**Party A**
+
+Customer company
+:::
+::: column
+**Party B**
+
+Supplier company
+:::
+::::
+```
+
+Run `node scripts/columns.mjs` against the local app to check columns and PDF export.
+
+For a signature row use `:::: signatures` with the same two `::: column`
+blocks. Four colons close the outer row; three close each column. Ordinary
+Markdown (paragraphs, lists, emphasis) works inside each column. Fenced code
+retains literal markers. This is layout structure, not raw HTML or CSS.
+
 **Page breaks.** Any of these, on a line of its own, starts a new page:
 
 ```

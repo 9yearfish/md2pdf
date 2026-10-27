@@ -1,0 +1,14 @@
+/* Keep the document's physical left/right arrangement even on small screens. */
+.paper .md-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8mm;
+  width: 100%;
+  margin-block: 1em;
+  break-inside: avoid;
+}
+.paper .md-column { min-width: 0; }
+.paper .md-column,
+.paper .md-column :is(p, li, dd, th, td) { text-align: left; }
+.paper .md-column > :first-child { margin-top: 0; }
+.paper .md-column > :last-child { margin-bottom: 0; }
