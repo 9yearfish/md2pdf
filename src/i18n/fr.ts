@@ -61,6 +61,7 @@ const fr: Messages = {
     docLanguage: 'Langue du document',
     template: 'Modèle',
     templateDefault: 'Par défaut',
+    templateContract: 'Contrat',
     templateReport: 'Rapport',
     templateAcademic: 'Académique',
     templateResume: 'CV',

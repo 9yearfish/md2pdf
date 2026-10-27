@@ -55,6 +55,7 @@ const pt: Messages = {
     docLanguage: 'Idioma do documento',
     template: 'Modelo',
     templateDefault: 'Padrão',
+    templateContract: 'Contrato',
     templateReport: 'Relatório',
     templateAcademic: 'Acadêmico',
     templateResume: 'Currículo',

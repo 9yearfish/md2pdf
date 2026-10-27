@@ -55,6 +55,7 @@ const es: Messages = {
     docLanguage: 'Idioma del documento',
     template: 'Plantilla',
     templateDefault: 'Predeterminada',
+    templateContract: 'Contrato',
     templateReport: 'Informe',
     templateAcademic: 'Académica',
     templateResume: 'Currículum',

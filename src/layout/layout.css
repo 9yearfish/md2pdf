@@ -280,3 +280,27 @@
 .paper[data-template="letter"] .signoff { margin-top: 1.8em; }
 .paper[data-template="letter"] .signature { margin-top: 3em; }
 .paper[data-template="letter"] a { color: inherit; }
+
+
+/* Contract preset: match the formal Pages contract rather than a report. */
+.paper[data-template="contract"] { color: #000; line-height: 1.745; }
+.paper[data-template="contract"] :is(h2, h3, h4, h5, h6) {
+  font-family: var(--paper-serif-family);
+  font-size: 1em; font-weight: 400; letter-spacing: 0;
+  margin-top: 1.745em; margin-bottom: 0;
+  border: none; padding: 0;
+}
+.paper[data-template="contract"] h1 {
+  font-size: 2.182em; line-height: 1.3; margin: 0 0 35pt; padding-top: 5pt;
+  font-family: var(--paper-serif-bold-family); font-weight: 700;
+}
+.paper[data-template="contract"] p { margin-bottom: 2.745em; }
+.paper[data-template="contract"] .md-columns { margin-block: 0 2.745em; }
+.paper[data-template="contract"] .md-column p { margin: 0; }
+.paper[data-template="contract"] table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+.paper[data-template="contract"] :is(th, td) { border: 0.4pt solid #b8b8b8; padding: 6.5pt 5pt; }
+.paper[data-template="contract"] th { background: #404040; color: #fff; text-align: center !important; font-weight: 700; }
+.paper[data-template="contract"] td { background: #ebebeb; color: #000; }
+.paper[data-template="contract"] tr > :first-child:nth-last-child(3) { width: 30%; }
+.paper[data-template="contract"] tr > :nth-child(2):nth-last-child(2) { width: 46.5%; }
+.paper[data-template="contract"] tr > :nth-child(3):last-child { width: 23.5%; }

@@ -54,6 +54,7 @@ const zh: Messages = {
     docLanguage: '文档语言',
     template: '模板',
     templateDefault: '默认',
+    templateContract: '合同',
     templateReport: '报告',
     templateAcademic: '学术论文',
     templateResume: '简历',

@@ -8,8 +8,8 @@ export { SUPPORTED_LANGUAGES, type LangSetting, type LangCode } from './lang';
 export type PaperSize = 'a4' | 'us-letter' | 'a5' | 'iso-b5';
 
 /** Page templates; what each one does is in src/layout/templates.ts. */
-export type TemplateId = 'default' | 'report' | 'academic' | 'resume' | 'letter';
-export const TEMPLATE_IDS: readonly TemplateId[] = ['default', 'report', 'academic', 'resume', 'letter'];
+export type TemplateId = 'default' | 'report' | 'academic' | 'resume' | 'letter' | 'contract';
+export const TEMPLATE_IDS: readonly TemplateId[] = ['default', 'report', 'academic', 'resume', 'letter', 'contract'];
 
 export interface DocumentOptions {
   paper: PaperSize;

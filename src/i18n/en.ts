@@ -55,6 +55,7 @@ const en: Messages = {
     docLanguage: 'Document language',
     template: 'Template',
     templateDefault: 'Default',
+    templateContract: 'Contract',
     templateReport: 'Report',
     templateAcademic: 'Academic',
     templateResume: 'Résumé',

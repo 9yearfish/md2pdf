@@ -121,6 +121,26 @@ function templateStyles(doc: ResolvedDocument, fonts: FontSet): string {
   // Chinese and Japanese indent every paragraph by two characters.
   const cjk = fonts.lang.cjkPunctuation;
   switch (doc.template.id) {
+    case 'contract':
+      return `// Contract: Song-style body, sans title, full-width shaded tables.
+#set par(leading: 1.02em, spacing: 2.745em)
+#set enum(numbering: "1、")
+#show heading: it => {
+  if it.level == 1 {
+    block(width: 100%, above: 0pt, below: 0pt, inset: (top: 5pt, bottom: 35pt), sticky: true,
+      text(size: ${pt(24 / 11)}, weight: "bold", font: ${bodyFonts({ ...fonts, serif: false }, true)}, it.body))
+  } else {
+    block(width: 100%, above: 1.745em, below: 1.2em, sticky: true, {
+      set par(justify: false, first-line-indent: 0pt)
+      text(size: ${pt(1)}, weight: "regular", font: ${bodyFonts(fonts)}, it.body)
+    })
+  }
+}
+#set table(fill: (_, y) => if y == 0 { rgb("#404040") } else { rgb("#ebebeb") }, stroke: 0.4pt + rgb("#b8b8b8"), inset: (x: 5pt, y: 6.5pt))
+#show table.cell.where(y: 0): set text(fill: white, weight: "bold")
+#show table.cell.where(y: 0): set align(center)
+#show table.cell.where(y: 0): set par(justify: false)
+`;
     case 'report':
       return `// Report: navy headings, ruled chapter headings, tinted table headers.
 #let md-accent = rgb("#1f3a60")

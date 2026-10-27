@@ -206,7 +206,7 @@ export async function convert(
 
   const warn = (w: string) => warnings.push(w);
   const emitted: EmittedFormula[] = [];
-  const body = emit({ tokens, assets: resolved, footnotes, warn, math, formulas: emitted });
+  const body = emit({ tokens, assets: resolved, footnotes, warn, math, formulas: emitted, template: options.template });
   for (const [tex, result] of math ?? []) {
     if ('error' in result) warnings.push(t('mathError', { detail: `${tex} (${result.error})` }));
   }

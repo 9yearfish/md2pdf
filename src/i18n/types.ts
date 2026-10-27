@@ -71,6 +71,7 @@ export interface PageMessages {
   docLanguage: string;
   template: string;
   templateDefault: string;
+  templateContract: string;
   templateReport: string;
   templateAcademic: string;
   templateResume: string;

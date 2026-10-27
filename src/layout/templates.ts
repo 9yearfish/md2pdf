@@ -24,6 +24,15 @@ export interface TemplateDef {
 }
 
 export const TEMPLATES: Record<TemplateId, TemplateDef> = {
+  contract: {
+    id: 'contract',
+    serif: true,
+    presets: { margin: 20, fontSize: 11, lineHeight: 1.75, justify: true, cover: false, pageNumbers: false },
+    header: '',
+    footer: '',
+    numbered: false,
+    titleBlock: 'never',
+  },
   default: {
     id: 'default',
     serif: false,

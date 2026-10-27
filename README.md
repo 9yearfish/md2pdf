@@ -196,7 +196,7 @@ subtitle: Q3 2026
 author: [Ada Lovelace, Alan Turing]   # or a single name; `- name: X` lists work too
 date: 2026-09-30                 # ISO dates and `today` are written the document language's way
 lang: ja-JP                      # any BCP 47 tag; normalised to a supported language
-template: report                 # default | report | academic | resume | letter
+template: report                 # default | report | academic | resume | letter | contract
 cover: true
 toc: true                        # toc-title: overrides the heading
 papersize: a5                    # a4 | letter | a5 | b5
@@ -241,6 +241,7 @@ panel applies its margins, sizes and cover setting, which stay editable.
 
 | Template | Look |
 | --- | --- |
+| Contract | Song-style serif body, sans title, full-width tables with dark grey/white headers and light grey rows; use `columns` for company names on the left and their codes on the right |
 | Default | The current look; a title block when the front matter has a title |
 | Report | Cover with a navy band, numbered headings 1 / 1.1 / 1.1.1, ruled chapter headings, header with the title and date, footer with the author and page / pages, tinted table headers |
 | Academic | Noto Serif, 2.5 cm margins, centred title block, abstract, numbered headings, indented paragraphs (two characters for Chinese and Japanese), booktabs tables, small footnotes with a short rule |

@@ -48,6 +48,8 @@ function overlay(o: Overlay): string {
 }
 
 export interface EmitInput {
+  /** The contract preset uses a full-width fee table. */
+  template?: import('./preamble').TemplateId;
   tokens: Token[];
   /** Keyed by `${kind}:${content}`; see `collect.ts`. */
   assets: Map<string, ResolvedAsset>;
@@ -250,10 +252,16 @@ class Emitter {
 
     const body: string[] = [];
     for (const row of rows) {
-      const cells = Array.from({ length: columns }, (_, i) => cellContent(row.cells[i]));
+      const cells = Array.from({ length: columns }, (_, i) => {
+        const content = cellContent(row.cells[i]);
+        return row.header && this.input.template === 'contract' ? `table.cell(align: center, ${content})` : content;
+      });
       body.push(row.header ? `table.header(${cells.join(', ')})` : cells.join(', '));
     }
-    return `#table(\n  columns: ${columns},\n  align: (${aligns.join(', ')}),\n${indent(body.join(',\n'), 2)},\n)`;
+    const tracks = this.input.template === 'contract'
+      ? `(${Array.from({ length: columns }, (_, i) => columns === 3 ? ['30%', '46.5%', '23.5%'][i] : '1fr').join(', ')},)`
+      : String(columns);
+    return `#table(\n  columns: ${tracks},\n  align: (${aligns.join(', ')}),\n${indent(body.join(',\n'), 2)},\n)`;
   }
 
   private definitionList(node: Node): string {

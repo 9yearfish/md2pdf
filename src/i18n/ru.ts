@@ -55,6 +55,7 @@ const ru: Messages = {
     docLanguage: 'Язык документа',
     template: 'Шаблон',
     templateDefault: 'Обычный',
+    templateContract: 'Договор',
     templateReport: 'Отчёт',
     templateAcademic: 'Научная статья',
     templateResume: 'Резюме',

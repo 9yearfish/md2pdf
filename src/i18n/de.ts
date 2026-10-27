@@ -55,6 +55,7 @@ const de: Messages = {
     docLanguage: 'Dokumentsprache',
     template: 'Vorlage',
     templateDefault: 'Standard',
+    templateContract: 'Vertrag',
     templateReport: 'Bericht',
     templateAcademic: 'Wissenschaftlich',
     templateResume: 'Lebenslauf',

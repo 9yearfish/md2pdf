@@ -54,6 +54,7 @@ const ko: Messages = {
     docLanguage: '문서 언어',
     template: '템플릿',
     templateDefault: '기본',
+    templateContract: '계약서',
     templateReport: '보고서',
     templateAcademic: '논문',
     templateResume: '이력서',

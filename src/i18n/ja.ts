@@ -54,6 +54,7 @@ const ja: Messages = {
     docLanguage: '文書の言語',
     template: 'テンプレート',
     templateDefault: '標準',
+    templateContract: '契約書',
     templateReport: 'レポート',
     templateAcademic: '論文',
     templateResume: '履歴書',
