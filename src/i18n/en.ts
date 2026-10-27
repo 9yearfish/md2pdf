@@ -236,6 +236,7 @@ const en: Messages = {
     aiCleaned: 'Tidied the formatting of pasted AI output',
     draftNotSample: 'Showing your saved draft, not this page’s example',
     loadExample: 'Load example',
+    templateExampleLoaded: "Loaded the {template} example; you can undo this change",
     exampleLoaded: 'Example loaded; your draft is kept until you edit',
     otherTab: 'This document was changed in another tab',
     loadLatest: 'Load latest',

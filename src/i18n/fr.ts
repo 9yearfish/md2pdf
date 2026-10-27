@@ -242,6 +242,7 @@ const fr: Messages = {
     aiCleaned: 'La mise en forme de la réponse d’IA collée a été nettoyée',
     draftNotSample: 'Votre brouillon enregistré est affiché, pas l’exemple de cette page',
     loadExample: 'Charger l’exemple',
+    templateExampleLoaded: "Exemple {template} chargé ; cette modification peut être annulée",
     exampleLoaded: 'Exemple chargé ; votre brouillon est conservé tant que vous ne modifiez rien',
     otherTab: 'Ce document a été modifié dans un autre onglet',
     loadLatest: 'Charger la dernière version',

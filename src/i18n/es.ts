@@ -236,6 +236,7 @@ const es: Messages = {
     aiCleaned: 'Se ha limpiado el formato de la respuesta de IA pegada',
     draftNotSample: 'Se muestra tu borrador guardado, no el ejemplo de esta página',
     loadExample: 'Cargar ejemplo',
+    templateExampleLoaded: "Ejemplo de {template} cargado; puedes deshacer el cambio",
     exampleLoaded: 'Ejemplo cargado; tu borrador se conserva hasta que edites',
     otherTab: 'Este documento se modificó en otra pestaña',
     loadLatest: 'Cargar lo último',

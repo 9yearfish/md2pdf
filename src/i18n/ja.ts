@@ -235,6 +235,7 @@ const ja: Messages = {
     aiCleaned: 'AI の出力の書式を整えました',
     draftNotSample: 'このページのサンプルではなく、保存済みの下書きを表示しています',
     loadExample: 'サンプルを読み込む',
+    templateExampleLoaded: "「{template}」のサンプルを読み込みました。元に戻せます",
     exampleLoaded: 'サンプルを読み込みました。編集するまで下書きは残ります',
     otherTab: 'この文書は別のタブで変更されました',
     loadLatest: '最新を読み込む',

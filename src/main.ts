@@ -1,12 +1,12 @@
 // First, before anything that resolves URLs: see the file for why.
 import './styles.css';
-import { DEFAULT_OPTIONS, type DocumentOptions, type PaperSize } from './convert/preamble';
+import { DEFAULT_OPTIONS, type DocumentOptions, type PaperSize, type TemplateId } from './convert/preamble';
 import type { EngineProgress } from './typst/engine';
 import { isEngineCached, loadCompilerModule } from './typst/wasm-loader';
 import { isSupportedImage, readImageFile, type LocalImage } from './convert/images';
 import { HtmlPreview } from './preview/html';
 import { detectLanguage, normalizeLang, SUPPORTED_LANGUAGES } from './convert/lang';
-import { landing, lang, plural, rememberLanguage, sample, t } from './i18n/runtime';
+import { landing, lang, plural, rememberLanguage, sample, exampleForTemplate, t } from './i18n/runtime';
 import { installErrorReporting, reportError } from './ui/errors';
 import { importWithRetry, isChunkLoadError } from './ui/retry-import';
 import { createEditor, type Editor } from './ui/editor';
@@ -137,9 +137,11 @@ function schedulePreview(): void {
 function renderPreview(): void {
   const source = doc.getValue();
   const layout = layoutModule();
+  let template = options.template;
   if (layout) {
     // Front matter and the template, applied over the panel's settings.
     const resolved = layout.resolveDocument(source, options);
+    template = resolved.options.template;
     applyOptions(resolved.options);
     preview.render(resolved.body, resolved.options, layout.previewLayout(resolved));
     layout.markOverrides(resolved, options);
@@ -151,6 +153,7 @@ function renderPreview(): void {
     // Front matter keys are not prose; they must not sway the detection.
     showDetectedLanguage(hideFrontMatter(source));
   }
+  showExampleTemplate(template);
   updateStats(source);
   scheduleWarmUp();
   pulseLive();
@@ -934,19 +937,64 @@ function offerLandingExample(draftText: string): void {
   if (!landing || draftText === sample) return;
   showWarnings([t('draftNotSample')], false, {
     label: t('loadExample'),
-    run: () => {
-      const previous = doc.getValue();
-      replaceText(sample);
-      renderPreview();
-      showWarnings([t('exampleLoaded')], false, {
-        label: t('undo'),
-        run: () => {
-          replaceText(previous);
-          renderPreview();
-        },
-      });
-    },
+    run: () => { void loadSelectedExample(true); },
   });
+}
+
+/** Explicitly loading an example starts a new document; Undo restores the
+ * entire previous draft, including its options, identity and local images. */
+let loadingExample = false;
+async function loadSelectedExample(preserveDraft = false): Promise<void> {
+  if (loadingExample) return;
+  loadingExample = true;
+  try {
+    const layout = await loadLayout().catch(() => null);
+    const template = layout?.resolveDocument(doc.getValue(), options).options.template ?? options.template;
+    const text = exampleForTemplate(template);
+    autosave.flush();
+    const previous = {
+      id: currentDocumentId, sourceName: currentSourceName, keep: keepCurrentInRecents,
+      text: doc.getValue(), options: { ...options }, images: new Map(images),
+    };
+    currentDocumentId = newDocumentId();
+    currentSourceName = null;
+    keepCurrentInRecents = true;
+    images.clear();
+    options = layout && options.template !== template ? layout.applyTemplate(options, template) : { ...options, template };
+    replaceText(text);
+    showOptionsInInputs();
+    renderPreview();
+    if (!preserveDraft) autosave.saveNow();
+    const templateName = el<HTMLSelectElement>('opt-template').selectedOptions[0]?.textContent ?? template;
+    showWarnings([t('templateExampleLoaded', { template: templateName })], 'ok', {
+      label: t('undo'),
+      run: () => {
+        autosave.flush();
+        currentDocumentId = previous.id;
+        currentSourceName = previous.sourceName;
+        keepCurrentInRecents = previous.keep;
+        options = previous.options;
+        images.clear();
+        for (const [name, image] of previous.images) images.set(name, image);
+        replaceText(previous.text);
+        renderPreview();
+        showOptionsInInputs();
+        autosave.saveNow();
+        doc.focus();
+      },
+    });
+    doc.focus();
+    showResultOnPhone();
+  } finally { loadingExample = false; }
+}
+
+function showExampleTemplate(template: TemplateId): void {
+  const name = el<HTMLSelectElement>('opt-template').querySelector<HTMLOptionElement>(`option[value="${template}"]`)?.textContent ?? template;
+  for (const id of ['empty-example', 'template-example']) {
+    const button = el<HTMLButtonElement>(id);
+    button.textContent = template === 'default' ? t('loadExample') : `${t('loadExample')} · ${name}`;
+    button.dataset.template = template;
+  }
 }
 
 /** Replace the text without it counting as an edit to save. */
@@ -1042,13 +1090,9 @@ function bindControls(): void {
   el('open-file').addEventListener('click', () => fileInput.click());
   el('empty-open').addEventListener('click', () => fileInput.click());
   el('empty-example').addEventListener('click', () => {
-    if (doc.getValue().trim()) return;
-    replaceText(sample);
-    renderPreview();
-    autosave.touch();
-    doc.focus();
-    showResultOnPhone();
+    if (!doc.getValue().trim()) void loadSelectedExample();
   });
+  el('template-example').addEventListener('click', () => { void loadSelectedExample(); });
   bindPdfPreview(label => buildPdf(pdfPreviewButton, label, t('downloadGenerating')));
   bindPasteButton();
   fileInput.addEventListener('change', () => {

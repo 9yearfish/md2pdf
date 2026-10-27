@@ -22,6 +22,11 @@ export const locale = data.code;
 /** BCP 47 tag for Intl formatting. */
 export const lang = data.lang;
 export const sample = data.sample;
+
+/** Default preserves a landing page’s own sample; other templates use locale-specific content. */
+export function exampleForTemplate(template: import('../convert/preamble').TemplateId): string {
+  return template === 'default' ? sample : data.examples[template];
+}
 /** The landing page's slug, or null on a locale's home page. */
 export const landing = data.landing ?? null;
 

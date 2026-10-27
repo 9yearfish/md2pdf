@@ -11,7 +11,13 @@ The eye button beside full-screen editing opens a full-window preview of that
 actual PDF, including its page breaks. Close it or press Escape to return.
 Full-screen editing lasts only until the page is reloaded; every visit starts
 with the ordinary page.
-Blank documents offer "Load example" to restore the current page's demo.
+Blank documents offer "Load example" for the active template and interface language.
+
+Examples follow the active template and the interface language: Contract,
+Résumé, Report, Academic and Letter each have their own content in all nine
+locales. Use “Load example” in Layout or on an empty document. Loading is
+explicit and undoable; selecting a template alone keeps the document text.
+The Default template retains the current home or guide page’s own example.
 
 ## How it works
 

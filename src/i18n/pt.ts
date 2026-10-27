@@ -236,6 +236,7 @@ const pt: Messages = {
     aiCleaned: 'A formatação da resposta de IA colada foi ajustada',
     draftNotSample: 'Mostrando seu rascunho salvo, não o exemplo desta página',
     loadExample: 'Carregar exemplo',
+    templateExampleLoaded: "Exemplo de {template} carregado; você pode desfazer a alteração",
     exampleLoaded: 'Exemplo carregado; seu rascunho fica guardado até você editar',
     otherTab: 'Este documento foi alterado em outra aba',
     loadLatest: 'Carregar a mais recente',

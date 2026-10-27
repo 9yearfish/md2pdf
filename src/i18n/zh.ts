@@ -233,6 +233,7 @@ const zh: Messages = {
     aiCleaned: '已整理 AI 输出的格式',
     draftNotSample: '显示的是你保存的草稿，而不是本页的示例',
     loadExample: '载入示例',
+    templateExampleLoaded: "已载入{template}示例，可以撤销",
     exampleLoaded: '已载入示例；在你编辑之前，草稿仍会保留',
     otherTab: '此文档已在另一个标签页中修改',
     loadLatest: '载入最新',

@@ -236,6 +236,7 @@ const de: Messages = {
     aiCleaned: 'Formatierung der eingefügten KI-Antwort bereinigt',
     draftNotSample: 'Angezeigt wird dein gespeicherter Entwurf, nicht das Beispiel dieser Seite',
     loadExample: 'Beispiel laden',
+    templateExampleLoaded: "Beispiel für {template} geladen; die Änderung lässt sich rückgängig machen",
     exampleLoaded: 'Beispiel geladen; dein Entwurf bleibt erhalten, bis du etwas änderst',
     otherTab: 'Dieses Dokument wurde in einem anderen Tab geändert',
     loadLatest: 'Neueste laden',

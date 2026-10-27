@@ -235,7 +235,8 @@ for (const p of pages) {
   }
   const failures = [];
   if (leaks.length) failures.push(`leaks ${leaks.slice(0, 3).join(', ')}`);
-  if (keys !== 'code,landing,lang,sample,ui') failures.push(`data keys ${keys}`);
+  if (keys !== 'code,examples,landing,lang,sample,ui') failures.push(`data keys ${keys}`);
+  if (JSON.stringify(data.examples) !== JSON.stringify(homeData.examples)) failures.push('template examples differ from the same locale home page');
   if (JSON.stringify(data.ui) !== JSON.stringify(homeData.ui)) failures.push('ui strings differ from the home page');
   if (assetsOf(p.html) !== assetsOf(home[p.code]).replace(/\/assets\/lang-redirect-[^ ]+ ?/, '').trim()) failures.push('different scripts or styles');
   if (size > homeSize * 1.3 || br > homeBr * 1.3) failures.push(`${size} B (${br} B br) vs home ${homeSize} B (${homeBr} B br)`);
@@ -436,7 +437,7 @@ for (const width of [1440, 390]) {
     check(b.open.r <= b.editor.r + 1 && b.open.l > b.stats.r, '1440: counts, New and Open stay over the source');
     check(new Set([b.stats, b.layout, b.preview, b.full, b.print, b.download].map(x => Math.round((x.t + x.b) / 2))).size === 1, '1440: one row');
     await page.click('#fullscreen-toggle');
-    await page.waitForTimeout(300);
+    await page.waitForFunction(() => !document.documentElement.classList.contains('fullscreen-transitioning'));
     b = await rows();
     check(Math.abs(b.download.r - b.sheet.r) <= 1 && b.layout.r <= b.preview.l && b.open.r <= b.editor.r + 1, 'full screen: the row still follows the panes');
     await page.click('#fullscreen-toggle');

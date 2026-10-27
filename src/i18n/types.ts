@@ -181,6 +181,8 @@ export interface UiMessages {
   /** On a landing page, a returning visitor sees their draft rather than the page's example. */
   draftNotSample: string;
   loadExample: string;
+  /** {template} */
+  templateExampleLoaded: string;
   exampleLoaded: string;
   otherTab: string;
   loadLatest: string;
@@ -282,6 +284,7 @@ export interface RuntimeLocale {
   lang: string;
   ui: UiMessages;
   sample: string;
+  examples: import('./examples').TemplateExamples;
   /** Set on a landing page: its slug. `sample` is then that page's example. */
   landing?: string;
 }

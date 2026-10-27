@@ -1,3 +1,4 @@
+import { templateExamples } from './examples';
 /**
  * Build-time rendering of the localised pages, the sitemap and the language
  * redirect. Pure string functions, used by the plugin in vite.config.ts; none
@@ -457,6 +458,7 @@ function runtimeData(ref: PageRef): string {
     lang: messages.locale.lang,
     ui: messages.ui,
     sample: copy?.sample ?? messages.sample,
+    examples: templateExamples(messages.locale.code, messages.locale.lang),
     ...(ref.slug ? { landing: ref.slug } : {}),
   };
   return `<script type="application/json" id="${LOCALE_DATA_ID}">${scriptJson(data)}</script>`;
@@ -607,6 +609,9 @@ export function validateLocales(): void {
     }
     if (m.about.faq.length !== base.about.faq.length) problems.push(`${code}: FAQ has ${m.about.faq.length} entries`);
     if (m.about.sections.length !== base.about.sections.length) problems.push(`${code}: about has ${m.about.sections.length} sections`);
+    for (const [template, example] of Object.entries(templateExamples(code, m.locale.lang))) {
+      if (!example.trim() || !example.startsWith('---\nlang: ' + m.locale.lang + '\n')) problems.push(`${code}.${template}: invalid example language`);
+    }
     if (!m.sample.includes('```mermaid')) problems.push(`${code}: sample has no Mermaid diagram`);
   }
   if (problems.length) throw new Error('i18n dictionaries are inconsistent:\n  ' + problems.join('\n  '));

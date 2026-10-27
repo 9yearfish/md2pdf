@@ -235,6 +235,7 @@ const ko: Messages = {
     aiCleaned: 'AI 답변의 서식을 정리했습니다',
     draftNotSample: '이 페이지의 예제 대신 저장된 초안을 표시하고 있습니다',
     loadExample: '예제 불러오기',
+    templateExampleLoaded: "{template} 예시를 불러왔습니다. 실행 취소할 수 있습니다",
     exampleLoaded: '예제를 불러왔습니다. 편집하기 전까지 초안은 유지됩니다',
     otherTab: '다른 탭에서 이 문서가 변경되었습니다',
     loadLatest: '최신 버전 불러오기',
