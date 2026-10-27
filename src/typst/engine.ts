@@ -71,6 +71,15 @@ const compilers = new Map<string, Promise<TypstCompiler>>();
 /** Paths mapped into each compiler's shadow filesystem, so stale assets get cleared. */
 const mappedAssets = new Map<string, Set<string>>();
 
+// Font tiers share the WASM module. Its Rust builder cannot be borrowed by
+// concurrent init/compile calls, including a warm-up still loading fonts.
+let engineQueue: Promise<unknown> = Promise.resolve();
+function withEngine<T>(work: () => Promise<T>): Promise<T> {
+  const result = engineQueue.then(work);
+  engineQueue = result.catch(() => {});
+  return result;
+}
+
 export type EngineProgress =
   | { stage: 'downloading-engine'; loaded: number; total: number }
   | { stage: 'starting-engine' }
@@ -126,41 +135,43 @@ export async function compileToPdf(
   onProgress: ProgressFn = () => {},
 ): Promise<CompileOutcome> {
   const fonts = withMathFonts(req.fonts ?? (await resolveFonts(req.textForFonts, req.lang)), req.hasMath);
-  const compiler = await getCompiler(fonts, onProgress);
-  const key = fontSetKey(fonts);
+  return withEngine(async () => {
+    const compiler = await getCompiler(fonts, onProgress);
+    const key = fontSetKey(fonts);
 
-  onProgress({ stage: 'compiling' });
+    onProgress({ stage: 'compiling' });
 
-  // Clear assets from the previous run before mapping the current ones.
-  const previous = mappedAssets.get(key)!;
-  const current = new Set(req.assets.map(a => a.path));
-  for (const path of previous) {
-    if (!current.has(path)) await compiler.unmapShadow(path);
-  }
-  for (const asset of req.assets) await compiler.mapShadow(asset.path, asset.bytes);
-  mappedAssets.set(key, current);
+    // Clear assets from the previous run before mapping the current ones.
+    const previous = mappedAssets.get(key)!;
+    const current = new Set(req.assets.map(a => a.path));
+    for (const path of previous) {
+      if (!current.has(path)) await compiler.unmapShadow(path);
+    }
+    for (const asset of req.assets) await compiler.mapShadow(asset.path, asset.bytes);
+    mappedAssets.set(key, current);
 
-  compiler.addSource(MAIN, req.source);
+    compiler.addSource(MAIN, req.source);
 
-  const result = await compiler.compile({
-    mainFilePath: MAIN,
-    format: CompileFormatEnum.pdf,
-    diagnostics: 'full',
+    const result = await compiler.compile({
+      mainFilePath: MAIN,
+      format: CompileFormatEnum.pdf,
+      diagnostics: 'full',
+    });
+
+    const diagnostics = (result.diagnostics ?? []).map(formatDiagnostic);
+    if (!result.result) {
+      throw new TypstCompileError(
+        diagnostics[0] ?? 'Typst failed to produce a document.',
+        diagnostics,
+        result.diagnostics ?? [],
+      );
+    }
+    // Copy the bytes out. The result can be a view into the compiler's WASM
+    // memory, which is detached as soon as that memory grows (the next font
+    // load or compile). A cached PDF kept as that view downloaded fine once,
+    // then threw on the second click ("TypeError: … detached").
+    return { pdf: new Uint8Array(result.result), fonts, diagnostics };
   });
-
-  const diagnostics = (result.diagnostics ?? []).map(formatDiagnostic);
-  if (!result.result) {
-    throw new TypstCompileError(
-      diagnostics[0] ?? 'Typst failed to produce a document.',
-      diagnostics,
-      result.diagnostics ?? [],
-    );
-  }
-  // Copy the bytes out. The result can be a view into the compiler's WASM
-  // memory, which is detached as soon as that memory grows (the next font
-  // load or compile). A cached PDF kept as that view downloaded fine once,
-  // then threw on the second click ("TypeError: … detached").
-  return { pdf: new Uint8Array(result.result), fonts, diagnostics };
 }
 
 /**
@@ -202,6 +213,6 @@ function warm(text: string, onProgress: ProgressFn, lang: LangSetting, fontOptio
   // requested; `withMathFonts` only keeps it once a download has needed it,
   // so the warmed compiler matches the one that download will use.
   return resolveFonts(text, lang, fontOptions)
-    .then(fonts => getCompiler(withMathFonts(fonts), onProgress))
+    .then(fonts => withEngine(() => getCompiler(withMathFonts(fonts), onProgress)))
     .then(() => true);
 }
